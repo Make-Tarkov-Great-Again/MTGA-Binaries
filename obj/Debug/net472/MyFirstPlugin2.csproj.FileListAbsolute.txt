@@ -1,0 +1,10 @@
+H:\EmuTarkov\Client Modules\MyFirstPlugin2\bin\Debug\net472\MyFirstPlugin2.dll
+H:\EmuTarkov\Client Modules\MyFirstPlugin2\bin\Debug\net472\MyFirstPlugin2.pdb
+H:\EmuTarkov\Client Modules\MyFirstPlugin2\obj\Debug\net472\MyFirstPlugin2.csproj.AssemblyReference.cache
+H:\EmuTarkov\Client Modules\MyFirstPlugin2\obj\Debug\net472\PluginInfo.cs
+H:\EmuTarkov\Client Modules\MyFirstPlugin2\obj\Debug\net472\MyFirstPlugin2.GeneratedMSBuildEditorConfig.editorconfig
+H:\EmuTarkov\Client Modules\MyFirstPlugin2\obj\Debug\net472\MyFirstPlugin2.AssemblyInfoInputs.cache
+H:\EmuTarkov\Client Modules\MyFirstPlugin2\obj\Debug\net472\MyFirstPlugin2.AssemblyInfo.cs
+H:\EmuTarkov\Client Modules\MyFirstPlugin2\obj\Debug\net472\MyFirstPlugin2.csproj.CoreCompileInputs.cache
+H:\EmuTarkov\Client Modules\MyFirstPlugin2\obj\Debug\net472\MyFirstPlugin2.dll
+H:\EmuTarkov\Client Modules\MyFirstPlugin2\obj\Debug\net472\MyFirstPlugin2.pdb

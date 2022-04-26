@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "dgSpecHash": "M+DGF2At6sprYFKGQtfkFVYfAjJfpUYXs5THEjd9T5Sj48wN106oD+s1UA4aQ6+sgu2vuVAS9WjLmogrL/F/iw==",
+  "success": true,
+  "projectFilePath": "H:\\EmuTarkov\\Client Modules\\MyFirstPlugin2\\SIT.Tarkov.Core.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\paula\\.nuget\\packages\\bepinex.analyzers\\1.0.8\\bepinex.analyzers.1.0.8.nupkg.sha512",
+    "C:\\Users\\paula\\.nuget\\packages\\bepinex.baselib\\5.4.19\\bepinex.baselib.5.4.19.nupkg.sha512",
+    "C:\\Users\\paula\\.nuget\\packages\\bepinex.core\\5.4.19\\bepinex.core.5.4.19.nupkg.sha512",
+    "C:\\Users\\paula\\.nuget\\packages\\bepinex.plugininfoprops\\1.1.0\\bepinex.plugininfoprops.1.1.0.nupkg.sha512",
+    "C:\\Users\\paula\\.nuget\\packages\\harmonyx\\2.7.0\\harmonyx.2.7.0.nupkg.sha512",
+    "C:\\Users\\paula\\.nuget\\packages\\microsoft.netframework.referenceassemblies\\1.0.2\\microsoft.netframework.referenceassemblies.1.0.2.nupkg.sha512",
+    "C:\\Users\\paula\\.nuget\\packages\\microsoft.netframework.referenceassemblies.net472\\1.0.2\\microsoft.netframework.referenceassemblies.net472.1.0.2.nupkg.sha512",
+    "C:\\Users\\paula\\.nuget\\packages\\mono.cecil\\0.11.4\\mono.cecil.0.11.4.nupkg.sha512",
+    "C:\\Users\\paula\\.nuget\\packages\\monomod.runtimedetour\\21.12.13.1\\monomod.runtimedetour.21.12.13.1.nupkg.sha512",
+    "C:\\Users\\paula\\.nuget\\packages\\monomod.utils\\21.12.13.1\\monomod.utils.21.12.13.1.nupkg.sha512",
+    "C:\\Users\\paula\\.nuget\\packages\\unityengine.modules\\2019.4.34\\unityengine.modules.2019.4.34.nupkg.sha512"
+  ],
+  "logs": []
+}
