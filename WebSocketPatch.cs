@@ -37,10 +37,10 @@ namespace SIT.Tarkov.Core
 
             if (wsMethod == null)
                 UnityEngine.Debug.LogError("WebSocket Patch:: Cannot find WebSocket TargetMethod");
-            else
-            {
-                UnityEngine.Debug.LogError("WebSocket Patch:: WebSocket TargetMethod ::" + typeThatMatches.FullName + "." + wsMethod.Name + "");
-            }
+            //else
+            //{
+            //    UnityEngine.Debug.LogError("WebSocket Patch:: WebSocket TargetMethod ::" + typeThatMatches.FullName + "." + wsMethod.Name + "");
+            //}
 
             return wsMethod;
         }
