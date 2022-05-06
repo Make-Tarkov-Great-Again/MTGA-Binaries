@@ -1,5 +1,7 @@
 # SIT.Tarkov.Core
 
+## Status - Complete
+
 ## Summary
 
 This is a port of the Just Emu Tarkov core functionality to allow the game to run without worrying about BattlEye and its File Checker using BepInEx
@@ -8,7 +10,7 @@ This is a port of the Just Emu Tarkov core functionality to allow the game to ru
 Version 5
 
 # How to install BepInEx
-[https://docs.bepinex.dev/articles/user_guide/installation/index.html]https://docs.bepinex.dev/articles/user_guide/installation/index.html
+[https://docs.bepinex.dev/articles/user_guide/installation/index.html](https://docs.bepinex.dev/articles/user_guide/installation/index.html)
 
 ## How to compile? 
 - You will need BepInEx Nuget Feed installed on your PC by running the following command in a terminal. 
