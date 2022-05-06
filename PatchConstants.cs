@@ -4,7 +4,7 @@ using System.Reflection;
 using Comfort.Common;
 using EFT;
 using FilesChecker;
-using ISession = GInterface115;
+//using ISession = GInterface115;
 
 namespace SIT.Tarkov.Core
 {
@@ -18,23 +18,23 @@ namespace SIT.Tarkov.Core
         public static Type BackendInterfaceType { get; private set; }
         public static Type SessionInterfaceType { get; private set; }
 
-        private static ISession _backEndSession;
-        public static ISession BackEndSession
-        {
-            get
-            {
-                if (_backEndSession == null)
-                {
-                    _backEndSession = Singleton<ClientApplication>.Instance.GetClientBackEndSession();
-                }
+        //private static ISession _backEndSession;
+        //public static ISession BackEndSession
+        //{
+        //    get
+        //    {
+        //        if (_backEndSession == null)
+        //        {
+        //            _backEndSession = Singleton<ClientApplication>.Instance.GetClientBackEndSession();
+        //        }
 
-                return _backEndSession;
-            }
-        }
+        //        return _backEndSession;
+        //    }
+        //}
 
         static PatchConstants()
         {
-            _ = nameof(ISession.GetPhpSessionId);
+            //_ = nameof(ISession.GetPhpSessionId);
 
             PrivateFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
             EftTypes = typeof(AbstractGame).Assembly.GetTypes();

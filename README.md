@@ -13,6 +13,7 @@ Version 5
 [https://docs.bepinex.dev/articles/user_guide/installation/index.html](https://docs.bepinex.dev/articles/user_guide/installation/index.html)
 
 ## How to compile? 
+- The references for Assembly-CSharp (cleaned via de4dot), Comfort, FilesChecker, UnityEngine will need to be setup to your Tarkov installation
 - You will need BepInEx Nuget Feed installed on your PC by running the following command in a terminal. 
 ```
 dotnet new -i BepInEx.Templates --nuget-source https://nuget.bepinex.dev/v3/index.json
