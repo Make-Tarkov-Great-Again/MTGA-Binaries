@@ -2,6 +2,10 @@
 
 ## Status - Complete
 
+## Disclaimer
+
+This is by no means designed for cheats or illegally downloading the game. This is purely for educational and game modification purposes.
+
 ## Summary
 
 This is a port of the Just Emu Tarkov core functionality to allow the game to run without worrying about BattlEye and its File Checker using BepInEx
@@ -39,7 +43,4 @@ start ./Clients/EmuTarkov/EscapeFromTarkov.exe -token=AID062158106353313252ruc -
 
 ## License
 
-Original Just Emu Tarkov core functionality completed by TheMaoci and AppeazeTheCheese. 
-
-As the original license is GNU GENERAL PUBLIC LICENSE v2 the license for this piece of software remains the same.
-All work derived from this work must contain creditation to this repo and the two afromentionted orignal authors.
+>>SOME<< of the original core functionality completed by TheMaoci, AppeazeTheCheese and the SPT-Aki team. There may be licenses pertaining to them within this source.

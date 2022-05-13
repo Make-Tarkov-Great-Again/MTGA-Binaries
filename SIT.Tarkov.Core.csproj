@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
@@ -22,19 +22,28 @@
   
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\JET Git Archives\JET-Project-Solution\References\Assembly-CSharp.dll</HintPath>
+      <HintPath>..\Tarkov.References\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="Comfort">
-      <HintPath>..\..\JET Git Archives\JET-Project-Solution\References\Comfort.dll</HintPath>
+      <HintPath>..\Tarkov.References\Comfort.dll</HintPath>
     </Reference>
     <Reference Include="Comfort.Unity">
-      <HintPath>..\..\JET Git Archives\JET-Project-Solution\References\Comfort.Unity.dll</HintPath>
+      <HintPath>..\Tarkov.References\Comfort.Unity.dll</HintPath>
     </Reference>
     <Reference Include="FilesChecker">
-      <HintPath>..\..\JET Git Archives\JET-Project-Solution\References\FilesChecker.dll</HintPath>
+      <HintPath>..\Tarkov.References\FilesChecker.dll</HintPath>
+    </Reference>
+    <Reference Include="Sirenix.Serialization">
+      <HintPath>..\Tarkov.References\Sirenix.Serialization.dll</HintPath>
+    </Reference>
+    <Reference Include="Sirenix.Serialization.Config">
+      <HintPath>..\Tarkov.References\Sirenix.Serialization.Config.dll</HintPath>
+    </Reference>
+    <Reference Include="Sirenix.Utilities">
+      <HintPath>..\Tarkov.References\Sirenix.Utilities.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>..\..\JET Git Archives\JET-Project-Solution\References\UnityEngine.dll</HintPath>
+      <HintPath>..\Tarkov.References\UnityEngine.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>
