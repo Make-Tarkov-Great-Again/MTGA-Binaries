@@ -7,6 +7,7 @@ using Comfort.Common;
 using EFT;
 using EFT.Communications;
 using FilesChecker;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace SIT.Tarkov.Core
@@ -60,19 +61,22 @@ namespace SIT.Tarkov.Core
             {
                 try
                 {
-                    var ConfigInstance = EftTypes
+                    var ConfigInstance = Constants.Instance.TargetAssemblyTypes
                         .Where(type => type.GetField("DEFAULT_BACKEND_URL", BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy) != null)
                         .FirstOrDefault().GetProperty("Config", BindingFlags.Static | BindingFlags.Public).GetValue(null);
                     _backendUrl = HarmonyLib.Traverse.Create(ConfigInstance).Field("BackendUrl").GetValue() as string;
                 }
                 catch (Exception e)
                 {
+                    Logger.LogError("GetBackendUrl():" + e);
                 }
                 Logger.LogInfo(_backendUrl);
             }
             if (_backendUrl == null)
             {
                 _backendUrl = "https://127.0.0.1";
+                Logger.LogInfo("GetBackendUrl is defaulting to " + _backendUrl);
+
             }
             return _backendUrl;
         }
@@ -97,6 +101,12 @@ namespace SIT.Tarkov.Core
         public static ManualLogSource Logger { get; private set; }
 
         public static Type MessageNotificationType { get; private set; }
+        public static Type GroupingType { get; }
+
+        public static T DoSafeConversion<T>(object o)
+        {
+            return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(o));
+        }
 
         static PatchConstants()
         {
@@ -117,6 +127,11 @@ namespace SIT.Tarkov.Core
             if(MessageNotificationType == null)
             {
                 Logger.LogInfo("SIT.Tarkov.Core:PatchConstants():MessageNotificationType:Not Found");
+            }
+            GroupingType = EftTypes.Single(x => x.GetMethods(BindingFlags.Public | BindingFlags.Static).Select(y => y.Name).Contains("CreateRaidPlayer"));
+            if (GroupingType != null)
+            {
+                Logger.LogInfo("SIT.Tarkov.Core:PatchConstants():Found GroupingType:" + GroupingType.FullName);
             }
 
             //GetBackendUrl();

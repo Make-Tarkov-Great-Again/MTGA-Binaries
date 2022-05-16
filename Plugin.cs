@@ -1,6 +1,7 @@
 ﻿using BepInEx;
+using SIT.Tarkov.Core;
 
-namespace SIT.Tarkov.Core
+namespace SIT.A.Tarkov.Core
 {
     [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
     public class Plugin : BaseUnityPlugin
