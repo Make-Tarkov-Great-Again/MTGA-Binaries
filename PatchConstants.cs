@@ -108,6 +108,153 @@ namespace SIT.Tarkov.Core
             return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(o));
         }
 
+        public static PropertyInfo GetPropertyFromType(Type t, string name)
+        {
+            var properties = t.GetProperties(BindingFlags.Instance | BindingFlags.Public);
+            foreach (PropertyInfo property in properties)
+            {
+                if (property.Name.ToLower().Contains(name.ToLower()))
+                {
+                    return property;
+                }
+            }
+            properties = t.GetProperties(BindingFlags.Instance | BindingFlags.NonPublic);
+            foreach (PropertyInfo property in properties)
+            {
+                if (property.Name.ToLower().Contains(name.ToLower()))
+                {
+                    return property;
+                }
+            }
+            return null;
+        }
+
+        public static FieldInfo GetFieldFromType(Type t, string name)
+        {
+            var fields = t.GetFields(BindingFlags.Instance | BindingFlags.Public);
+            foreach (FieldInfo field in fields)
+            {
+                if (field.Name.ToLower().Contains(name.ToLower()))
+                {
+                    return field;
+                }
+            }
+            fields = t.GetFields(BindingFlags.Instance | BindingFlags.NonPublic);
+            foreach (FieldInfo field in fields)
+            {
+                if (field.Name.ToLower().Contains(name.ToLower()))
+                {
+                    return field;
+                }
+            }
+            return null;
+        }
+
+        public static T GetFieldOrPropertyFromInstance<T>(object o, string name)
+        {
+            var properties = o.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public);
+            foreach (PropertyInfo property in properties)
+            {
+                if (property.Name.ToLower().Contains(name.ToLower()))
+                {
+                    return Tarkov.Core.PatchConstants.DoSafeConversion<T>(property.GetValue(o));
+                }
+            }
+            properties = o.GetType().GetProperties(BindingFlags.Instance | BindingFlags.NonPublic);
+            foreach (PropertyInfo property in properties)
+            {
+                if (property.Name.ToLower().Contains(name.ToLower()))
+                {
+                    return Tarkov.Core.PatchConstants.DoSafeConversion<T>(property.GetValue(o));
+                }
+            }
+            properties = o.GetType().GetProperties(BindingFlags.Static | BindingFlags.Public);
+            foreach (PropertyInfo property in properties)
+            {
+                if (property.Name.ToLower().Contains(name.ToLower()))
+                {
+                    return Tarkov.Core.PatchConstants.DoSafeConversion<T>(property.GetValue(o));
+                }
+            }
+            var fields = o.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public);
+            foreach (FieldInfo field in fields)
+            {
+                if (field.Name.ToLower().Contains(name.ToLower()))
+                {
+                    return Tarkov.Core.PatchConstants.DoSafeConversion<T>(field.GetValue(o));
+                }
+            }
+            fields = o.GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic);
+            foreach (FieldInfo field in fields)
+            {
+                if (field.Name.ToLower().Contains(name.ToLower()))
+                {
+                    return Tarkov.Core.PatchConstants.DoSafeConversion<T>(field.GetValue(o));
+                }
+            }
+            fields = o.GetType().GetFields(BindingFlags.Static | BindingFlags.Public);
+            foreach (FieldInfo field in fields)
+            {
+                if (field.Name.ToLower().Contains(name.ToLower()))
+                {
+                    return Tarkov.Core.PatchConstants.DoSafeConversion<T>(field.GetValue(o));
+                }
+            }
+            return default(T);
+        }
+
+        public static void SetFieldOrPropertyFromInstance<T>(object o, string name, T v)
+        {
+            var properties = o.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public);
+            foreach (PropertyInfo property in properties)
+            {
+                if (property.Name.ToLower().Contains(name.ToLower()))
+                {
+                    property.SetValue(o, v);
+                }
+            }
+            properties = o.GetType().GetProperties(BindingFlags.Instance | BindingFlags.NonPublic);
+            foreach (PropertyInfo property in properties)
+            {
+                if (property.Name.ToLower().Contains(name.ToLower()))
+                {
+                    property.SetValue(o, v);
+                }
+            }
+            properties = o.GetType().GetProperties(BindingFlags.Static | BindingFlags.Public);
+            foreach (PropertyInfo property in properties)
+            {
+                if (property.Name.ToLower().Contains(name.ToLower()))
+                {
+                    property.SetValue(o, v);
+                }
+            }
+            var fields = o.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public);
+            foreach (FieldInfo field in fields)
+            {
+                if (field.Name.ToLower().Contains(name.ToLower()))
+                {
+                    field.SetValue(o, v);
+                }
+            }
+            fields = o.GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic);
+            foreach (FieldInfo field in fields)
+            {
+                if (field.Name.ToLower().Contains(name.ToLower()))
+                {
+                    field.SetValue(o, v);
+                }
+            }
+            fields = o.GetType().GetFields(BindingFlags.Static | BindingFlags.Public);
+            foreach (FieldInfo field in fields)
+            {
+                if (field.Name.ToLower().Contains(name.ToLower()))
+                {
+                    field.SetValue(o, v);
+                }
+            }
+        }
+
         static PatchConstants()
         {
             if(Logger == null)  
