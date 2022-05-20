@@ -9,7 +9,9 @@ You can obtain it here. [https://www.escapefromtarkov.com](https://www.escapefro
 
 ## Summary
 
-This is a port of the Just Emu Tarkov core functionality to allow the game to run without worrying about BattlEye and its File Checker using BepInEx
+This is a ~~port~~ **rewrite** of the Just Emu Tarkov core functionality to allow the game to run without worrying about BattlEye and its File Checker using BepInEx. The primary design of this versus 
+others of its kind is that it can be used with ALL versions of EFT.
+
 
 ## Which version of BepInEx is this built for?
 Version 5
