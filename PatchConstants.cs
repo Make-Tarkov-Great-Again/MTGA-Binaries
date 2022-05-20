@@ -8,6 +8,7 @@ using EFT;
 using EFT.Communications;
 using FilesChecker;
 using Newtonsoft.Json;
+using SIT.A.Tarkov.Core.Web;
 using UnityEngine;
 
 namespace SIT.Tarkov.Core
@@ -50,35 +51,46 @@ namespace SIT.Tarkov.Core
         /// </summary>
         public static readonly Dictionary<(Type, string), MethodInfo> MethodDictionary = new Dictionary<(Type, string), MethodInfo>();
 
-        private static string _backendUrl;
+        private static string backendUrl;
         /// <summary>
         /// Method that returns the Backend Url (Example: https://127.0.0.1)
         /// </summary>
         public static string GetBackendUrl()
         {
-            //return GClassXXX.Config.BackendUrl;
-            if (_backendUrl == null)
+            if (string.IsNullOrEmpty(backendUrl))
             {
-                try
-                {
-                    var ConfigInstance = Constants.Instance.TargetAssemblyTypes
-                        .Where(type => type.GetField("DEFAULT_BACKEND_URL", BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy) != null)
-                        .FirstOrDefault().GetProperty("Config", BindingFlags.Static | BindingFlags.Public).GetValue(null);
-                    _backendUrl = HarmonyLib.Traverse.Create(ConfigInstance).Field("BackendUrl").GetValue() as string;
-                }
-                catch (Exception e)
-                {
-                    Logger.LogError("GetBackendUrl():" + e);
-                }
-                Logger.LogInfo(_backendUrl);
+                backendUrl = BackendConnection.GetBackendConnection().BackendUrl;
             }
-            if (_backendUrl == null)
-            {
-                _backendUrl = "https://127.0.0.1";
-                Logger.LogInfo("GetBackendUrl is defaulting to " + _backendUrl);
+            return backendUrl;
 
-            }
-            return _backendUrl;
+            //return GClassXXX.Config.BackendUrl;
+            //if (_backendUrl == null)
+            //{
+            //    try
+            //    {
+            //        var ConfigInstance = Constants.Instance.TargetAssemblyTypes
+            //            .Where(type => type.GetField("DEFAULT_BACKEND_URL", BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy) != null)
+            //            .FirstOrDefault().GetProperty("Config", BindingFlags.Static | BindingFlags.Public).GetValue(null);
+            //        _backendUrl = HarmonyLib.Traverse.Create(ConfigInstance).Field("BackendUrl").GetValue() as string;
+            //    }
+            //    catch (Exception e)
+            //    {
+            //        Logger.LogError("GetBackendUrl():" + e);
+            //    }
+            //    Logger.LogInfo(_backendUrl);
+            //}
+            //if (_backendUrl == null)
+            //{
+            //    _backendUrl = "https://127.0.0.1";
+            //    Logger.LogInfo("GetBackendUrl is defaulting to " + _backendUrl);
+
+            //}
+            //return _backendUrl;
+        }
+
+        public static string GetPHPSESSID()
+        {
+            return BackendConnection.GetBackendConnection().PHPSESSID;
         }
 
         public static void DisplayMessageNotification(string message)
@@ -102,10 +114,16 @@ namespace SIT.Tarkov.Core
 
         public static Type MessageNotificationType { get; private set; }
         public static Type GroupingType { get; }
+        public static Type JsonConverterType { get; }
+        public static JsonConverter[] JsonConverterDefault { get; }
 
         public static T DoSafeConversion<T>(object o)
         {
-            return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(o));
+            //return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(o), new JsonSerializerSettings() { 
+            //     MaxDepth = 1, ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+            //});
+            var json = o.SITToJson();
+            return json.SITParseJson<T>();
         }
 
         public static PropertyInfo GetPropertyFromType(Type t, string name)
@@ -255,6 +273,26 @@ namespace SIT.Tarkov.Core
             }
         }
 
+        public static string SITToJson(this object o)
+        {
+            return JsonConvert.SerializeObject(o
+                    , new JsonSerializerSettings()
+                    {
+                        Converters = PatchConstants.JsonConverterDefault
+                    }
+                    );
+        }
+
+        public static T SITParseJson<T>(this string str)
+        {
+            return JsonConvert.DeserializeObject<T>(str
+                    , new JsonSerializerSettings()
+                    {
+                        Converters = PatchConstants.JsonConverterDefault
+                    }
+                    );
+        }
+
         static PatchConstants()
         {
             if(Logger == null)  
@@ -280,6 +318,11 @@ namespace SIT.Tarkov.Core
             {
                 Logger.LogInfo("SIT.Tarkov.Core:PatchConstants():Found GroupingType:" + GroupingType.FullName);
             }
+
+            JsonConverterType = typeof(AbstractGame).Assembly.GetTypes()
+               .First(t => t.GetField("Converters", BindingFlags.Static | BindingFlags.Public) != null);
+            JsonConverterDefault = JsonConverterType.GetField("Converters", BindingFlags.Static | BindingFlags.Public).GetValue(null) as JsonConverter[];
+
 
             //GetBackendUrl();
         }

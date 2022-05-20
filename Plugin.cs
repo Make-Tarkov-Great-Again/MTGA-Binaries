@@ -15,6 +15,8 @@ namespace SIT.A.Tarkov.Core
             new UnityWebRequestPatch().Enable();
             new WebSocketPatch().Enable();
 
+            PatchConstants.GetBackendUrl();
+
             // Plugin startup logic
             Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
         }
