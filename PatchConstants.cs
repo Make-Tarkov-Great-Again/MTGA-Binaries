@@ -168,32 +168,89 @@ namespace SIT.Tarkov.Core
             return null;
         }
 
-        public static T GetFieldOrPropertyFromInstance<T>(object o, string name)
+        public static IEnumerable<PropertyInfo> GetAllPropertiesForObject(object o)
         {
-            var properties = o.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public);
+            var properties = o.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy);
             foreach (PropertyInfo property in properties)
             {
-                if (property.Name.ToLower().Contains(name.ToLower()))
-                {
-                    return Tarkov.Core.PatchConstants.DoSafeConversion<T>(property.GetValue(o));
-                }
+                yield return property;
             }
-            properties = o.GetType().GetProperties(BindingFlags.Instance | BindingFlags.NonPublic);
+            properties = o.GetType().GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
             foreach (PropertyInfo property in properties)
             {
-                if (property.Name.ToLower().Contains(name.ToLower()))
-                {
-                    return Tarkov.Core.PatchConstants.DoSafeConversion<T>(property.GetValue(o));
-                }
+                yield return property;
             }
-            properties = o.GetType().GetProperties(BindingFlags.Static | BindingFlags.Public);
+            properties = o.GetType().GetProperties(BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy);
             foreach (PropertyInfo property in properties)
             {
-                if (property.Name.ToLower().Contains(name.ToLower()))
-                {
-                    return Tarkov.Core.PatchConstants.DoSafeConversion<T>(property.GetValue(o));
-                }
+                yield return property;
             }
+            properties = o.GetType().GetProperties(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+            foreach (PropertyInfo property in properties)
+            {
+                yield return property;
+            }
+        }
+
+        public static IEnumerable<FieldInfo> GetAllFieldsForObject(object o)
+        {
+            var fields = o.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy);
+            foreach (FieldInfo field in fields)
+            {
+                yield return field;
+            }
+            fields = o.GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+            foreach (FieldInfo field in fields)
+            {
+                yield return field;
+            }
+            fields = o.GetType().GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy);
+            foreach (FieldInfo field in fields)
+            {
+                yield return field;
+
+            }
+            fields = o.GetType().GetFields(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+            foreach (FieldInfo field in fields)
+            {
+                yield return field;
+
+            }
+        }
+
+        public static T GetFieldOrPropertyFromInstance<T>(object o, string name, bool safeConvert = true)
+        {
+            foreach (PropertyInfo property in GetAllPropertiesForObject(o))
+            {
+                if (safeConvert)
+                    return Tarkov.Core.PatchConstants.DoSafeConversion<T>(property.GetValue(o));
+                else
+                    return (T)property.GetValue(o);
+            }
+            //var properties = o.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public);
+            //foreach (PropertyInfo property in properties)
+            //{
+            //    if (property.Name.ToLower().Contains(name.ToLower()))
+            //    {
+            //        return Tarkov.Core.PatchConstants.DoSafeConversion<T>(property.GetValue(o));
+            //    }
+            //}
+            //properties = o.GetType().GetProperties(BindingFlags.Instance | BindingFlags.NonPublic);
+            //foreach (PropertyInfo property in properties)
+            //{
+            //    if (property.Name.ToLower().Contains(name.ToLower()))
+            //    {
+            //        return Tarkov.Core.PatchConstants.DoSafeConversion<T>(property.GetValue(o));
+            //    }
+            //}
+            //properties = o.GetType().GetProperties(BindingFlags.Static | BindingFlags.Public);
+            //foreach (PropertyInfo property in properties)
+            //{
+            //    if (property.Name.ToLower().Contains(name.ToLower()))
+            //    {
+            //        return Tarkov.Core.PatchConstants.DoSafeConversion<T>(property.GetValue(o));
+            //    }
+            //}
             var fields = o.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public);
             foreach (FieldInfo field in fields)
             {
@@ -285,12 +342,12 @@ namespace SIT.Tarkov.Core
 
         public static T SITParseJson<T>(this string str)
         {
-            return JsonConvert.DeserializeObject<T>(str
+            return (T)JsonConvert.DeserializeObject<T>(str
                     , new JsonSerializerSettings()
                     {
                         Converters = PatchConstants.JsonConverterDefault
                     }
-                    );
+                    ) ;
         }
 
         static PatchConstants()
