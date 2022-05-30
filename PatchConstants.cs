@@ -168,6 +168,29 @@ namespace SIT.Tarkov.Core
             return null;
         }
 
+        public static IEnumerable<MethodInfo> GetAllMethodsForType(Type t)
+        {
+            foreach (var m in t.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy))
+            {
+                yield return m;
+            }
+
+            foreach (var m in t.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy))
+            {
+                yield return m;
+            }
+
+            foreach (var m in t.GetMethods(BindingFlags.Static | BindingFlags.Instance | BindingFlags.FlattenHierarchy))
+            {
+                yield return m;
+            }
+        }
+
+        public static IEnumerable<MethodInfo> GetAllMethodsForObject(object ob)
+        {
+            return GetAllMethodsForType(ob.GetType());  
+        }
+
         public static IEnumerable<PropertyInfo> GetAllPropertiesForObject(object o)
         {
             var properties = o.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy);
@@ -348,6 +371,32 @@ namespace SIT.Tarkov.Core
                         Converters = PatchConstants.JsonConverterDefault
                     }
                     ) ;
+        }
+
+        public static object GetPlayerProfile(object __instance)
+        {
+            var instanceProfile = __instance.GetType().GetProperty("Profile"
+                , BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy).GetValue(__instance);
+            if (instanceProfile == null)
+            {
+                Logger.LogInfo("ReplaceInPlayer:PatchPostfix: Couldn't find Profile");
+                return null;
+            }
+            return instanceProfile;
+        }
+
+        public static string GetPlayerProfileAccountId(object instanceProfile)
+        {
+            var instanceAccountProp = instanceProfile.GetType().GetField("AccountId"
+                , BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+          
+            if (instanceAccountProp == null)
+            {
+                Logger.LogInfo($"ReplaceInPlayer:PatchPostfix: instanceAccountProp not found");
+                return null;
+            }
+            var instanceAccountId = instanceAccountProp.GetValue(instanceProfile).ToString();
+            return instanceAccountId;
         }
 
         static PatchConstants()
