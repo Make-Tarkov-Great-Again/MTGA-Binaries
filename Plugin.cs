@@ -1,5 +1,6 @@
 ﻿using BepInEx;
 using SIT.Tarkov.Core;
+using SIT.Tarkov.Core.Bundles;
 
 namespace SIT.A.Tarkov.Core
 {
@@ -16,6 +17,12 @@ namespace SIT.A.Tarkov.Core
             new WebSocketPatch().Enable();
 
             PatchConstants.GetBackendUrl();
+
+            BundleSetup.Init();
+            BundleManager.GetBundles();
+            new EasyAssetsPatch().Enable();
+            new EasyBundlePatch().Enable();
+            // test bla
 
             // Plugin startup logic
             Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");

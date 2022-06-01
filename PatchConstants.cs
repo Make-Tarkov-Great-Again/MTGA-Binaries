@@ -149,7 +149,7 @@ namespace SIT.Tarkov.Core
 
         public static FieldInfo GetFieldFromType(Type t, string name)
         {
-            var fields = t.GetFields(BindingFlags.Instance | BindingFlags.Public);
+            var fields = t.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy);
             foreach (FieldInfo field in fields)
             {
                 if (field.Name.ToLower().Contains(name.ToLower()))
@@ -157,7 +157,7 @@ namespace SIT.Tarkov.Core
                     return field;
                 }
             }
-            fields = t.GetFields(BindingFlags.Instance | BindingFlags.NonPublic);
+            fields = t.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
             foreach (FieldInfo field in fields)
             {
                 if (field.Name.ToLower().Contains(name.ToLower()))
