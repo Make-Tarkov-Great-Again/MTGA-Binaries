@@ -149,16 +149,35 @@ namespace SIT.Tarkov.Core
             var path = $"{rootPath.Replace("file:///", string.Empty).Replace("file://", string.Empty)}/{platformName}/";
             var filepath = path + platformName;
             var manifest = (File.Exists(filepath)) ? await GetManifestBundle(filepath) : await GetManifestJson(filepath);
+            //var results =
+            //JsonConvert.DeserializeObject<Dictionary<string, BundleDetails>>(File.ReadAllText(filepath + ".json"))
+            //    .ToDictionary(k => k.Key, v => new BundleDetails
+            //    {
+            //        FileName = v.Value.FileName,
+            //        Crc = v.Value.Crc,
+            //        Dependencies = v.Value.Dependencies
+            //    });
 
             // load bundles
             Logger.LogInfo($"EasyAssetsPatch.Init.1.path={path}");
             Logger.LogInfo($"EasyAssetsPatch.Init.1.filepath={filepath}");
-            Logger.LogInfo($"EasyAssetsPatch.Init.1.manifest={manifest}");
-            var bundleNames = manifest.GetAllAssetBundles().ToArray();
-            foreach(var customBundleKey in BundleManager.Bundles.Keys)
+            //Logger.LogInfo($"EasyAssetsPatch.Init.1.manifest={manifest}");
+            uint iCrc = 100;
+            foreach (var (key, value) in BundleManager.Bundles)
             {
-                // TODO: Go from here!
+                var detail = new BundleDetails()
+                {
+                    FileName = value.Path,
+                    Crc = iCrc++,
+                    Dependencies = value.DependencyKeys
+                };
+
+                //results.Add(key, detail);
             }
+            //manifest.SetResults(results);
+
+            var bundleNames = manifest.GetAllAssetBundles().Union(BundleManager.Bundles.Keys).ToArray();
+
             //var bundles = (IEasyBundle[])Array.CreateInstance(EasyBundleHelper.Type, bundleNames.Length);
             Logger.LogInfo("EasyAssetsPatch.Init.2");
             var bundles = (object[])Array.CreateInstance(EasyBundleHelper.Type, bundleNames.Length);
@@ -170,12 +189,12 @@ namespace SIT.Tarkov.Core
             }
 
             Logger.LogInfo($"EasyAssetsPatch.Init.4.Loading {bundleNames.Length} bundles");
-            for (var i = 0; i < bundleNames.Length; i++)
+            for (uint iBundleName = 0; iBundleName < bundleNames.Length; iBundleName++)
             {
                 //Logger.LogInfo("EasyAssetsPatch.Init." + bundleNames[i]);
                 //bundles[i] = (IEasyBundle)Activator.CreateInstance(EasyBundleHelper.Type, new object[] { bundleNames[i], path, manifest, bundleLock, bundleCheck });
                 //Logger.LogInfo("EasyAssetsPatch.Init.4");
-                bundles[i] = Activator.CreateInstance(EasyBundleHelper.Type, new object[] { bundleNames[i], path, manifest, bundleLock, bundleCheck });
+                bundles[iBundleName] = Activator.CreateInstance(EasyBundleHelper.Type, new object[] { bundleNames[iBundleName], path, manifest, bundleLock, bundleCheck });
                 await JobScheduler.Yield();
             }
 
