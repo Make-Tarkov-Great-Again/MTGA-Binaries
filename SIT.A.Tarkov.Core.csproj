@@ -59,8 +59,4 @@
       <HintPath>..\Tarkov.References\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
   </ItemGroup>
-  
-  <ItemGroup>
-    <Folder Include="SP\" />
-  </ItemGroup>
 </Project>

@@ -1,6 +1,8 @@
 ﻿using BepInEx;
+using SIT.A.Tarkov.Core.SP;
 using SIT.Tarkov.Core;
 using SIT.Tarkov.Core.Bundles;
+using SIT.Tarkov.Core.SP;
 
 namespace SIT.A.Tarkov.Core
 {
@@ -22,7 +24,11 @@ namespace SIT.A.Tarkov.Core
             BundleManager.GetBundles();
             new EasyAssetsPatch().Enable();
             new EasyBundlePatch().Enable();
-            // test bla
+
+            //new LoadBotTemplatesPatch().Enable();
+            new UpdateDogtagPatch().Enable();
+
+            new LootableContainerInteractPatch().Enable();
 
             // Plugin startup logic
             Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");

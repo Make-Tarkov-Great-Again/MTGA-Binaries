@@ -247,7 +247,7 @@ namespace SIT.Tarkov.Core
             {
                 if (safeConvert)
                     return Tarkov.Core.PatchConstants.DoSafeConversion<T>(property.GetValue(o));
-                else
+                else 
                     return (T)property.GetValue(o);
             }
             //var properties = o.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public);
