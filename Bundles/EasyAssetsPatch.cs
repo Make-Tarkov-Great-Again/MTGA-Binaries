@@ -198,6 +198,7 @@ namespace SIT.Tarkov.Core
                 await JobScheduler.Yield();
             }
 
+
             _manifestField.SetValue(instance, manifest);
             _bundlesField.SetValue(instance, bundles);
             //_systemProperty.SetValue(instance, new DependencyGraph(bundles, defaultKey, shouldExclude));

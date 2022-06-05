@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System;
 using SIT.Tarkov.Core.Bundles;
+using UnityEngine;
 
 /***
  * Full Credit for this patch goes to SPT-Aki team
@@ -31,10 +32,13 @@ namespace SIT.Tarkov.Core
         [PatchPostfix]
         private static void PatchPostfix(object __instance, string key, string rootPath, CompatibilityAssetBundleManifest manifest, object bundleLock)
         {
-            //Logger.LogInfo("EasyBundlePatch:PatchPostfix");
 
             var path = rootPath + key;
             var dependencyKeys = manifest.GetDirectDependencies(key) ?? new string[0];
+            if (path.Contains(BundleManager.CachePath))
+            {
+                Logger.LogInfo("EasyBundlePatch:PatchPostfix:" + path);
+            }
 
             if (BundleManager.Bundles.TryGetValue(key, out BundleInfo bundle))
             {

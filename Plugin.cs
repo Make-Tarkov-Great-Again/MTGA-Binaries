@@ -22,7 +22,7 @@ namespace SIT.A.Tarkov.Core
 
             BundleSetup.Init();
             BundleManager.GetBundles();
-            new EasyAssetsPatch().Enable();
+            //new EasyAssetsPatch().Enable();
             new EasyBundlePatch().Enable();
 
             //new LoadBotTemplatesPatch().Enable();

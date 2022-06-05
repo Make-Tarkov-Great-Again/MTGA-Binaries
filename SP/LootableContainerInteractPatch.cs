@@ -21,7 +21,9 @@ namespace SIT.A.Tarkov.Core.SP
         {
             Logger.LogInfo($"LootableContainerInteractPatch:PatchPostfix");
             Logger.LogInfo($"{__instance.Id}");
+            Logger.LogInfo($"{__instance.ItemOwner.ID}");
             Logger.LogInfo($"{__instance.ItemOwner.Name}");
+            Logger.LogInfo($"{__instance.ItemOwner.ContainerName}");
         }
     }
 }

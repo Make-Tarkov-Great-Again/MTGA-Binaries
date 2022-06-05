@@ -36,6 +36,8 @@ namespace SIT.Tarkov.Core
         public static Type BackendInterfaceType { get; private set; }
         public static Type SessionInterfaceType { get; private set; }
 
+        public static Type StartWithTokenType { get; private set; }
+
         /// <summary>
         /// A Key/Value dictionary of storing & obtaining an array of types by name
         /// </summary>
@@ -128,62 +130,63 @@ namespace SIT.Tarkov.Core
 
         public static PropertyInfo GetPropertyFromType(Type t, string name)
         {
-            var properties = t.GetProperties(BindingFlags.Instance | BindingFlags.Public);
-            foreach (PropertyInfo property in properties)
-            {
-                if (property.Name.ToLower().Contains(name.ToLower()))
-                {
-                    return property;
-                }
-            }
-            properties = t.GetProperties(BindingFlags.Instance | BindingFlags.NonPublic);
-            foreach (PropertyInfo property in properties)
-            {
-                if (property.Name.ToLower().Contains(name.ToLower()))
-                {
-                    return property;
-                }
-            }
+            var properties = t.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            PropertyInfo property = properties.FirstOrDefault(x => x.Name.ToLower() == name.ToLower());
+            if (property != null)
+                return property;
+
             return null;
         }
 
         public static FieldInfo GetFieldFromType(Type t, string name)
         {
-            var fields = t.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy);
-            foreach (FieldInfo field in fields)
-            {
-                if (field.Name.ToLower().Contains(name.ToLower()))
-                {
-                    return field;
-                }
-            }
-            fields = t.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
-            foreach (FieldInfo field in fields)
-            {
-                if (field.Name.ToLower().Contains(name.ToLower()))
-                {
-                    return field;
-                }
-            }
-            return null;
+            var fields = t.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+            return fields.FirstOrDefault(x => x.Name.ToLower() == name.ToLower());    
+            //foreach (FieldInfo field in fields)
+            //{
+            //    if (field.Name.ToLower().Contains(name.ToLower()))
+            //    {
+            //        return field;
+            //    }
+            //}
+            //fields = t.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+            //foreach (FieldInfo field in fields)
+            //{
+            //    if (field.Name.ToLower().Contains(name.ToLower()))
+            //    {
+            //        return field;
+            //    }
+            //}
+            //return null;
         }
 
         public static IEnumerable<MethodInfo> GetAllMethodsForType(Type t)
         {
-            foreach (var m in t.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy))
+            foreach (var m in t.GetMethods(
+                BindingFlags.NonPublic
+                | BindingFlags.Public
+                | BindingFlags.Static
+                | BindingFlags.Instance
+                | BindingFlags.FlattenHierarchy
+                ))
             {
                 yield return m;
             }
 
-            foreach (var m in t.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy))
-            {
-                yield return m;
-            }
+            //foreach (var m in t.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy))
+            //{
+            //    yield return m;
+            //}
 
-            foreach (var m in t.GetMethods(BindingFlags.Static | BindingFlags.Instance | BindingFlags.FlattenHierarchy))
-            {
-                yield return m;
-            }
+            //foreach (var m in t.GetMethods(BindingFlags.Static | BindingFlags.Instance | BindingFlags.FlattenHierarchy))
+            //{
+            //    yield return m;
+            //}
+
+            //foreach (var m in t.GetMethods(BindingFlags.Static | BindingFlags. | BindingFlags.FlattenHierarchy))
+            //{
+            //    yield return m;
+            //}
         }
 
         public static IEnumerable<MethodInfo> GetAllMethodsForObject(object ob)
@@ -243,13 +246,21 @@ namespace SIT.Tarkov.Core
 
         public static T GetFieldOrPropertyFromInstance<T>(object o, string name, bool safeConvert = true)
         {
-            foreach (PropertyInfo property in GetAllPropertiesForObject(o))
+            foreach (PropertyInfo property in GetAllPropertiesForObject(o).Where(x=>x.Name.ToLower() == name.ToLower()))
             {
                 if (safeConvert)
                     return Tarkov.Core.PatchConstants.DoSafeConversion<T>(property.GetValue(o));
                 else 
                     return (T)property.GetValue(o);
             }
+            foreach (FieldInfo field in GetAllFieldsForObject(o).Where(x => x.Name.ToLower() == name.ToLower()))
+            {
+                if (safeConvert)
+                    return Tarkov.Core.PatchConstants.DoSafeConversion<T>(field.GetValue(o));
+                else
+                    return (T)field.GetValue(o);
+            }
+            
             //var properties = o.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public);
             //foreach (PropertyInfo property in properties)
             //{
@@ -274,30 +285,30 @@ namespace SIT.Tarkov.Core
             //        return Tarkov.Core.PatchConstants.DoSafeConversion<T>(property.GetValue(o));
             //    }
             //}
-            var fields = o.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public);
-            foreach (FieldInfo field in fields)
-            {
-                if (field.Name.ToLower().Contains(name.ToLower()))
-                {
-                    return Tarkov.Core.PatchConstants.DoSafeConversion<T>(field.GetValue(o));
-                }
-            }
-            fields = o.GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic);
-            foreach (FieldInfo field in fields)
-            {
-                if (field.Name.ToLower().Contains(name.ToLower()))
-                {
-                    return Tarkov.Core.PatchConstants.DoSafeConversion<T>(field.GetValue(o));
-                }
-            }
-            fields = o.GetType().GetFields(BindingFlags.Static | BindingFlags.Public);
-            foreach (FieldInfo field in fields)
-            {
-                if (field.Name.ToLower().Contains(name.ToLower()))
-                {
-                    return Tarkov.Core.PatchConstants.DoSafeConversion<T>(field.GetValue(o));
-                }
-            }
+            //var fields = o.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public);
+            //foreach (FieldInfo field in fields)
+            //{
+            //    if (field.Name.ToLower().Contains(name.ToLower()))
+            //    {
+            //        return Tarkov.Core.PatchConstants.DoSafeConversion<T>(field.GetValue(o));
+            //    }
+            //}
+            //fields = o.GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic);
+            //foreach (FieldInfo field in fields)
+            //{
+            //    if (field.Name.ToLower().Contains(name.ToLower()))
+            //    {
+            //        return Tarkov.Core.PatchConstants.DoSafeConversion<T>(field.GetValue(o));
+            //    }
+            //}
+            //fields = o.GetType().GetFields(BindingFlags.Static | BindingFlags.Public);
+            //foreach (FieldInfo field in fields)
+            //{
+            //    if (field.Name.ToLower().Contains(name.ToLower()))
+            //    {
+            //        return Tarkov.Core.PatchConstants.DoSafeConversion<T>(field.GetValue(o));
+            //    }
+            //}
             return default(T);
         }
 
@@ -353,6 +364,23 @@ namespace SIT.Tarkov.Core
             }
         }
 
+        public static void ConvertDictionaryToObject(object o, Dictionary<string, object> dict)
+        {
+            foreach (var key in dict)
+            {
+                var prop = PatchConstants.GetPropertyFromType(o.GetType(), key.Key);
+                if (prop != null)
+                {
+                    prop.SetValue(o, key.Value);
+                }
+                var field = PatchConstants.GetFieldFromType(o.GetType(), key.Key);
+                if (field != null)
+                {
+                    field.SetValue(o, key.Value);
+                }
+            }
+        }
+
         public static string SITToJson(this object o)
         {
             return JsonConvert.SerializeObject(o
@@ -399,6 +427,11 @@ namespace SIT.Tarkov.Core
             return instanceAccountId;
         }
 
+        public static IDisposable StartWithToken(string name)
+        {
+            return GetAllMethodsForType(StartWithTokenType).Single(x=>x.Name == "StartWithToken").Invoke(null, new object[] { name }) as IDisposable;
+        }
+
         static PatchConstants()
         {
             if(Logger == null)  
@@ -429,6 +462,7 @@ namespace SIT.Tarkov.Core
                .First(t => t.GetField("Converters", BindingFlags.Static | BindingFlags.Public) != null);
             JsonConverterDefault = JsonConverterType.GetField("Converters", BindingFlags.Static | BindingFlags.Public).GetValue(null) as JsonConverter[];
 
+            StartWithTokenType = PatchConstants.EftTypes.Single(x =>  GetAllMethodsForType(x).Count(y=>y.Name =="StartWithToken") == 1);
 
             //GetBackendUrl();
         }
