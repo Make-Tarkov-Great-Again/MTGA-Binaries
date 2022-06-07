@@ -2,7 +2,9 @@
 using SIT.A.Tarkov.Core.SP;
 using SIT.Tarkov.Core;
 using SIT.Tarkov.Core.Bundles;
+using SIT.Tarkov.Core.Health;
 using SIT.Tarkov.Core.SP;
+using SIT.Tarkov.Core.SP.ScavMode;
 
 namespace SIT.A.Tarkov.Core
 {
@@ -11,24 +13,38 @@ namespace SIT.A.Tarkov.Core
     {
         private void Awake()
         {
+            PatchConstants.GetBackendUrl();
+
             new ConsistencySinglePatch().Enable();
             new ConsistencyMultiPatch().Enable();
             new BattlEyePatch().Enable();
+
+            //new FileChecker.FileCheckerMainApplicationPatch().Enable();
+
             new SslCertificatePatch().Enable();
             new UnityWebRequestPatch().Enable();
             new WebSocketPatch().Enable();
 
-            PatchConstants.GetBackendUrl();
 
-            BundleSetup.Init();
-            BundleManager.GetBundles();
+            //BundleSetup.Init();
+            //BundleManager.GetBundles();
             //new EasyAssetsPatch().Enable();
-            new EasyBundlePatch().Enable();
+            //new EasyBundlePatch().Enable();
 
             //new LoadBotTemplatesPatch().Enable();
             new UpdateDogtagPatch().Enable();
 
             new LootableContainerInteractPatch().Enable();
+
+            // --------- On Dead -----------------------
+            new OnDeadPatch().Enable();
+
+            // --------- SCAV MODE ---------------------
+            //new ScavPrefabLoadPatch().Enable();
+            //new ScavProfileLoadPatch().Enable();
+            //new ScavExfilPatch().Enable();
+
+            new ForceLocalGamePatch().Enable();
 
             // Plugin startup logic
             Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
