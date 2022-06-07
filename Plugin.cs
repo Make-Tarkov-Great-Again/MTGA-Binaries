@@ -1,4 +1,5 @@
 ﻿using BepInEx;
+using BundleLoader.Patches;
 using SIT.A.Tarkov.Core.SP;
 using SIT.Tarkov.Core;
 using SIT.Tarkov.Core.Bundles;
@@ -26,8 +27,10 @@ namespace SIT.A.Tarkov.Core
             new WebSocketPatch().Enable();
 
 
-            //BundleSetup.Init();
-            //BundleManager.GetBundles();
+            BundleSetup.Init();
+            BundleManager.GetBundles();
+            //new EasyAssets().Enable();
+            //new EasyBundle().Enable();
             //new EasyAssetsPatch().Enable();
             //new EasyBundlePatch().Enable();
 
@@ -43,6 +46,7 @@ namespace SIT.A.Tarkov.Core
             //new ScavPrefabLoadPatch().Enable();
             //new ScavProfileLoadPatch().Enable();
             //new ScavExfilPatch().Enable();
+            new DisableScavModePatch().Enable();
 
             new ForceLocalGamePatch().Enable();
 

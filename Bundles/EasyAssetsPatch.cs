@@ -195,7 +195,9 @@ namespace SIT.Tarkov.Core
                 //bundles[i] = (IEasyBundle)Activator.CreateInstance(EasyBundleHelper.Type, new object[] { bundleNames[i], path, manifest, bundleLock, bundleCheck });
                 //Logger.LogInfo("EasyAssetsPatch.Init.4");
                 bundles[iBundleName] = Activator.CreateInstance(EasyBundleHelper.Type, new object[] { bundleNames[iBundleName], path, manifest, bundleLock, bundleCheck });
-                await JobScheduler.Yield();
+                //await JobScheduler.Yield();
+                JobScheduler.Yield().GetAwaiter();
+
             }
 
 
