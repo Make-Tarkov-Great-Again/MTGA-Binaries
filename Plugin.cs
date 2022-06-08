@@ -31,8 +31,8 @@ namespace SIT.A.Tarkov.Core
             BundleManager.GetBundles();
             //new EasyAssets().Enable();
             //new EasyBundle().Enable();
-            //new EasyAssetsPatch().Enable();
-            //new EasyBundlePatch().Enable();
+            new EasyAssetsPatch().Enable();
+            new EasyBundlePatch().Enable();
 
             //new LoadBotTemplatesPatch().Enable();
             new UpdateDogtagPatch().Enable();

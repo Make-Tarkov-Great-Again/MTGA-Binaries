@@ -50,6 +50,7 @@ namespace SIT.Tarkov.Core
                         continue;
                     }
                     VFS.WriteFile(filepath, data);
+                    PatchConstants.Logger.LogInfo($"Adding Custom Bundle : {filepath}");
                     bundle.Path = filepath;
                 }
 
