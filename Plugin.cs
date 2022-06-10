@@ -5,6 +5,7 @@ using SIT.Tarkov.Core;
 using SIT.Tarkov.Core.Bundles;
 using SIT.Tarkov.Core.Health;
 using SIT.Tarkov.Core.SP;
+using SIT.Tarkov.Core.SP.Raid;
 using SIT.Tarkov.Core.SP.ScavMode;
 
 namespace SIT.A.Tarkov.Core
@@ -35,6 +36,7 @@ namespace SIT.A.Tarkov.Core
             new EasyBundlePatch().Enable();
 
             //new LoadBotTemplatesPatch().Enable();
+            new LoadBotProfileFromServerPatch().Enable();
             new UpdateDogtagPatch().Enable();
 
             new LootableContainerInteractPatch().Enable();
