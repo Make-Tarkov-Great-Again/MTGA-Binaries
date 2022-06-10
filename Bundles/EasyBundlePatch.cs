@@ -35,10 +35,10 @@ namespace SIT.Tarkov.Core
 
             var path = rootPath + key;
             var dependencyKeys = manifest.GetDirectDependencies(key) ?? new string[0];
-            if (path.Contains("qhb") || path.Contains("l85a2"))
-            {
-                Logger.LogInfo("EasyBundlePatch:PatchPostfix:Initial Path:" + path);
-            }
+            //if (path.Contains("qhb") || path.Contains("l85a2"))
+            //{
+            //    Logger.LogInfo("EasyBundlePatch:PatchPostfix:Initial Path:" + path);
+            //}
 
             if (BundleManager.Bundles.TryGetValue(key, out BundleInfo bundle))
             {
@@ -46,10 +46,10 @@ namespace SIT.Tarkov.Core
                 path = bundle.Path;
             }
 
-            if (path.Contains("qhb") || path.Contains("l85a2"))
-            {
-                Logger.LogInfo("EasyBundlePatch:PatchPostfix:Actual Path:" + path);
-            }
+            //if (path.Contains("qhb") || path.Contains("l85a2"))
+            //{
+            //    Logger.LogInfo("EasyBundlePatch:PatchPostfix:Actual Path:" + path);
+            //}
 
             Type[] typeArgs = { typeof(ELoadState) };
             Type constructed = BundleSetup.BindableStateType.MakeGenericType(typeArgs);
