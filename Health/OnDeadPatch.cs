@@ -23,12 +23,16 @@ namespace SIT.Tarkov.Core.Health
         [PatchPostfix]
         public static void PatchPostfix(Player __instance, EDamageType damageType)
         {
-            var lastAggressor = PatchConstants.GetFieldOrPropertyFromInstance<Player>(__instance, "LastAggressor", false);
+            Player deadPlayer = __instance;
 
-            if (lastAggressor != null)
-                PatchConstants.DisplayMessageNotification($"{__instance.Profile.Nickname} has been killed by {lastAggressor.Profile.Info.Nickname}");
+            var killedBy = PatchConstants.GetFieldOrPropertyFromInstance<Player>(deadPlayer, "LastAggressor", false);
+            // Untested MF.
+            var killedByLastAggressor = PatchConstants.GetFieldOrPropertyFromInstance<Player>(killedBy, "LastAggressor", false);
+
+            if (killedBy != null)
+                PatchConstants.DisplayMessageNotification($"{killedBy.Profile.Info.Nickname} killed {deadPlayer.Profile.Nickname}");
             else
-                PatchConstants.DisplayMessageNotification($"{__instance.Profile.Nickname} has been killed by {damageType}");
+                PatchConstants.DisplayMessageNotification($"{deadPlayer.Profile.Nickname} has died by {damageType}");
 
             Dictionary<string, object> map = new Dictionary<string, object>();
             map.Add("diedAID", __instance.Profile.AccountId);
@@ -38,9 +42,13 @@ namespace SIT.Tarkov.Core.Health
                 if(__instance.Profile.Info.Settings != null)
                     map.Add("diedWST", __instance.Profile.Info.Settings.Role);
             }
-            if (lastAggressor != null) 
+            if (killedBy != null) 
             {
-                map.Add("killedByAID", lastAggressor.Profile.AccountId);
+                map.Add("killedByAID", killedBy.Profile.AccountId);
+            }
+            if(killedByLastAggressor != null)
+            {
+                map.Add("killedByLastAggressorAID", killedByLastAggressor.Profile.AccountId);
             }
             new Request().PostJson("/client/raid/person/killed", JsonConvert.SerializeObject(map));
         }
