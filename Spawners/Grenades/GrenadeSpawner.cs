@@ -27,11 +27,6 @@ namespace SIT.A.Tarkov.Core.Spawners.Grenades
 
 		public virtual string TemplateId { get; set; } = "5d70e500a4b9364de70d38ce";
 
-		public GrenadeSpawner(string templateId)
-		{
-			TemplateId = templateId;
-		}
-
 		private void Start()
 		{
 			this.bullet = ShotFactory.GetBullet(TemplateId);

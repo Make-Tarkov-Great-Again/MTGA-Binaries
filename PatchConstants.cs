@@ -38,6 +38,11 @@ namespace SIT.Tarkov.Core
 
         public static Type StartWithTokenType { get; private set; }
 
+        public static Type PoolManagerType { get; set; }
+
+        public static Type JobPriorityType { get; set; }
+
+
         /// <summary>
         /// A Key/Value dictionary of storing & obtaining an array of types by name
         /// </summary>
@@ -119,18 +124,29 @@ namespace SIT.Tarkov.Core
         public static Type JsonConverterType { get; }
         public static JsonConverter[] JsonConverterDefault { get; }
 
+        private static object _backEndSession;
+        public static object BackEndSession
+        {
+            get
+            {
+                if (_backEndSession == null)
+                {
+                    _backEndSession = GetMethodForType(typeof(ClientApplication), "GetClientBackEndSession").Invoke(Singleton<ClientApplication>.Instance, new object[] { });
+                }
+
+                return _backEndSession;
+            }
+        }
+
         public static T DoSafeConversion<T>(object o)
         {
-            //return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(o), new JsonSerializerSettings() { 
-            //     MaxDepth = 1, ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-            //});
             var json = o.SITToJson();
             return json.SITParseJson<T>();
         }
 
         public static PropertyInfo GetPropertyFromType(Type t, string name)
         {
-            var properties = t.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            var properties = t.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
             PropertyInfo property = properties.FirstOrDefault(x => x.Name.ToLower() == name.ToLower());
             if (property != null)
                 return property;
@@ -142,25 +158,15 @@ namespace SIT.Tarkov.Core
         {
             var fields = t.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
             return fields.FirstOrDefault(x => x.Name.ToLower() == name.ToLower());    
-            //foreach (FieldInfo field in fields)
-            //{
-            //    if (field.Name.ToLower().Contains(name.ToLower()))
-            //    {
-            //        return field;
-            //    }
-            //}
-            //fields = t.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
-            //foreach (FieldInfo field in fields)
-            //{
-            //    if (field.Name.ToLower().Contains(name.ToLower()))
-            //    {
-            //        return field;
-            //    }
-            //}
-            //return null;
+          
         }
 
-        public static IEnumerable<MethodInfo> GetAllMethodsForType(Type t)
+        public static MethodInfo GetMethodForType(Type t, string methodName, bool debug = false)
+        {
+            return GetAllMethodsForType(t, debug).Last(x => x.Name.ToLower() == methodName.ToLower()); 
+        }
+
+        public static IEnumerable<MethodInfo> GetAllMethodsForType(Type t, bool debug = false)
         {
             foreach (var m in t.GetMethods(
                 BindingFlags.NonPublic
@@ -170,23 +176,12 @@ namespace SIT.Tarkov.Core
                 | BindingFlags.FlattenHierarchy
                 ))
             {
+                if (debug)
+                    Logger.LogInfo(m.Name);
+
                 yield return m;
             }
 
-            //foreach (var m in t.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy))
-            //{
-            //    yield return m;
-            //}
-
-            //foreach (var m in t.GetMethods(BindingFlags.Static | BindingFlags.Instance | BindingFlags.FlattenHierarchy))
-            //{
-            //    yield return m;
-            //}
-
-            //foreach (var m in t.GetMethods(BindingFlags.Static | BindingFlags. | BindingFlags.FlattenHierarchy))
-            //{
-            //    yield return m;
-            //}
         }
 
         public static IEnumerable<MethodInfo> GetAllMethodsForObject(object ob)
@@ -261,54 +256,6 @@ namespace SIT.Tarkov.Core
                     return (T)field.GetValue(o);
             }
             
-            //var properties = o.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public);
-            //foreach (PropertyInfo property in properties)
-            //{
-            //    if (property.Name.ToLower().Contains(name.ToLower()))
-            //    {
-            //        return Tarkov.Core.PatchConstants.DoSafeConversion<T>(property.GetValue(o));
-            //    }
-            //}
-            //properties = o.GetType().GetProperties(BindingFlags.Instance | BindingFlags.NonPublic);
-            //foreach (PropertyInfo property in properties)
-            //{
-            //    if (property.Name.ToLower().Contains(name.ToLower()))
-            //    {
-            //        return Tarkov.Core.PatchConstants.DoSafeConversion<T>(property.GetValue(o));
-            //    }
-            //}
-            //properties = o.GetType().GetProperties(BindingFlags.Static | BindingFlags.Public);
-            //foreach (PropertyInfo property in properties)
-            //{
-            //    if (property.Name.ToLower().Contains(name.ToLower()))
-            //    {
-            //        return Tarkov.Core.PatchConstants.DoSafeConversion<T>(property.GetValue(o));
-            //    }
-            //}
-            //var fields = o.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public);
-            //foreach (FieldInfo field in fields)
-            //{
-            //    if (field.Name.ToLower().Contains(name.ToLower()))
-            //    {
-            //        return Tarkov.Core.PatchConstants.DoSafeConversion<T>(field.GetValue(o));
-            //    }
-            //}
-            //fields = o.GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic);
-            //foreach (FieldInfo field in fields)
-            //{
-            //    if (field.Name.ToLower().Contains(name.ToLower()))
-            //    {
-            //        return Tarkov.Core.PatchConstants.DoSafeConversion<T>(field.GetValue(o));
-            //    }
-            //}
-            //fields = o.GetType().GetFields(BindingFlags.Static | BindingFlags.Public);
-            //foreach (FieldInfo field in fields)
-            //{
-            //    if (field.Name.ToLower().Contains(name.ToLower()))
-            //    {
-            //        return Tarkov.Core.PatchConstants.DoSafeConversion<T>(field.GetValue(o));
-            //    }
-            //}
             return default(T);
         }
 
@@ -437,9 +384,6 @@ namespace SIT.Tarkov.Core
             if(Logger == null)  
                 Logger = BepInEx.Logging.Logger.CreateLogSource("SIT.Tarkov.Core.PatchConstants");
 
-            //_ = nameof(ISession.GetPhpSessionId);
-
-            //EftTypes = typeof(AbstractGame).Assembly.GetTypes();
             TypesDictionary.Add("EftTypes", EftTypes);
 
             FilesCheckerTypes = typeof(ICheckResult).Assembly.GetTypes();
@@ -464,7 +408,19 @@ namespace SIT.Tarkov.Core
 
             StartWithTokenType = PatchConstants.EftTypes.Single(x =>  GetAllMethodsForType(x).Count(y=>y.Name =="StartWithToken") == 1);
 
-            //GetBackendUrl();
+            
+
+            if (JobPriorityType == null)
+            {
+                JobPriorityType = PatchConstants.EftTypes.Single(x =>
+                    PatchConstants.GetAllMethodsForType(x).Any(x => x.Name == "Priority")
+                    //&& 
+                    //(PatchConstants.GetFieldFromType(x, "General") != null
+                    //|| PatchConstants.GetPropertyFromType(x, "General") != null)
+                    );
+                Logger.LogInfo($"Loading JobPriorityType:{JobPriorityType.FullName}");
+
+            }
         }
     }
 }

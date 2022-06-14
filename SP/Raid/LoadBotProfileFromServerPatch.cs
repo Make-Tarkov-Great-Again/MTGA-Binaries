@@ -13,14 +13,14 @@ namespace SIT.Tarkov.Core.SP.Raid
     {
         public LoadBotProfileFromServerPatch() { }
 
-        protected BindingFlags BindingFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
+        public static BindingFlags BindingFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
 
-        protected Type GetTargetType() => PatchConstants.EftTypes
+        public static Type GetTargetType() => PatchConstants.EftTypes
             .Last(t => t.GetMethods(BindingFlags).Any(x => IsTargetMethod(x)));
 
-        protected override MethodBase GetTargetMethod() => GetTargetType().GetMethods(BindingFlags).LastOrDefault(x => IsTargetMethod(x));
+        protected override MethodBase GetTargetMethod() => GetTargetType().GetMethods(BindingFlags).Last(x => IsTargetMethod(x));
 
-        protected bool IsTargetMethod(MethodInfo method)
+        public static bool IsTargetMethod(MethodInfo method)
         {
             var parameters = method.GetParameters();
 
@@ -30,13 +30,18 @@ namespace SIT.Tarkov.Core.SP.Raid
         [PatchPrefix]
         public static bool PatchPrefix(object __instance, object data, EFT.Profile __result, List<EFT.Profile> ___list_0)
         {
+            return ActualPatch(__instance, data, __result, ___list_0);
+        }
+
+        public static bool ActualPatch(object __instance, object data, EFT.Profile __result, List<EFT.Profile> ___list_0)
+        {
             if (___list_0.Count > 0)
             {
-                EFT.Profile profile = PatchConstants.GetAllMethodsForObject(data).First(x=>x.Name == "ChooseProfile").Invoke(data, new object[] { ___list_0, true }) as EFT.Profile;
+                EFT.Profile profile = PatchConstants.GetAllMethodsForObject(data).First(x => x.Name == "ChooseProfile").Invoke(data, new object[] { ___list_0, true }) as EFT.Profile;
                 if (profile != null)
                 {
                     EFT.Profile profile2 = profile;
-                    if(profile2.Side == EFT.EPlayerSide.Usec)
+                    if (profile2.Side == EFT.EPlayerSide.Usec)
                     {
                         profile2.Info.Voice = "Usec_1";
                     }
@@ -50,15 +55,16 @@ namespace SIT.Tarkov.Core.SP.Raid
                     Dictionary<string, string> args = new Dictionary<string, string>();
                     args.Add("Side", profile.Side.ToString());
                     args.Add("Settings", profile.Info.Settings.SITToJson());
-                    //Dictionary<string, object> result = JsonConvert.DeserializeObject<Dictionary<string, object>>(new Request().PostJson("/client/raid/bots/getNewProfile", args.SITToJson()));
-
+                    var resultJson = new Request().PostJson("/client/raid/bots/getNewProfile", args.SITToJson());
+                    Logger.LogInfo("LoadBotProfileFromServerPatch.PatchPrefix: " + resultJson);
+                    Dictionary<string, object> result = JsonConvert.DeserializeObject<Dictionary<string, object>>(resultJson);
                     __result = profile2;
                 }
             }
             __result = null;
             //var profilesInCache = PatchConstants.GetFieldOrPropertyFromInstance<List<EFT.Profile>>(__instance, "list_0");
             //Logger.LogInfo("LoadBotProfileFromServerPatch.PatchPrefix: " + profilesInCache.SITToJson());
-           
+
             return false;
         }
     }

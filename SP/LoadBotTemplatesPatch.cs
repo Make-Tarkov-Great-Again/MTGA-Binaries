@@ -13,6 +13,8 @@ using System.Threading;
 //using JobPriority = GClass2549; // Search for General
 using SIT.Tarkov.Core;
 using System;
+using System.Collections.Generic;
+using SIT.A.Tarkov.Core;
 
 namespace SIT.Tarkov.Core.SP
 {
@@ -21,39 +23,42 @@ namespace SIT.Tarkov.Core.SP
         private static MethodInfo _getNewProfileMethod;
 
         public static Type BotPresetsType { get; set; }
+
         public static Type BotDataType { get; set; }
 
-        public static Type PoolManagerType { get; set; }
+        public static Type PoolManagerType = PatchConstants.PoolManagerType;
 
-        public static Type JobPriorityType { get; set; }
+        public static Type JobPriorityType = PatchConstants.JobPriorityType;
 
         public LoadBotTemplatesPatch()
         {
+            //Logger.LogInfo("Loading BotPresetsType");
             if (BotPresetsType == null)
             {
                 BotPresetsType = PatchConstants.EftTypes.LastOrDefault
                     (x => PatchConstants.GetAllMethodsForType(x).Any(y => y.Name.Contains("GetNewProfile")));
+                Logger.LogInfo($"Loading BotPresetsType:{BotPresetsType.FullName}");
+
             }
 
+            //Logger.LogInfo("Loading BotDataType");
             if (BotDataType == null)
             {
                 BotDataType = PatchConstants.EftTypes.LastOrDefault(x
                     => x.IsInterface && PatchConstants.GetAllMethodsForType(x).Any(y => y.Name.Contains("PrepareToLoadBackend")));
+                Logger.LogInfo($"Loading BotDataType:{BotDataType.FullName}");
+
             }
 
-            if(PoolManagerType == null)
+            //Logger.LogInfo("Loading PoolManagerType");
+            if (PoolManagerType == null)
             {
-                PoolManagerType = PatchConstants.EftTypes.Single(x => PatchConstants.GetAllMethodsForType(x).Any(x => x.Name == "LoadBundlesAndCreatePools"));
+                throw new Exception("PoolManagerType is Null");
             }
 
-            if(JobPriorityType == null)
+            if (JobPriorityType == null)
             {
-                JobPriorityType = PatchConstants.EftTypes.Single(x => 
-                    PatchConstants.GetAllMethodsForType(x).Any(x => x.Name == "Priority" && x.IsStatic)
-                    && 
-                    (PatchConstants.GetFieldFromType(x, "General") != null
-                    || PatchConstants.GetPropertyFromType(x, "General") != null)
-                    );
+                throw new Exception("JobPriorityType is Null");
             }
 
             //_ = nameof(BotData.PrepareToLoadBackend);
@@ -61,8 +66,15 @@ namespace SIT.Tarkov.Core.SP
             //_ = nameof(PoolManager.LoadBundlesAndCreatePools);
             //_ = nameof(JobPriority.General);
 
-            _getNewProfileMethod = BotPresetsType
-                .GetMethod("GetNewProfile", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+            if (BotPresetsType != null)
+            {
+                _getNewProfileMethod = BotPresetsType
+                    .GetMethod("GetNewProfile", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+            }
+            else
+            {
+                throw new Exception("BotPresetsType is Null");
+            }
         }
 
         protected override MethodBase GetTargetMethod()
@@ -83,94 +95,94 @@ namespace SIT.Tarkov.Core.SP
         //public static bool PatchPrefix(ref Task<Profile> __result, object __instance, BotData data)
         public static bool PatchPrefix(ref Task<Profile> __result, object __instance, object data)
         {
-            //    /*
-            //        in short when client wants new bot and GetNewProfile() return null (if not more available templates or they don't satisfied by Role and Difficulty condition)
-            //        then client gets new piece of WaveInfo collection (with Limit = 30 by default) and make request to server
-            //        but use only first value in response (this creates a lot of garbage and cause freezes)
-            //        after patch we request only 1 template from server
-
-            //        along with other patches this one causes to call data.PrepareToLoadBackend(1) gets the result with required role and difficulty:
-            //        new[] { new WaveInfo() { Limit = 1, Role = role, Difficulty = difficulty } }
-            //        then perform request to server and get only first value of resulting single element collection
-            //    */
             var taskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
             var taskAwaiter = (Task<Profile>)null;
-            //var profile = SIT.Tarkov.Core.PatchConstants.DoSafeConversion<Profile>(_getNewProfileMethod.Invoke(__instance, parameters: new object[] { data }));
+            var profile = (EFT.Profile)_getNewProfileMethod.Invoke(__instance, parameters: new object[] { data });
+            //var profile
+            if (profile == null)
+            {
+                // load from server
+                //Logger.LogInfo("Loading bot profile from server");
 
-            //    if (profile == null)
-            //    {
-            //        // load from server
-            //        Debug.Log("Loading bot profile from server");
+                var pptlbMethod = data.GetType().GetMethod("PrepareToLoadBackend", BindingFlags.Instance | BindingFlags.Public);
+                var typeOfThisShit = PatchConstants.EftTypes.Single(x =>
+                    PatchConstants.GetFieldFromType(x, "Role") != null
+                    && PatchConstants.GetFieldFromType(x, "Limit") != null
+                    && PatchConstants.GetFieldFromType(x, "Difficulty") != null
+                );
+                Type genericList = typeof(List<>);
+                Type[] typeArgs = { typeOfThisShit };
+                Type constructed = genericList.MakeGenericType(typeArgs);
 
-            //        var pptlbMethod = data.GetType().GetMethod("PrepareToLoadBackend", BindingFlags.Instance | BindingFlags.Public);
+                var source = Activator.CreateInstance(constructed, pptlbMethod.Invoke(data, new object[] { 1 }));
+                var backendSession = PatchConstants.BackEndSession;
+                var botsTask = (Task<Profile[]>)PatchConstants.GetMethodForType(backendSession.GetType(), "LoadBots").Invoke(backendSession, new object[] { source });
+                taskAwaiter = botsTask.ContinueWith(GetFirstResult, taskScheduler);
+            }
+            else
+            {
+                // return cached profile
+                //Logger.LogInfo("Loading bot profile from cache");
+                taskAwaiter = Task.FromResult(profile);
+            }
 
-            //        //var source = data.PrepareToLoadBackend(1).ToList();
-            //taskAwaiter = SIT.B.Tarkov.SP.PatchConstants.GetClientApp().GetClientBackEndSession().LoadBots(source).ContinueWith(GetFirstResult, taskScheduler);
-
-            //        // =====================================================
-            //        // TODO: we havent got this working yet, continue with original
-            //        return true;
-            //    }
-            //    else
-            //    {
-            //        // return cached profile
-            //        Debug.Log("Loading bot profile from cache");
-            //        taskAwaiter = Task.FromResult(profile);
-            //    }
-
-            //    // load bundles for bot profile
-            //    var continuation = new Continuation(taskScheduler);
+            // load bundles for bot profile
+            var continuation = new Continuation(taskScheduler);
+            var r = taskAwaiter.ContinueWith(continuation.LoadBundles, taskScheduler).Unwrap();
             //    __result = taskAwaiter.ContinueWith(continuation.LoadBundles, taskScheduler).Unwrap();
-            //    return false;
-            return true;
+            __result = r;
+            return false;
+            //return true;
         }
 
-        //private static Profile GetFirstResult(Task<Profile[]> task)
-        //{
-        //    if (task.IsCompleted && task.Result.Any())
-        //    {
-        //        var result = task.Result[0];
-        //        UnityEngine.Debug.LogError($"Loading bot profile from server. role: {result.Info.Settings.Role} side: {result.Side}");
-        //        return result;
-        //    }
+        private static Profile GetFirstResult(Task<Profile[]> task)
+        {
+            if (task.IsCompleted && task.Result.Any())
+            {
+                var result = task.Result[0];
+                Logger.LogInfo($"Loading bot profile from server. role: {result.Info.Settings.Role} side: {result.Side}");
+                return result;
+            }
 
-        //    return null;
-        //}
+            return null;
+        }
 
-        //private struct Continuation
-        //{
-        //    Profile Profile;
-        //    TaskScheduler TaskScheduler { get; }
+        private struct Continuation
+        {
+            Profile Profile;
+            TaskScheduler TaskScheduler { get; }
 
-        //    public Continuation(TaskScheduler taskScheduler)
-        //    {
-        //        Profile = null;
-        //        TaskScheduler = taskScheduler;
-        //    }
 
-        //    public Task<Profile> LoadBundles(Task<Profile> task)
-        //    {
-        //        Profile = task.Result;
+            public Continuation(TaskScheduler taskScheduler)
+            {
+                Profile = null;
+                TaskScheduler = taskScheduler;
+            }
 
-        //        Type generic = typeof(Comfort.Common.IResult).Assembly.GetTypes().Single(x => x.FullName == "Comfort.Common.Singleton");
-        //        Type[] typeArgs = { PoolManagerType };
-        //        Type constructed = generic.MakeGenericType(typeArgs);
+            public Task<Profile> LoadBundles(Task<Profile> task)
+            {
+                Profile = task.Result;
 
-        //        var loadTask = Singleton.CreateInstance(constructed);
-        //            .LoadBundlesAndCreatePools(PoolManager.PoolsCategory.Raid,
-        //                                       PoolManager.AssemblyType.Local,
-        //                                       Profile.GetAllPrefabPaths(false).ToArray(),
-        //                                       JobPriority.General,
-        //                                       null,
-        //                                       default(CancellationToken));
+                //LoadBundlesAndCreatePoolsMethod.Invoke(BundleManager, Enum.Parse()
 
-        //        return loadTask.ContinueWith(GetProfile, TaskScheduler);
-        //    }
+                var loadTask = Plugin.LoadBundlesAndCreatePools(Profile.GetAllPrefabPaths(false).ToArray());
 
-        //    private Profile GetProfile(Task task)
-        //    {
-        //        return Profile;
-        //    }
-        //}
+                //var loadTask = Singleton.CreateInstance(constructed);
+                //    .LoadBundlesAndCreatePools(PoolManager.PoolsCategory.Raid,
+                //                               PoolManager.AssemblyType.Local,
+                //                               Profile.GetAllPrefabPaths(false).ToArray(),
+                //                               JobPriority.General,
+                //                               null,
+                //                               default(CancellationToken));
+
+                return loadTask.ContinueWith(GetProfile, TaskScheduler);
+                //return null;
+            }
+
+            private Profile GetProfile(Task task)
+            {
+                return Profile;
+            }
+        }
     }
 }

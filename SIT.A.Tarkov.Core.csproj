@@ -34,6 +34,9 @@
     <Reference Include="Comfort.Unity">
       <HintPath>..\Tarkov.References\Comfort.Unity.dll</HintPath>
     </Reference>
+    <Reference Include="DissonanceVoip">
+      <HintPath>..\Tarkov.References\DissonanceVoip.dll</HintPath>
+    </Reference>
     <Reference Include="FilesChecker">
       <HintPath>..\Tarkov.References\FilesChecker.dll</HintPath>
     </Reference>

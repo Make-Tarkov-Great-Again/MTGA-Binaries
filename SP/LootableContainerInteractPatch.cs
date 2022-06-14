@@ -24,6 +24,9 @@ namespace SIT.A.Tarkov.Core.SP
             Logger.LogInfo($"{__instance.ItemOwner.ID}");
             Logger.LogInfo($"{__instance.ItemOwner.Name}");
             Logger.LogInfo($"{__instance.ItemOwner.ContainerName}");
+
+            Dictionary<string, string> args = new Dictionary<string, string>();
+            new Request().PostJson("/client/raid/person/lootingContainer", args.SITToJson());
         }
     }
 }

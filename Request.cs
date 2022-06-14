@@ -44,10 +44,10 @@ namespace SIT.Tarkov.Core
             if (!Uri.IsWellFormedUriString(fullUri, UriKind.Absolute))
                 fullUri = RemoteEndPoint + fullUri;
 
-            PatchConstants.Logger.LogInfo(fullUri);
+            //PatchConstants.Logger.LogInfo(fullUri);
 
-            //WebRequest request = WebRequest.Create(new Uri(fullUri));
-            var request = WebRequest.CreateHttp(fullUri);
+            WebRequest request = WebRequest.Create(new Uri(fullUri));
+            //var request = WebRequest.CreateHttp(fullUri);
 
             if (!string.IsNullOrEmpty(Session))
             {

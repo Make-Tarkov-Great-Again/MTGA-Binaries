@@ -21,7 +21,7 @@ namespace SIT.Tarkov.Core.Health
             .GetMethod("OnDead", BindingFlags.NonPublic | BindingFlags.Instance);
 
         [PatchPostfix]
-        public static void PatchPostfix(Player __instance, EDamageType damageType)
+        public static void PatchPostfix(EFT.Player __instance, EDamageType damageType)
         {
             Player deadPlayer = __instance;
 
@@ -38,13 +38,14 @@ namespace SIT.Tarkov.Core.Health
             map.Add("diedAID", __instance.Profile.AccountId);
             if (__instance.Profile.Info != null)
             {
-                map.Add("diedFaction", __instance.Profile.Info.Side);
+                map.Add("diedFaction", __instance.Side);
                 if(__instance.Profile.Info.Settings != null)
                     map.Add("diedWST", __instance.Profile.Info.Settings.Role);
             }
             if (killedBy != null) 
             {
                 map.Add("killedByAID", killedBy.Profile.AccountId);
+                map.Add("killerFaction", killedBy.Side);
             }
             if(killedByLastAggressor != null)
             {

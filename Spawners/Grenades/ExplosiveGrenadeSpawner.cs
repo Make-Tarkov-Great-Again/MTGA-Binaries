@@ -12,9 +12,7 @@ namespace SIT.A.Tarkov.Core.Spawners.Grenades
 {
     public class ExplosiveGrenadeSpawner : GrenadeSpawner
     {
-        public ExplosiveGrenadeSpawner(string templateId) : base(templateId)
-        {
-        }
+       
     }
 
 }
