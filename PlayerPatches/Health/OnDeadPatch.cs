@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SIT.Tarkov.Core.Health
+namespace SIT.Tarkov.Core.PlayerPatches.Health
 {
     public class OnDeadPatch : ModulePatch
     {

@@ -25,6 +25,8 @@ namespace SIT.Tarkov.Core.PlayerPatches
         {
             if(OnPlayerInit != null)
                 OnPlayerInit(__instance);
+
+            PatchConstants.DisplayMessageNotification($"{__instance.Profile.Nickname}:{__instance.Side}:{__instance.Profile.Info.Settings.Role} has spawned");
         }
     }
 }

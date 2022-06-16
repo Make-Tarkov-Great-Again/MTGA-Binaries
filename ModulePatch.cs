@@ -16,9 +16,11 @@ namespace SIT.Tarkov.Core
         private readonly List<HarmonyMethod> _ilmanipulatorList;
 
         protected static ManualLogSource Logger { get; private set; }
+        public string ThisTypeName { get; private set; }
 
         protected ModulePatch() : this(null)
         {
+            ThisTypeName = GetType().FullName;
             if (Logger == null)
             {
                 Logger = BepInEx.Logging.Logger.CreateLogSource(nameof(ModulePatch));

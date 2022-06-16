@@ -27,7 +27,7 @@ namespace SIT.Tarkov.Core.AI
             void
             PatchPostfix(EFT.LocalPlayer __instance)
         {
-            Logger.LogInfo("CreateFriendlyAIPatch.PatchPostfix");
+            //Logger.LogInfo("CreateFriendlyAIPatch.PatchPostfix");
 
             //if (!ShouldFriendlyAI.HasValue)
             //{

@@ -37,31 +37,51 @@ namespace SIT.Tarkov.Core.SP.Raid
         {
             if (___list_0.Count > 0)
             {
-                EFT.Profile profile = PatchConstants.GetAllMethodsForObject(data).First(x => x.Name == "ChooseProfile").Invoke(data, new object[] { ___list_0, true }) as EFT.Profile;
+                Logger.LogInfo("LoadBotProfileFromServerPatch:ActualPatch:List count: " + ___list_0.Count);
+                var firstOriginalProfile = ___list_0[0];
+                //Logger.LogInfo($"LoadBotProfileFromServerPatch:Original Profile 0:{firstOriginalProfile.AccountId}:{firstOriginalProfile.Side}:{firstOriginalProfile.Info.Voice}");
+
+                var profileObj = PatchConstants
+                    .GetAllMethodsForObject(data)
+                    .First(x => x.Name == "ChooseProfile")
+                    .Invoke(data, new object[] { ___list_0, false });
+                //.Invoke(data, new object[] { ___list_0, true });
+                if (profileObj == null)
+                {
+                    Logger.LogInfo("LoadBotProfileFromServerPatch:ActualPatch:Profile not found");
+                    return false;
+                }
+                var profile = profileObj as EFT.Profile;
                 if (profile != null)
                 {
-                    EFT.Profile profile2 = profile;
-                    if (profile2.Side == EFT.EPlayerSide.Usec)
+                    // Fix voices
+                    if (profile.Side == EFT.EPlayerSide.Usec)
                     {
-                        profile2.Info.Voice = "Usec_1";
+                        profile.Info.Voice = "Usec_1";
                     }
-                    else if (profile2.Side == EFT.EPlayerSide.Bear)
+                    else if (profile.Side == EFT.EPlayerSide.Bear)
                     {
-                        profile2.Info.Voice = "Bear_1";
+                        profile.Info.Voice = "Bear_1";
                     }
-                    profile2.AccountId = Guid.NewGuid().ToString();
-                    profile2.Id = Guid.NewGuid().ToString();
+                    //profile.AccountId = Guid.NewGuid().ToString();
+                    //profile.Id = Guid.NewGuid().ToString();
 
-                    Dictionary<string, string> args = new Dictionary<string, string>();
-                    args.Add("Side", profile.Side.ToString());
-                    args.Add("Settings", profile.Info.Settings.SITToJson());
-                    var resultJson = new Request().PostJson("/client/raid/bots/getNewProfile", args.SITToJson());
-                    Logger.LogInfo("LoadBotProfileFromServerPatch.PatchPrefix: " + resultJson);
-                    Dictionary<string, object> result = JsonConvert.DeserializeObject<Dictionary<string, object>>(resultJson);
-                    __result = profile2;
+                    Logger.LogInfo($"LoadBotProfileFromServerPatch:Profile:{profile.AccountId}:{profile.Side}:{profile.Info.Voice}");
+
+                    //Dictionary<string, string> args = new Dictionary<string, string>();
+                    //args.Add("Side", profile.Side.ToString());
+                    //args.Add("Settings", profile.Info.Settings.SITToJson());
+                    //var resultJson = new Request().PostJson("/client/raid/bots/getNewProfile", args.SITToJson());
+                    //Logger.LogInfo("LoadBotProfileFromServerPatch.PatchPrefix: " + resultJson);
+                    //Dictionary<string, object> result = JsonConvert.DeserializeObject<Dictionary<string, object>>(resultJson);
+                    __result = profile;
                 }
             }
-            __result = null;
+            else
+            {
+                __result = null;
+                return true;
+            }
             //var profilesInCache = PatchConstants.GetFieldOrPropertyFromInstance<List<EFT.Profile>>(__instance, "list_0");
             //Logger.LogInfo("LoadBotProfileFromServerPatch.PatchPrefix: " + profilesInCache.SITToJson());
 

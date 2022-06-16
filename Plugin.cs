@@ -1,11 +1,13 @@
 ﻿using BepInEx;
 using EFT;
+using SIT.A.Tarkov.Core.LocalGame;
 using SIT.A.Tarkov.Core.SP;
+using SIT.A.Tarkov.Core.SP.Raid;
 using SIT.Tarkov.Core;
 using SIT.Tarkov.Core.AI;
 using SIT.Tarkov.Core.Bundles;
-using SIT.Tarkov.Core.Health;
 using SIT.Tarkov.Core.PlayerPatches;
+using SIT.Tarkov.Core.PlayerPatches.Health;
 using SIT.Tarkov.Core.SP;
 using SIT.Tarkov.Core.SP.Raid;
 using SIT.Tarkov.Core.SP.ScavMode;
@@ -33,37 +35,32 @@ namespace SIT.A.Tarkov.Core
             new UnityWebRequestPatch().Enable();
             new WebSocketPatch().Enable();
 
-
             // - Loading Bundles from Server. Working Aki version with some tweaks by me -----
             BundleSetup.Init();
             BundleManager.GetBundles();
             new EasyAssetsPatch().Enable();
             new EasyBundlePatch().Enable();
 
-            //new LoadBotProfileFromServerPatch().Enable();
-            //new LoadBotProfileFromServerPatch2().Enable();
-            new UpdateDogtagPatch().Enable();
-
+            // --------- Container Id Debug ------------
             new LootableContainerInteractPatch().Enable();
+
+            // --------- PMC Dogtags -------------------
+            new UpdateDogtagPatch().Enable();
 
             // --------- On Dead -----------------------
             new OnDeadPatch().Enable();
 
-            // --------- SCAV MODE ---------------------
-            //new ScavPrefabLoadPatch().Enable();
-            //new ScavProfileLoadPatch().Enable();
-            //new ScavExfilPatch().Enable();
-            new DisableScavModePatch().Enable();
-
-            new ForceLocalGamePatch().Enable();
-
-            new CreateFriendlyAIPatch().Enable();
+            // --------- Player Init -------------------
             new PlayerInitPatch().Enable();
 
-            //new EnsureSpawnPmcPatch().Enable();
+            // --------- SCAV MODE ---------------------
+            new DisableScavModePatch().Enable();
+            new ForceLocalGamePatch().Enable();
 
-            //new RemoveUsedBotProfile().Enable();
-
+            //new FilterProfilesPatch().Enable();
+            //new BossSpawnChancePatch().Enable();
+            //new LocalGameStartingPatch().Enable();
+            //LocalGameStartingPatch.LocalGameStarted += LocalGameStartingPatch_LocalGameStarted;
 
             // Plugin startup logic
             Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
@@ -71,6 +68,12 @@ namespace SIT.A.Tarkov.Core
             SceneManager.sceneLoaded += SceneManager_sceneLoaded;
             SceneManager.sceneUnloaded += SceneManager_sceneUnloaded;
 
+        }
+
+        private void LocalGameStartingPatch_LocalGameStarted()
+        {
+            Logger.LogInfo($"Local Game Started");
+            new LocalGameSpawnAICoroutinePatch().Enable();
         }
 
         private void SceneManager_sceneUnloaded(Scene arg0)
@@ -95,10 +98,12 @@ namespace SIT.A.Tarkov.Core
                 Logger.LogInfo(PatchConstants.PoolManagerType.FullName);
                 Logger.LogInfo(ConstructedBundleAndPoolManagerSingletonType.FullName);
 
-                
-
                 new LoadBotTemplatesPatch().Enable();
+                //new LoadBotProfileFromServerPatch().Enable();
+
             }
+
+
 
 
         }

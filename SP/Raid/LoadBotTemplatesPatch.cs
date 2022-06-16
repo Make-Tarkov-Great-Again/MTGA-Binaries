@@ -114,6 +114,14 @@ namespace SIT.Tarkov.Core.SP
                 Type[] typeArgs = { typeOfThisShit };
                 Type constructed = genericList.MakeGenericType(typeArgs);
 
+
+                //PatchConstants.GetAllFieldsForObject(data).ExecuteForEach(x => Logger.LogInfo("f" + x.Name));
+                //PatchConstants.GetAllPropertiesForObject(data).ExecuteForEach(x => Logger.LogInfo("p" + x.Name));
+
+                //requestedRole = PatchConstants.GetFieldOrPropertyFromInstance<string>(data, "Role");
+                //Logger.LogInfo(requestedRole);
+
+
                 var source = Activator.CreateInstance(constructed, pptlbMethod.Invoke(data, new object[] { 1 }));
                 var backendSession = PatchConstants.BackEndSession;
                 var botsTask = (Task<Profile[]>)PatchConstants.GetMethodForType(backendSession.GetType(), "LoadBots").Invoke(backendSession, new object[] { source });
@@ -134,6 +142,8 @@ namespace SIT.Tarkov.Core.SP
             return false;
             //return true;
         }
+
+        public static string requestedRole;
 
         private static Profile GetFirstResult(Task<Profile[]> task)
         {

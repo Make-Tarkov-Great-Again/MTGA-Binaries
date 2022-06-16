@@ -9,14 +9,14 @@ using System.Threading.Tasks;
 
 namespace SIT.Tarkov.Core.SP.Raid
 {
-    public class EnsureSpawnPmcPatch : ModulePatch
+    public class FilterProfilesPatch : ModulePatch
     {
         private static Type _targetInterface;
         private static Type _targetType;
         private static FieldInfo _wildSpawnTypeField;
         private static FieldInfo _botDifficultyField;
 
-        static EnsureSpawnPmcPatch()
+        static FilterProfilesPatch()
         {
             _targetInterface = PatchConstants.EftTypes.Single(IsTargetInterface);
             _targetType = PatchConstants.EftTypes.Single(IsTargetType);
@@ -46,12 +46,22 @@ namespace SIT.Tarkov.Core.SP.Raid
         }
 
         [PatchPrefix]
-        private static bool PatchPrefix(ref bool __result, object __instance, Profile x)
+        private static bool PatchPrefix(
+            ref bool __result
+            , object __instance
+            , Profile x)
         {
             var botType = (WildSpawnType)_wildSpawnTypeField.GetValue(__instance);
             var botDifficulty = (BotDifficulty)_botDifficultyField.GetValue(__instance);
 
-            __result = x.Info.Settings.Role == botType && x.Info.Settings.BotDifficulty == botDifficulty;
+            //Logger.LogInfo("FilterProfilesPatch");
+            //Logger.LogInfo("Wildspawn BotType: " + botType);
+            //Logger.LogInfo("Profile BotType: " + x.Info.Settings.Role);
+            //Logger.LogInfo("Wildspawn BotDifficulty: " + botDifficulty);
+            //Logger.LogInfo("Profile BotDifficulty: " + x.Info.Settings.BotDifficulty);
+            //Logger.LogInfo("Profile Side: " + x.Side);
+
+            __result = x.Info.Settings.Role == botType;// && profile.Info.Settings.BotDifficulty == botDifficulty;
             return false;
         }
     }
