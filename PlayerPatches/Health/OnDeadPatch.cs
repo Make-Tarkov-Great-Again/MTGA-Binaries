@@ -58,7 +58,7 @@ namespace SIT.Tarkov.Core.PlayerPatches.Health
             {
                 map.Add("killedByLastAggressorAID", killedByLastAggressor.Profile.AccountId);
             }
-            new Request().PostJson("/client/raid/person/killed", JsonConvert.SerializeObject(map));
+            _ = new Request().PostJsonAsync("/client/raid/person/killed", JsonConvert.SerializeObject(map));
         }
     }
 }

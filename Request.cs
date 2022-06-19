@@ -4,10 +4,11 @@ using System.Net;
 using System.Text;
 using UnityEngine;
 using ComponentAce.Compression.Libs.zlib;
+using System.Threading.Tasks;
 
 namespace SIT.Tarkov.Core
 {
-    public class Request
+    public class Request : IDisposable
     {
         public string Session;
         public string RemoteEndPoint;
@@ -134,6 +135,11 @@ namespace SIT.Tarkov.Core
             }
         }
 
+        public async Task<string> PostJsonAsync(string url, string data, bool compress = true)
+        {
+            return await Task.Run(() => { return PostJson(url, data, compress); });
+        }
+
         public Texture2D GetImage(string url, bool compress = true)
         {
             using (Stream stream = Send(url, "GET", null, compress))
@@ -149,6 +155,10 @@ namespace SIT.Tarkov.Core
                     return texture;
                 }
             }
+        }
+
+        public void Dispose()
+        {
         }
     }
 }
