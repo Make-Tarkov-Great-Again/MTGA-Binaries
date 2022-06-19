@@ -1,4 +1,5 @@
-﻿using SIT.Tarkov.Core;
+﻿using SIT.A.Tarkov.Core.AI;
+using SIT.Tarkov.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +26,11 @@ namespace SIT.Tarkov.Core.PlayerPatches
         {
             if(OnPlayerInit != null)
                 OnPlayerInit(__instance);
+
+            if (__instance.IsAI)
+            {
+                BotSystemHelpers.AddActivePlayer(__instance);
+            }
 
             //PatchConstants.DisplayMessageNotification($"{__instance.Profile.Nickname}:{__instance.Side}:{__instance.Profile.Info.Settings.Role} has spawned");
         }

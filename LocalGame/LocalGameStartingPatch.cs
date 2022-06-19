@@ -1,4 +1,5 @@
-﻿using SIT.Tarkov.Core;
+﻿using SIT.A.Tarkov.Core.AI;
+using SIT.Tarkov.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,6 +43,9 @@ namespace SIT.A.Tarkov.Core.LocalGame
             LocalGameInstance = __instance;
             if (LocalGameStarted != null)
                 LocalGameStarted();
+
+            BotSystemHelpers.BotSystemInstance = PatchConstants.GetFieldOrPropertyFromInstance<object>(__instance, BotSystemHelpers.BotSystemType.Name.ToLower() + "_0", false);
+            Logger.LogInfo($"LocalGameStartingPatch:BotSystemInstance:" + BotSystemHelpers.BotSystemInstance.GetType().Name);
         }
     }
 }
