@@ -118,16 +118,37 @@ namespace SIT.A.Tarkov.Core
 
         public static Task LoadBundlesAndCreatePools(ResourceKey[] resources)
         {
-            return LoadBundlesAndCreatePoolsMethod.Invoke(BundleAndPoolManager,
-                new object[] {
+            try
+            {
+                if(BundleAndPoolManager == null)
+                {
+                    PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: BundleAndPoolManager is missing");
+                    return null;
+                }
+                var task = LoadBundlesAndCreatePoolsMethod.Invoke(BundleAndPoolManager,
+                    new object[] {
                     Enum.Parse(poolsCategoryType, "Raid")
                     , Enum.Parse(assemblyTypeType, "Local")
                     , resources
                     , PatchConstants.GetPropertyFromType(PatchConstants.JobPriorityType, "General").GetValue(null, null)
                     , null
                     , default(CancellationToken)
+                    }
+                    );
+                //PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: task is " + task.GetType());
+
+                if (task != null) // && task.GetType() == typeof(Task))
+                {
+                    var t = task as Task;
+                    //PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: t is " + t.GetType());
+                    return t;
                 }
-                ) as Task;
+            }
+            catch (Exception ex)
+            {
+                PatchConstants.Logger.LogInfo(ex.ToString());
+            }
+            return null;
         }
 
         void FixedUpdate()

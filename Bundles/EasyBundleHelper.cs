@@ -32,7 +32,8 @@ namespace SIT.Tarkov.Core
             //_ = nameof(IBundleLock.IsLocked);
             //_ = nameof(BindableState.Bind);
 
-            Type = PatchConstants.EftTypes.Single(x => x.GetMethod("set_SameNameAsset", _flags) != null);
+            //Type = PatchConstants.EftTypes.Single(x => x.GetMethod("set_SameNameAsset", _flags) != null);
+            Type = PatchConstants.EftTypes.Single(x => !x.IsInterface && PatchConstants.GetPropertyFromType(x, "SameNameAsset") != null);
             _pathField = Type.GetField("string_1", _flags);
             _keyWithoutExtensionField = Type.GetField("string_0", _flags);
             _bundleLockField = Type.GetFields(_flags).FirstOrDefault(x => x.FieldType == BundleSetup.IBundleLockType);
