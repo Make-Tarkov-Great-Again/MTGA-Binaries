@@ -12,6 +12,8 @@ namespace SIT.Tarkov.Core.PlayerPatches.Health
 {
     public class OnDeadPatch : ModulePatch
     {
+        public static event Action<EFT.Player, EDamageType> OnPersonKilled;
+
         public OnDeadPatch()
         {
             
@@ -24,6 +26,11 @@ namespace SIT.Tarkov.Core.PlayerPatches.Health
         public static void PatchPostfix(EFT.Player __instance, EDamageType damageType)
         {
             Player deadPlayer = __instance;
+
+            if(OnPersonKilled != null)
+            {
+                OnPersonKilled(__instance, damageType);
+            }
 
             var killedBy = PatchConstants.GetFieldOrPropertyFromInstance<Player>(deadPlayer, "LastAggressor", false);
             // Untested MF.
