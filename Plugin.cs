@@ -11,6 +11,7 @@ using SIT.Tarkov.Core.PlayerPatches.Health;
 using SIT.Tarkov.Core.SP;
 using SIT.Tarkov.Core.SP.Raid;
 using SIT.Tarkov.Core.SP.ScavMode;
+using SIT.Tarkov.SP.Raid;
 using System;
 using System.Linq;
 using System.Reflection;
@@ -78,9 +79,6 @@ namespace SIT.A.Tarkov.Core
 
         private void SceneManager_sceneUnloaded(Scene arg0)
         {
-            //if (LocalGamePatches.LocalGameInstance == null)
-            //    new LocalGameStartBotSystemPatch().Disable();
-
             
         }
 
@@ -100,6 +98,7 @@ namespace SIT.A.Tarkov.Core
 
                 new LoadBotTemplatesPatch().Enable();
                 //new LoadBotProfileFromServerPatch().Enable();
+                new RemoveUsedBotProfile().Enable();
 
             }
 
