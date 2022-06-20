@@ -13,10 +13,23 @@ namespace SIT.Tarkov.Core.PlayerPatches.Health
     public class OnDeadPatch : ModulePatch
     {
         public static event Action<EFT.Player, EDamageType> OnPersonKilled;
+        public static bool DisplayDeathMessage = true;
 
-        public OnDeadPatch()
+        public OnDeadPatch(BepInEx.Configuration.ConfigFile config)
         {
-            
+            var enableDeathMessage = config.Bind("Bundles", "Enable", true);
+            if (enableDeathMessage != null && enableDeathMessage.Value == true)
+            {
+                DisplayDeathMessage = enableDeathMessage.Value;
+                
+                //DisplayDeathMessage = JsonConvert.DeserializeObject<bool>();
+            }
+
+            if(bool.TryParse(new Request().PostJson("/client/raid/person/killed/showMessage", null, true), out bool serverDecision))
+            {
+                Logger.LogInfo("OnDeadPatch:Server Decision:" + serverDecision);
+                DisplayDeathMessage = serverDecision;
+            }
         }
 
         protected override MethodBase GetTargetMethod() => typeof(Player)
@@ -33,13 +46,15 @@ namespace SIT.Tarkov.Core.PlayerPatches.Health
             }
 
             var killedBy = PatchConstants.GetFieldOrPropertyFromInstance<Player>(deadPlayer, "LastAggressor", false);
-            // Untested MF.
             var killedByLastAggressor = PatchConstants.GetFieldOrPropertyFromInstance<Player>(killedBy, "LastAggressor", false);
 
-            if (killedBy != null)
-                PatchConstants.DisplayMessageNotification($"{killedBy.Profile.Info.Nickname} killed {deadPlayer.Profile.Nickname}");
-            else
-                PatchConstants.DisplayMessageNotification($"{deadPlayer.Profile.Nickname} has died by {damageType}");
+            if (DisplayDeathMessage)
+            {
+                if (killedBy != null)
+                    PatchConstants.DisplayMessageNotification($"{killedBy.Profile.Info.Nickname} killed {deadPlayer.Profile.Nickname}");
+                else
+                    PatchConstants.DisplayMessageNotification($"{deadPlayer.Profile.Nickname} has died by {damageType}");
+            }
 
             Dictionary<string, object> map = new Dictionary<string, object>();
             map.Add("diedAID", __instance.Profile.AccountId);

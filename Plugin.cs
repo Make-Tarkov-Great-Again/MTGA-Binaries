@@ -8,6 +8,7 @@ using SIT.Tarkov.Core.AI;
 using SIT.Tarkov.Core.Bundles;
 using SIT.Tarkov.Core.PlayerPatches;
 using SIT.Tarkov.Core.PlayerPatches.Health;
+using SIT.Tarkov.Core.Raid.Aki;
 using SIT.Tarkov.Core.SP;
 using SIT.Tarkov.Core.SP.Raid;
 using SIT.Tarkov.Core.SP.ScavMode;
@@ -37,10 +38,14 @@ namespace SIT.A.Tarkov.Core
             new WebSocketPatch().Enable();
 
             // - Loading Bundles from Server. Working Aki version with some tweaks by me -----
-            BundleSetup.Init();
-            BundleManager.GetBundles();
-            new EasyAssetsPatch().Enable();
-            new EasyBundlePatch().Enable();
+            var enableBundles = Config.Bind("Bundles", "Enable", true);
+            if (enableBundles != null && enableBundles.Value == true)
+            {
+                BundleSetup.Init();
+                BundleManager.GetBundles();
+                new EasyAssetsPatch().Enable();
+                new EasyBundlePatch().Enable();
+            }
 
             // --------- Container Id Debug ------------
             new LootableContainerInteractPatch().Enable();
@@ -49,7 +54,7 @@ namespace SIT.A.Tarkov.Core
             new UpdateDogtagPatch().Enable();
 
             // --------- On Dead -----------------------
-            new OnDeadPatch().Enable();
+            new OnDeadPatch(Config).Enable();
 
             // --------- Player Init -------------------
             new PlayerInitPatch().Enable();
@@ -62,6 +67,10 @@ namespace SIT.A.Tarkov.Core
             //new BossSpawnChancePatch().Enable();
             //new LocalGameStartingPatch().Enable();
             //LocalGameStartingPatch.LocalGameStarted += LocalGameStartingPatch_LocalGameStarted;
+
+            // --------- Airdrop -----------------------
+            new AirdropBoxPatch().Enable();
+            new AirdropPatch(Config).Enable();
 
             // Plugin startup logic
             Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
@@ -97,8 +106,8 @@ namespace SIT.A.Tarkov.Core
                 Logger.LogInfo(ConstructedBundleAndPoolManagerSingletonType.FullName);
 
                 new LoadBotTemplatesPatch().Enable();
-                //new LoadBotProfileFromServerPatch().Enable();
                 new RemoveUsedBotProfile().Enable();
+                new CreateFriendlyAIPatch().Enable();
 
             }
 

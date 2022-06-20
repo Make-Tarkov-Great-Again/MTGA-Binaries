@@ -21,6 +21,11 @@ namespace SIT.Tarkov.Core.AI
             return PatchConstants.GetMethodForType(typeof(EFT.LocalPlayer), "Init");
         }
 
+        public CreateFriendlyAIPatch()
+        {
+            //ShouldFriendlyAI = JsonConvert.DeserializeObject<bool>(new Request().PostJson("/client/raid/createFriendlyAI", null, true));
+        }
+
         [PatchPostfix]
         public static
             async
