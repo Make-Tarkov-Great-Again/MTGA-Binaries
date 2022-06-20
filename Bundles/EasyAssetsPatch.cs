@@ -27,14 +27,42 @@ namespace SIT.Tarkov.Core
         private static FieldInfo _bundlesField;
         private static PropertyInfo _systemProperty;
 
+        private static Type easyAssetsType;
+
+        public static Type EasyAssetsType
+        {
+            get { 
+                
+                if(easyAssetsType == null)
+                {
+                    easyAssetsType = PatchConstants.EftTypes.Single(
+                        x => x.Name.Contains("EasyAssets")
+                        && PatchConstants.GetFieldFromType(x, "Log") != null
+                        && PatchConstants.GetFieldFromType(x, "Manifest") != null
+                        && PatchConstants.GetPropertyFromType(x, "System") != null
+                    );
+                }
+
+                return easyAssetsType; 
+            }
+            set { easyAssetsType = value; }
+        }
+
+
 
         static EasyAssetsPatch()
         {
-            var type = typeof(EasyAssets);
+            //var type = typeof(EasyAssets);
 
-            _manifestField = type.GetField(nameof(EasyAssets.Manifest));
-            _bundlesField = type.GetField($"{EasyBundleHelper.Type.Name.ToLowerInvariant()}_0", PatchConstants.PrivateFlags);
-            _systemProperty = type.GetProperty("System");
+            //_manifestField = EasyAssetsType.GetField(nameof(EasyAssets.Manifest));
+            _manifestField = EasyAssetsType.GetField("Manifest");
+            _bundlesField = EasyAssetsType.GetField($"{EasyBundleHelper.Type.Name.ToLowerInvariant()}_0", PatchConstants.PrivateFlags);
+            _systemProperty = EasyAssetsType.GetProperty("System");
+
+            Logger.LogInfo("EasyAssetsPatch");
+            Logger.LogInfo(_manifestField.Name);
+            Logger.LogInfo(_bundlesField.Name);
+            Logger.LogInfo(_systemProperty.Name);
         }
 
         public EasyAssetsPatch()
@@ -47,23 +75,52 @@ namespace SIT.Tarkov.Core
 
         protected override MethodBase GetTargetMethod()
         {
-            return typeof(EasyAssets).GetMethods(PatchConstants.PrivateFlags).Single(IsTargetMethod);
+            //return typeof(EasyAssets).GetMethods(PatchConstants.PrivateFlags).Single(IsTargetMethod);
+            return PatchConstants.EftTypes.Single(
+                x => x.Name.Contains("EasyAssets")
+                && PatchConstants.GetFieldFromType(x, "Log") != null
+                && PatchConstants.GetFieldFromType(x, "Manifest") != null
+                && PatchConstants.GetPropertyFromType(x, "System") != null
+                ).GetMethods(PatchConstants.PrivateFlags).Single(IsTargetMethod);
         }
+
+        /*
+         * // Token: 0x0600D5C8 RID: 54728 RVA: 0x00424FF4 File Offset: 0x004231F4
+		private async Task method_0([CanBeNull] GInterface284 bundleLock
+        , string defaultKey
+        , string rootPath
+        , string platformName
+        , [CanBeNull] Func<string, bool> shouldExclude
+        , [CanBeNull] Func<string, Task> bundleCheck)
+         */
 
         private static bool IsTargetMethod(MethodInfo mi)
         {
             var parameters = mi.GetParameters();
-            return (parameters.Length != 6
-                || parameters[0].Name != "bundleLock"
-                || parameters[1].Name != "defaultKey"
-                || parameters[4].Name != "shouldExclude") ? false : true;
+            return (parameters.Length >= 6
+                && parameters[0].Name == "bundleLock"
+                && parameters[1].Name == "defaultKey"
+                && parameters[2].Name == "rootPath"
+                && parameters[3].Name == "platformName"
+                && parameters[4].Name == "shouldExclude"
+                && parameters[5].Name == "bundleCheck");
         }
 
         [PatchPrefix]
-        private static bool PatchPrefix(ref Task __result, EasyAssets __instance, [CanBeNull] object bundleLock, string defaultKey, string rootPath,
+        //private static bool PatchPrefix(ref Task __result, EasyAssets __instance, [CanBeNull] object bundleLock, string defaultKey, string rootPath,
+        //    string platformName, [CanBeNull] Func<string, bool> shouldExclude, [CanBeNull] Func<string, Task> bundleCheck)
+        private static bool PatchPrefix(ref Task __result, object __instance, [CanBeNull] object bundleLock, string defaultKey, string rootPath,
             string platformName, [CanBeNull] Func<string, bool> shouldExclude, [CanBeNull] Func<string, Task> bundleCheck)
         {
-            __result = Init(__instance, bundleLock, defaultKey, rootPath, platformName, shouldExclude, bundleCheck);
+            try
+            {
+                __result = Init(__instance, bundleLock, defaultKey, rootPath, platformName, shouldExclude, bundleCheck);
+            }
+            catch (Exception)
+            {
+                Logger.LogInfo("Error: Unable to setup EasyAssetsPatch");
+                return true;
+            }
             return false;
         }
 
@@ -140,8 +197,21 @@ namespace SIT.Tarkov.Core
             return (CompatibilityAssetBundleManifest)assetLoading.allAssets[0];
         }
 
-        private static async Task Init(EasyAssets instance, [CanBeNull] object bundleLock, string defaultKey, string rootPath,
-                                      string platformName, [CanBeNull] Func<string, bool> shouldExclude, Func<string, Task> bundleCheck)
+        //private static async Task Init(EasyAssets instance, [CanBeNull] object bundleLock, string defaultKey, string rootPath,
+                                      //string platformName, [CanBeNull] Func<string, bool> shouldExclude, Func<string, Task> bundleCheck)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="instance">EasyAssets instance</param>
+        /// <param name="bundleLock"></param>
+        /// <param name="defaultKey"></param>
+        /// <param name="rootPath"></param>
+        /// <param name="platformName"></param>
+        /// <param name="shouldExclude"></param>
+        /// <param name="bundleCheck"></param>
+        /// <returns></returns>
+        private static async Task Init(object instance, object bundleLock, string defaultKey, string rootPath,
+                                      string platformName, Func<string, bool> shouldExclude, Func<string, Task> bundleCheck)
         {
             Logger.LogInfo("EasyAssetsPatch.Init.Started");
 
@@ -149,31 +219,23 @@ namespace SIT.Tarkov.Core
             var path = $"{rootPath.Replace("file:///", string.Empty).Replace("file://", string.Empty)}/{platformName}/";
             var filepath = path + platformName;
             var manifest = (File.Exists(filepath)) ? await GetManifestBundle(filepath) : await GetManifestJson(filepath);
-            //var results =
-            //JsonConvert.DeserializeObject<Dictionary<string, BundleDetails>>(File.ReadAllText(filepath + ".json"))
-            //    .ToDictionary(k => k.Key, v => new BundleDetails
-            //    {
-            //        FileName = v.Value.FileName,
-            //        Crc = v.Value.Crc,
-            //        Dependencies = v.Value.Dependencies
-            //    });
-
+            
             // load bundles
             Logger.LogInfo($"EasyAssetsPatch.Init.1.path={path}");
             Logger.LogInfo($"EasyAssetsPatch.Init.1.filepath={filepath}");
             //Logger.LogInfo($"EasyAssetsPatch.Init.1.manifest={manifest}");
-            uint iCrc = 100;
-            foreach (var (key, value) in BundleManager.Bundles)
-            {
-                var detail = new BundleDetails()
-                {
-                    FileName = value.Path,
-                    Crc = iCrc++,
-                    Dependencies = value.DependencyKeys
-                };
+            //uint iCrc = 100;
+            //foreach (var (key, value) in BundleManager.Bundles)
+            //{
+            //    var detail = new BundleDetails()
+            //    {
+            //        FileName = value.Path,
+            //        Crc = iCrc++,
+            //        Dependencies = value.DependencyKeys
+            //    };
 
-                //results.Add(key, detail);
-            }
+            //    //results.Add(key, detail);
+            //}
             //manifest.SetResults(results);
 
             var bundleNames = manifest.GetAllAssetBundles().Union(BundleManager.Bundles.Keys).ToArray();
