@@ -149,6 +149,7 @@ namespace SIT.Tarkov.Core.SP
         {
             if (task.IsCompleted && task.Result.Any())
             {
+                Logger.LogInfo($"Loading bot profile from server. count: {task.Result.Length}");
                 var result = task.Result[0];
                 Logger.LogInfo($"Loading bot profile from server. role: {result.Info.Settings.Role} side: {result.Side}");
                 return result;
@@ -191,6 +192,7 @@ namespace SIT.Tarkov.Core.SP
 
             private Profile GetProfile(Task task)
             {
+                Logger.LogInfo("LoadBotTemplatesPatch+Continuation.GetProfile");
                 return Profile;
             }
         }

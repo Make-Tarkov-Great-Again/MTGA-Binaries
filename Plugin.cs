@@ -1,6 +1,5 @@
 ﻿using BepInEx;
 using EFT;
-using SIT.A.Tarkov.Core.LocalGame;
 using SIT.A.Tarkov.Core.SP;
 using SIT.A.Tarkov.Core.SP.Raid;
 using SIT.Tarkov.Core;
@@ -80,11 +79,11 @@ namespace SIT.A.Tarkov.Core
 
         }
 
-        private void LocalGameStartingPatch_LocalGameStarted()
-        {
-            Logger.LogInfo($"Local Game Started");
-            new LocalGameSpawnAICoroutinePatch().Enable();
-        }
+        //private void LocalGameStartingPatch_LocalGameStarted()
+        //{
+        //    Logger.LogInfo($"Local Game Started");
+        //    new LocalGameSpawnAICoroutinePatch().Enable();
+        //}
 
         private void SceneManager_sceneUnloaded(Scene arg0)
         {

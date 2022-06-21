@@ -1,5 +1,5 @@
-﻿using SIT.A.Tarkov.Core.LocalGame;
-using SIT.Tarkov.Core;
+﻿using SIT.Tarkov.Core;
+using SIT.Tarkov.Core.LocalGame;
 using System;
 using System.Collections.Generic;
 using System.Linq;

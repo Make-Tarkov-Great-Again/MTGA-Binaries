@@ -282,21 +282,27 @@ namespace SIT.Tarkov.Core.Raid.Aki
             var url = "/singleplayer/airdrop/config";
             var json = new Request(PatchConstants.GetPHPSESSID(), PatchConstants.GetBackendUrl()).GetJson(url);
 
-            return JsonConvert.DeserializeObject<AirdropConfig>(json);
+            var c = JsonConvert.DeserializeObject<AirdropConfig>(json);
+            AirdropPatch.MaxDropCount = c.maximumAirdopsPerRaid;
+            PatchConstants.Logger.LogInfo($"AirdropComponent:MaxDropCount:{AirdropPatch.MaxDropCount}");
+
+            return c;
         }
 
         public bool ShouldAirdropOccur()
         {
-            return UnityEngine.Random.Range(1, 99) <= dropChance;
+            return UnityEngine.Random.Range(1, 99) <= dropChance && amountDropped <= AirdropPatch.MaxDropCount;
         }
 
         public void DoNotRun() // currently not doing anything, could be used later for multiple drops
         {
-            doNotRun = true;
+            doNotRun = amountDropped >= AirdropPatch.MaxDropCount;
         }
 
         public void ScriptStart()
         {
+            PatchConstants.Logger.LogInfo("AirdropComponent:ScriptStart");
+
             if (!ShouldAirdropOccur())
             {
                 DoNotRun();
@@ -383,9 +389,13 @@ namespace SIT.Tarkov.Core.Raid.Aki
 
         public void DisablePlane()
         {
+            PatchConstants.Logger.LogInfo("AirdropComponent:DisablePlane");
+
             planeEnabled = false;
             amountDropped++;
             plane.ReturnToPool();
+            timeToDrop = timer + UnityEngine.Random.Range(config.airdropMinStartTimeSeconds, config.airdropMaxStartTimeSeconds);
+            boxEnabled = false;
         }
     }
 
@@ -409,5 +419,6 @@ namespace SIT.Tarkov.Core.Raid.Aki
         public int planeMinFlyHeight { get; set; } = 50;
         public int planeMaxFlyHeight { get; set; } = 100;
         public float planeVolume { get; set; } = 0.7f;
+        public int maximumAirdopsPerRaid { get; set; } = 1;
     }
 }

@@ -1,5 +1,5 @@
-﻿using SIT.A.Tarkov.Core.AI;
-using SIT.Tarkov.Core;
+﻿using SIT.Tarkov.Core;
+using SIT.Tarkov.Core.AI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SIT.A.Tarkov.Core.LocalGame
+namespace SIT.Tarkov.Core.LocalGame
 {
     // <summary>
     /// Target that smethod_3 like
@@ -44,8 +44,8 @@ namespace SIT.A.Tarkov.Core.LocalGame
             if (LocalGameStarted != null)
                 LocalGameStarted();
 
-            BotSystemHelpers.BotSystemInstance = PatchConstants.GetFieldOrPropertyFromInstance<object>(__instance, BotSystemHelpers.BotSystemType.Name.ToLower() + "_0", false);
-            Logger.LogInfo($"LocalGameStartingPatch:BotSystemInstance:" + BotSystemHelpers.BotSystemInstance.GetType().Name);
+            BotSystemHelpers.BotControllerInstance = PatchConstants.GetFieldOrPropertyFromInstance<object>(__instance, BotSystemHelpers.BotControllerType.Name.ToLower() + "_0", false);
+            Logger.LogInfo($"LocalGameStartingPatch:BotSystemInstance:" + BotSystemHelpers.BotControllerInstance.GetType().Name);
         }
     }
 }

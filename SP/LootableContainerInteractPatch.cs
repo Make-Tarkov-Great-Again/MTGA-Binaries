@@ -1,4 +1,5 @@
 ﻿using EFT.Interactive;
+using Newtonsoft.Json;
 using SIT.Tarkov.Core;
 using System;
 using System.Collections.Generic;
@@ -26,7 +27,8 @@ namespace SIT.A.Tarkov.Core.SP
             Logger.LogInfo($"{__instance.ItemOwner.ContainerName}");
 
             Dictionary<string, string> args = new Dictionary<string, string>();
-            new Request().PostJson("/client/raid/person/lootingContainer", args.SITToJson());
+            //var s = args.SITToJsonAsync().GetAwaiter().GetResult();
+            _ = new Request().PostJsonAsync("/client/raid/person/lootingContainer", JsonConvert.SerializeObject(args));
         }
     }
 }

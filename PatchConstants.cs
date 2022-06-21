@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using BepInEx.Logging;
 using Comfort.Common;
 using EFT;
@@ -9,6 +10,7 @@ using EFT.Communications;
 using FilesChecker;
 using Newtonsoft.Json;
 using SIT.A.Tarkov.Core.Web;
+using SIT.Tarkov.Core.AI;
 using UnityEngine;
 
 namespace SIT.Tarkov.Core
@@ -166,6 +168,12 @@ namespace SIT.Tarkov.Core
             return GetAllMethodsForType(t, debug).Last(x => x.Name.ToLower() == methodName.ToLower()); 
         }
 
+        public static async Task<MethodInfo> GetMethodForTypeAsync(Type t, string methodName, bool debug = false)
+        {
+            return await Task.Run(() => GetMethodForType(t, methodName, debug));
+        }
+
+
         public static IEnumerable<MethodInfo> GetAllMethodsForType(Type t, bool debug = false)
         {
             foreach (var m in t.GetMethods(
@@ -259,6 +267,11 @@ namespace SIT.Tarkov.Core
             return default(T);
         }
 
+        public static async Task<T> GetFieldOrPropertyFromInstanceAsync<T>(object o, string name, bool safeConvert = true)
+        {
+            return await Task.Run(() => GetFieldOrPropertyFromInstance<T>(o, name, safeConvert));
+        }
+
         public static void SetFieldOrPropertyFromInstance<T>(object o, string name, T v)
         {
             var properties = o.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public);
@@ -338,6 +351,14 @@ namespace SIT.Tarkov.Core
                     );
         }
 
+        public static async Task<string> SITToJsonAsync(this object o)
+        {
+            return await Task.Run(() =>
+            {
+                return SITToJson(o);
+            });
+        }
+
         public static T SITParseJson<T>(this string str)
         {
             return (T)JsonConvert.DeserializeObject<T>(str
@@ -408,7 +429,7 @@ namespace SIT.Tarkov.Core
 
             StartWithTokenType = PatchConstants.EftTypes.Single(x =>  GetAllMethodsForType(x).Count(y=>y.Name =="StartWithToken") == 1);
 
-            
+            BotSystemHelpers.Setup();
 
             if (JobPriorityType == null)
             {
@@ -419,7 +440,6 @@ namespace SIT.Tarkov.Core
                     //|| PatchConstants.GetPropertyFromType(x, "General") != null)
                     );
                 Logger.LogInfo($"Loading JobPriorityType:{JobPriorityType.FullName}");
-
             }
         }
     }

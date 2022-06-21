@@ -10,14 +10,16 @@ namespace SIT.Tarkov.Core
 {
     public class Request : IDisposable
     {
-        public string Session;
-        public string RemoteEndPoint;
+        public static string Session;
+        public static string RemoteEndPoint;
         public bool isUnity;
 
         public Request()
         {
-            Session = PatchConstants.GetPHPSESSID();
-            RemoteEndPoint = PatchConstants.GetBackendUrl();
+            if(string.IsNullOrEmpty(Session))
+                Session = PatchConstants.GetPHPSESSID();
+            if(string.IsNullOrEmpty(RemoteEndPoint))
+                RemoteEndPoint = PatchConstants.GetBackendUrl();
         }
 
         public Request(string session, string remoteEndPoint, bool isUnity = true)
