@@ -44,6 +44,18 @@ namespace SIT.Tarkov.Core.PlayerPatches.Health
             GetHealthControllerChangeHealthMethod(healthController).Invoke(healthController, new object[] { bodyPart, value, damageInfo });
         }
 
+        public static object GetActiveHealthController(object player)
+        {
+            object activeHealthController = PatchConstants.GetFieldOrPropertyFromInstance<object>(player, "ActiveHealthController", false);
+            return activeHealthController;
+        }
+
+        public static bool IsAlive(object healthController)
+        {
+            bool isAlive = PatchConstants.GetFieldOrPropertyFromInstance<bool>(healthController, "IsAlive", false);
+            return isAlive;
+        }
+
         /// <summary>
         /// Gets the Body Part Health Value struct for provided health controller
         /// </summary>

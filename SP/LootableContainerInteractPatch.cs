@@ -14,7 +14,7 @@ namespace SIT.A.Tarkov.Core.SP
     {
         protected override MethodBase GetTargetMethod()
         {
-            return PatchConstants.GetAllMethodsForType(PatchConstants.EftTypes.Single(x => x.Name == "LootableContainer")).Single(x => x.Name == "Interact");
+            return PatchConstants.GetAllMethodsForType(PatchConstants.EftTypes.First(x => x.Name == "LootableContainer")).First(x => x.Name == "Interact");
         }
 
         [PatchPostfix]

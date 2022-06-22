@@ -14,9 +14,13 @@ namespace SIT.Tarkov.Core.AI
         public static Type BotPresetType { get; set; }
         public static Type BotScatteringType { get; set; }
         public static Type BossSpawnRunnerType { get; set; }
+        public static Type ProfileCreatorType { get; set; }
+        public static Type BotCreatorType { get; set; }
+        public static Type RoleLimitDifficultyType { get; set; }
 
         public static Object BotControllerInstance { get; set; }
         public static MethodInfo SetSettingsMethod { get; set; }
+        public static MethodInfo InitMethod { get; set; }
         public static MethodInfo StopMethod { get; set; }
         public static MethodInfo AddActivePlayerMethod { get; set; }
 
@@ -39,7 +43,7 @@ namespace SIT.Tarkov.Core.AI
                     && x.GetMethod("AddActivePLayer", BindingFlags.Public | BindingFlags.Instance) != null
                 );
 
-            Logger.LogInfo($"{BotControllerType.Name}");
+            Logger.LogInfo($"BotControllerType:{BotControllerType.Name}");
 
             if (BotPresetType == null)
                 BotPresetType = PatchConstants.EftTypes.Single(x => x.IsClass
@@ -49,7 +53,7 @@ namespace SIT.Tarkov.Core.AI
                     && PatchConstants.GetFieldFromType(x, "VisibleAngle") != null
                     );
 
-            Logger.LogInfo($"{BotPresetType.Name}");
+            Logger.LogInfo($"BotPresetType:{BotPresetType.Name}");
 
             if (BotScatteringType == null)
                 BotScatteringType = PatchConstants.EftTypes.Single(x => x.IsClass
@@ -59,7 +63,7 @@ namespace SIT.Tarkov.Core.AI
                     && PatchConstants.GetMethodForType(x, "Check") != null
                     );
 
-            Logger.LogInfo($"{BotScatteringType.Name}");
+            Logger.LogInfo($"BotScatteringType:{BotScatteringType.Name}");
 
             if(BossSpawnRunnerType == null)
                 BossSpawnRunnerType = PatchConstants.EftTypes.Single(x => x.IsClass
@@ -68,22 +72,53 @@ namespace SIT.Tarkov.Core.AI
                     && x.GetMethod("Run", BindingFlags.Public | BindingFlags.Instance) != null
                     );
 
-            Logger.LogInfo($"{BossSpawnRunnerType.Name}");
+            Logger.LogInfo($"BossSpawnRunnerType:{BossSpawnRunnerType.Name}");
+
+            if(ProfileCreatorType == null)
+                ProfileCreatorType = PatchConstants.EftTypes.Last(x => x.IsClass
+                    && PatchConstants.GetPropertyFromType(x, "BundlesLoading") != null
+                    && x.GetMethod("GetNewProfile", BindingFlags.NonPublic | BindingFlags.Instance) != null
+                    );
+
+            Logger.LogInfo($"ProfileCreatorType:{ProfileCreatorType.Name}");
+
+            if (BotCreatorType == null)
+                BotCreatorType = PatchConstants.EftTypes.Single(x => x.IsClass
+                    && PatchConstants.GetPropertyFromType(x, "StartProfilesLoaded") != null
+                    && x.GetMethods(BindingFlags.Public | BindingFlags.Instance).Any(m => m.Name == "ActivateBot")
+                    && x.GetMethod("method_0", BindingFlags.NonPublic | BindingFlags.Instance) != null
+                    && x.GetMethod("method_1", BindingFlags.NonPublic | BindingFlags.Instance) != null
+                    && x.GetMethod("method_2", BindingFlags.NonPublic | BindingFlags.Instance) != null
+                    );
+
+            Logger.LogInfo($"BotCreatorType:{BotCreatorType.Name}");
+
+            if(RoleLimitDifficultyType == null)
+                RoleLimitDifficultyType = PatchConstants.EftTypes.First(x => x.IsClass
+                    && PatchConstants.GetFieldFromType(x, "Role") != null
+                    && PatchConstants.GetFieldFromType(x, "Limit") != null
+                    && PatchConstants.GetFieldFromType(x, "Difficulty") != null
+                    );
 
             if (SetSettingsMethod == null)
                 SetSettingsMethod = PatchConstants.GetMethodForType(BotControllerType, "SetSettings");
 
-            Logger.LogInfo($"{SetSettingsMethod.Name}");
+            Logger.LogInfo($"SetSettingsMethod:{SetSettingsMethod.Name}");
 
             if (StopMethod == null)
                 StopMethod = PatchConstants.GetMethodForType(BotControllerType, "Stop");
 
-            Logger.LogInfo($"{StopMethod.Name}");
+            Logger.LogInfo($"StopMethod:{StopMethod.Name}");
+
+            if (InitMethod == null)
+                InitMethod = PatchConstants.GetMethodForType(BotControllerType, "Init");
+
+            Logger.LogInfo($"InitMethod:{InitMethod.Name}");
 
             if (AddActivePlayerMethod == null)
                 AddActivePlayerMethod = PatchConstants.GetMethodForType(BotControllerType, "AddActivePLayer");
 
-            Logger.LogInfo($"{AddActivePlayerMethod.Name}");
+            Logger.LogInfo($"AddActivePlayerMethod:{AddActivePlayerMethod.Name}");
         }
 
         public static void AddActivePlayer(EFT.Player player)
@@ -94,7 +129,21 @@ namespace SIT.Tarkov.Core.AI
                 return;
             }
 
+            Logger.LogInfo($"AddActivePlayer:{player.Profile.AccountId}");
+
             AddActivePlayerMethod?.Invoke(BotControllerInstance, new object[] { player });
+        }
+
+        public static void SetSettings(int maxCount, Array botPresets, Array botScattering)
+        {
+            if (BotControllerInstance == null)
+            {
+                PatchConstants.Logger.LogInfo("Can't SetSettings when BotSystemInstance is NULL");
+                return;
+            }
+
+            SetSettingsMethod?.Invoke(BotControllerInstance
+                , new object[] { 0, botPresets, botScattering });
         }
 
         public static void SetSettingsNoBots()
@@ -110,6 +159,47 @@ namespace SIT.Tarkov.Core.AI
 
             SetSettingsMethod?.Invoke(BotControllerInstance
                 , new object[] { 0, botPresets, botScattering });
+        }
+
+        public static void Init(
+            object botGame
+            , object botCreator
+            , BotZone[] botZones
+            , object spawnSystem
+            , BotLocationModifier botLocationModifier
+            , bool botEnable
+            , bool freeForAll
+            , bool enableWaveControl
+            , bool online
+            , bool haveSectants
+            , object players
+            , string openZones)
+        {
+            if (BotControllerInstance == null)
+            {
+                PatchConstants.Logger.LogInfo("Can't Init when BotControllerInstance is NULL");
+                return;
+            }
+
+
+
+            InitMethod?.Invoke(BotControllerInstance
+                , new object[] {
+
+                    botGame
+                    , botCreator
+                    , botZones
+                    , spawnSystem
+                    , botLocationModifier
+                    , botEnable
+                    , freeForAll
+                    , enableWaveControl
+                    , online
+                    , haveSectants
+                    , players
+                    , openZones
+
+                });
         }
 
         public static void Stop()

@@ -165,7 +165,7 @@ namespace SIT.Tarkov.Core
 
         public static MethodInfo GetMethodForType(Type t, string methodName, bool debug = false)
         {
-            return GetAllMethodsForType(t, debug).Last(x => x.Name.ToLower() == methodName.ToLower()); 
+            return GetAllMethodsForType(t, debug).LastOrDefault(x => x.Name.ToLower() == methodName.ToLower()); 
         }
 
         public static async Task<MethodInfo> GetMethodForTypeAsync(Type t, string methodName, bool debug = false)
@@ -190,6 +190,23 @@ namespace SIT.Tarkov.Core
                 yield return m;
             }
 
+            if(t.BaseType != null)
+            {
+                foreach (var m in t.BaseType.GetMethods(
+                BindingFlags.NonPublic
+                | BindingFlags.Public
+                | BindingFlags.Static
+                | BindingFlags.Instance
+                | BindingFlags.FlattenHierarchy
+                ))
+                {
+                    if (debug)
+                        Logger.LogInfo(m.Name);
+
+                    yield return m;
+                }
+            }
+
         }
 
         public static IEnumerable<MethodInfo> GetAllMethodsForObject(object ob)
@@ -199,64 +216,56 @@ namespace SIT.Tarkov.Core
 
         public static IEnumerable<PropertyInfo> GetAllPropertiesForObject(object o)
         {
-            var properties = o.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy);
-            foreach (PropertyInfo property in properties)
+            var t = o.GetType();
+            var props = t.GetProperties(BindingFlags.Instance | BindingFlags.Public).ToList();
+            props.AddRange(t.GetProperties(BindingFlags.Instance | BindingFlags.NonPublic));
+            props.AddRange(t.GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy));
+            props.AddRange(t.GetProperties(BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy));
+            props.AddRange(t.GetProperties(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy));
+            if (t.BaseType != null)
             {
-                yield return property;
+                t = t.BaseType;
+                props.AddRange(t.GetProperties(BindingFlags.Instance | BindingFlags.Public));
+                props.AddRange(t.GetProperties(BindingFlags.Instance | BindingFlags.NonPublic));
+                props.AddRange(t.GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy));
+                props.AddRange(t.GetProperties(BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy));
+                props.AddRange(t.GetProperties(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy));
             }
-            properties = o.GetType().GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
-            foreach (PropertyInfo property in properties)
-            {
-                yield return property;
-            }
-            properties = o.GetType().GetProperties(BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy);
-            foreach (PropertyInfo property in properties)
-            {
-                yield return property;
-            }
-            properties = o.GetType().GetProperties(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
-            foreach (PropertyInfo property in properties)
-            {
-                yield return property;
-            }
+            return props.Distinct(x => x.Name).AsEnumerable();
         }
 
         public static IEnumerable<FieldInfo> GetAllFieldsForObject(object o)
         {
-            var fields = o.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy);
-            foreach (FieldInfo field in fields)
+            var t = o.GetType();
+            var fields = t.GetFields(BindingFlags.Instance | BindingFlags.Public).ToList();
+            fields.AddRange(t.GetFields(BindingFlags.Instance | BindingFlags.NonPublic));
+            fields.AddRange(t.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy));
+            fields.AddRange(t.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy));
+            fields.AddRange(t.GetFields(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy));
+            if (t.BaseType != null)
             {
-                yield return field;
+                t = t.BaseType;
+                fields.AddRange(t.GetFields(BindingFlags.Instance | BindingFlags.Public));
+                fields.AddRange(t.GetFields(BindingFlags.Instance | BindingFlags.NonPublic));
+                fields.AddRange(t.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy));
+                fields.AddRange(t.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy));
+                fields.AddRange(t.GetFields(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy));
             }
-            fields = o.GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
-            foreach (FieldInfo field in fields)
-            {
-                yield return field;
-            }
-            fields = o.GetType().GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy);
-            foreach (FieldInfo field in fields)
-            {
-                yield return field;
-
-            }
-            fields = o.GetType().GetFields(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
-            foreach (FieldInfo field in fields)
-            {
-                yield return field;
-
-            }
+            return fields.Distinct(x => x.Name).AsEnumerable();
         }
 
         public static T GetFieldOrPropertyFromInstance<T>(object o, string name, bool safeConvert = true)
         {
-            foreach (PropertyInfo property in GetAllPropertiesForObject(o).Where(x=>x.Name.ToLower() == name.ToLower()))
+            PropertyInfo property = GetAllPropertiesForObject(o).FirstOrDefault(x => x.Name.ToLower() == name.ToLower());
+            if(property != null)
             {
                 if (safeConvert)
                     return Tarkov.Core.PatchConstants.DoSafeConversion<T>(property.GetValue(o));
                 else 
                     return (T)property.GetValue(o);
             }
-            foreach (FieldInfo field in GetAllFieldsForObject(o).Where(x => x.Name.ToLower() == name.ToLower()))
+            FieldInfo field = GetAllFieldsForObject(o).FirstOrDefault(x => x.Name.ToLower() == name.ToLower());
+            if(field != null)
             {
                 if (safeConvert)
                     return Tarkov.Core.PatchConstants.DoSafeConversion<T>(field.GetValue(o));

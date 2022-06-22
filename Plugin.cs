@@ -71,6 +71,10 @@ namespace SIT.A.Tarkov.Core
             new AirdropBoxPatch().Enable();
             new AirdropPatch(Config).Enable();
 
+            new IsEnemyPatch().Enable();
+            new IsPlayerEnemyPatch().Enable();
+            new IsPlayerEnemyByRolePatch().Enable();
+
             // Plugin startup logic
             Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
 
@@ -106,7 +110,7 @@ namespace SIT.A.Tarkov.Core
 
                 new LoadBotTemplatesPatch().Enable();
                 new RemoveUsedBotProfile().Enable();
-                new CreateFriendlyAIPatch().Enable();
+                //new CreateFriendlyAIPatch().Enable();
 
             }
 

@@ -122,7 +122,9 @@ namespace SIT.Tarkov.Core.Raid.Aki
     public class AirdropComponent : MonoBehaviour
     {
         private SynchronizableObject plane;
+        private SynchronizableObject[] planes;
         private SynchronizableObject box;
+        private SynchronizableObject[] boxes;
         private bool planeEnabled;
         private bool boxEnabled;
         private int amountDropped;
@@ -143,6 +145,7 @@ namespace SIT.Tarkov.Core.Raid.Aki
         private bool isRunning;
         private GameWorld gameWorld;
         private AirdropConfig config;
+        private int airdropIndex = -1;
 
         public void Start()
         {
@@ -156,16 +159,34 @@ namespace SIT.Tarkov.Core.Raid.Aki
             boxObjId = 10;
             planePositivePosition = 3000f;
             planeNegativePosition = -3000f;
+
+            planes = LocationScene.GetAll<SynchronizableObject>().Where(x => x.GetComponent<AirplaneSynchronizableObject>()).ToArray();
+            PatchConstants.Logger.LogInfo($"AirdropComponent:Start:Number of Planes:{planes.Length}");
+            boxes = LocationScene.GetAll<SynchronizableObject>().Where(x => x.GetComponent<AirdropSynchronizableObject>()).ToArray();
+            PatchConstants.Logger.LogInfo($"AirdropComponent:Start:Number of Boxes:{boxes.Length}");
+            airdropPoints = LocationScene.GetAll<AirdropPoint>().OrderBy(_ => Guid.NewGuid()).ToList();
+            PatchConstants.Logger.LogInfo($"AirdropComponent:Start:Number of Points:{airdropPoints.Count}");
+
             config = GetConfigFromServer();
             dropChance = ChanceToSpawn();
             dropHeight = UnityEngine.Random.Range(config.planeMinFlyHeight, config.planeMaxFlyHeight);
             timeToDrop = UnityEngine.Random.Range(config.airdropMinStartTimeSeconds, config.airdropMaxStartTimeSeconds);
-            planeObjId = UnityEngine.Random.Range(1, 4);
-            plane = LocationScene.GetAll<SynchronizableObject>().First(x => x.GetComponent<AirplaneSynchronizableObject>());
-            box = LocationScene.GetAll<SynchronizableObject>().First(x => x.GetComponent<AirdropSynchronizableObject>());
-            airdropPoints = LocationScene.GetAll<AirdropPoint>().ToList();
-            randomAirdropPoint = airdropPoints.OrderBy(_ => Guid.NewGuid()).FirstOrDefault();
+            
+            GetNextAirdropSetup();
+        }
 
+        private bool GetNextAirdropSetup()
+        {
+            airdropIndex++;
+            if (airdropIndex < planes.Length && airdropIndex < boxes.Length && airdropIndex < airdropPoints.Count)
+            {
+                plane = planes[airdropIndex];
+                box = boxes[airdropIndex];
+                randomAirdropPoint = airdropPoints[airdropIndex];
+                planeObjId = airdropIndex + 1;
+            }
+
+            return false;
         }
 
         public void FixedUpdate() // https://docs.unity3d.com/ScriptReference/MonoBehaviour.FixedUpdate.html
@@ -283,7 +304,7 @@ namespace SIT.Tarkov.Core.Raid.Aki
             var json = new Request(PatchConstants.GetPHPSESSID(), PatchConstants.GetBackendUrl()).GetJson(url);
 
             var c = JsonConvert.DeserializeObject<AirdropConfig>(json);
-            AirdropPatch.MaxDropCount = c.maximumAirdopsPerRaid;
+            AirdropPatch.MaxDropCount =  c.maximumAirdopsPerRaid;
             PatchConstants.Logger.LogInfo($"AirdropComponent:MaxDropCount:{AirdropPatch.MaxDropCount}");
 
             return c;
@@ -291,7 +312,8 @@ namespace SIT.Tarkov.Core.Raid.Aki
 
         public bool ShouldAirdropOccur()
         {
-            return UnityEngine.Random.Range(1, 99) <= dropChance && amountDropped <= AirdropPatch.MaxDropCount;
+            return UnityEngine.Random.Range(1, 99) <= dropChance 
+                && amountDropped <= AirdropPatch.MaxDropCount;
         }
 
         public void DoNotRun() // currently not doing anything, could be used later for multiple drops
@@ -396,6 +418,7 @@ namespace SIT.Tarkov.Core.Raid.Aki
             plane.ReturnToPool();
             timeToDrop = timer + UnityEngine.Random.Range(config.airdropMinStartTimeSeconds, config.airdropMaxStartTimeSeconds);
             boxEnabled = false;
+            GetNextAirdropSetup();
         }
     }
 

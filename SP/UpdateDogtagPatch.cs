@@ -41,19 +41,19 @@ namespace SIT.Tarkov.Core.SP
             }
 
             //var equipment = getEquipmentProperty(__instance);
-            var equipment = PatchConstants.GetAllPropertiesForObject(__instance).Single(x => x.Name == "Equipment").GetValue(__instance);
-            var dogtagSlot = PatchConstants.GetAllMethodsForType(equipment.GetType()).Single(x => x.Name == "GetSlot").Invoke(equipment, new object[] { EquipmentSlot.Dogtag });
+            var equipment = PatchConstants.GetAllPropertiesForObject(__instance).FirstOrDefault(x => x.Name == "Equipment").GetValue(__instance);
+            var dogtagSlot = PatchConstants.GetAllMethodsForType(equipment.GetType()).FirstOrDefault(x => x.Name == "GetSlot").Invoke(equipment, new object[] { EquipmentSlot.Dogtag });
             var dogtagItem = PatchConstants.GetFieldOrPropertyFromInstance<object>(dogtagSlot, "ContainedItem", false) as Item;
             //var dogtagSlot = equipment.GetSlot(EquipmentSlot.Dogtag);
             //var dogtagItem = dogtagSlot.ContainedItem as Item;
 
             if (dogtagItem == null)
             {
-                Debug.LogError("[DogtagPatch] error > DogTag slot item is null somehow.");
+                Logger.LogError("[DogtagPatch] error > DogTag slot item is null somehow.");
                 return;
             }
 
-            MethodInfo method = PatchConstants.GetAllMethodsForType(dogtagItem.GetType()).Single(x => x.Name == "GetItemComponent");
+            MethodInfo method = PatchConstants.GetAllMethodsForType(dogtagItem.GetType()).FirstOrDefault(x => x.Name == "GetItemComponent");
             MethodInfo generic = method.MakeGenericMethod(typeof(DogtagComponent));
             var itemComponent = generic.Invoke(dogtagItem, null);
 

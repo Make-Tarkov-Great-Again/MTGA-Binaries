@@ -192,7 +192,7 @@ namespace SIT.Tarkov.Core.SP
 
             private Profile GetProfile(Task task)
             {
-                Logger.LogInfo("LoadBotTemplatesPatch+Continuation.GetProfile");
+                //Logger.LogInfo("LoadBotTemplatesPatch+Continuation.GetProfile");
                 return Profile;
             }
         }
