@@ -44,6 +44,9 @@ namespace SIT.Tarkov.Core
 
         public static Type JobPriorityType { get; set; }
 
+        public static Type PlayerInfoType { get; set; }
+        public static Type PlayerCustomizationType { get; set; }
+
 
         /// <summary>
         /// A Key/Value dictionary of storing & obtaining an array of types by name
@@ -450,6 +453,24 @@ namespace SIT.Tarkov.Core
                     );
                 Logger.LogInfo($"Loading JobPriorityType:{JobPriorityType.FullName}");
             }
+
+            if(PlayerInfoType == null)
+            {
+                PlayerInfoType = PatchConstants.EftTypes.Single(x =>
+                    PatchConstants.GetAllMethodsForType(x).Any(x => x.Name == "AddBan")
+                    && PatchConstants.GetAllMethodsForType(x).Any(x => x.Name == "RemoveBan")
+                    );
+                Logger.LogInfo($"Loading PlayerInfoType:{PlayerInfoType.FullName}");
+            }
+
+            if (PlayerCustomizationType == null)
+            {
+                var profileType = typeof(EFT.Profile);
+                PlayerCustomizationType = PatchConstants.GetFieldFromType(typeof(EFT.Profile), "Customization").FieldType;
+                Logger.LogInfo($"Loading PlayerCustomizationType:{PlayerCustomizationType.FullName}");
+            }
+
+            
         }
     }
 }

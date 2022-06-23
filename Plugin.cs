@@ -5,12 +5,14 @@ using SIT.A.Tarkov.Core.SP.Raid;
 using SIT.Tarkov.Core;
 using SIT.Tarkov.Core.AI;
 using SIT.Tarkov.Core.Bundles;
+using SIT.Tarkov.Core.Menus;
 using SIT.Tarkov.Core.PlayerPatches;
 using SIT.Tarkov.Core.PlayerPatches.Health;
 using SIT.Tarkov.Core.Raid.Aki;
 using SIT.Tarkov.Core.SP;
 using SIT.Tarkov.Core.SP.Raid;
 using SIT.Tarkov.Core.SP.ScavMode;
+using SIT.Tarkov.SP;
 using SIT.Tarkov.SP.Raid;
 using System;
 using System.Linq;
@@ -71,9 +73,46 @@ namespace SIT.A.Tarkov.Core
             new AirdropBoxPatch().Enable();
             new AirdropPatch(Config).Enable();
 
+            // --------- AI -----------------------
             new IsEnemyPatch().Enable();
             new IsPlayerEnemyPatch().Enable();
             new IsPlayerEnemyByRolePatch().Enable();
+
+            // -------------------------------------
+            // Matchmaker
+            new AutoSetOfflineMatch().Enable();
+            new BringBackInsuranceScreen().Enable();
+            new DisableReadyButtonOnFirstScreen().Enable();
+            new DisableReadyButtonOnSelectLocation().Enable();
+
+            // -------------------------------------
+            // Progression
+            new OfflineSaveProfile().Enable();
+            new ExperienceGainFix().Enable();
+
+            // -------------------------------------
+            // Quests
+            new ItemDroppedAtPlace_Beacon().Enable();
+
+            // -------------------------------------
+            // Raid
+            new LoadBotDifficultyFromServer().Enable();
+
+            // --------------------------------------
+            // Health stuff
+            new ReplaceInPlayer().Enable();
+
+            new ChangeHealthPatch().Enable();
+            new ChangeEnergyPatch().Enable();
+            new ChangeHydrationPatch().Enable();
+
+
+
+
+
+
+
+
 
             // Plugin startup logic
             Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
