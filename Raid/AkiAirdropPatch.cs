@@ -178,12 +178,13 @@ namespace SIT.Tarkov.Core.Raid.Aki
         private bool GetNextAirdropSetup()
         {
             airdropIndex++;
-            if (airdropIndex < planes.Length && airdropIndex < boxes.Length && airdropIndex < airdropPoints.Count)
+            if (
+                airdropIndex < planes.Length && airdropIndex < boxes.Length && airdropIndex < airdropPoints.Count)
             {
                 plane = planes[airdropIndex];
                 box = boxes[airdropIndex];
                 randomAirdropPoint = airdropPoints[airdropIndex];
-                planeObjId = airdropIndex + 1;
+                planeObjId = airdropIndex + 1 > 4 ? 0 : airdropIndex + 1;
             }
 
             return false;
@@ -354,13 +355,13 @@ namespace SIT.Tarkov.Core.Raid.Aki
             plane.ManualUpdate(0);
 
             var sound = plane.GetComponentInChildren<AudioSource>();
-            sound.volume = config.planeVolume;
-            sound.spatialBlend = 0.9f;
+            sound.volume = (float)Math.Min(1.0, Math.Max(0.75, config.planeVolume));
+            sound.spatialBlend = 0.9875f;
             sound.spatialize = true;
             sound.dopplerLevel = 0.7f;
-            sound.pitch = 0.2f;
-            sound.minDistance = 20f;
-            sound.maxDistance = 60f;
+            sound.pitch = 0.6f;
+            sound.minDistance = 45.0f;
+            sound.maxDistance = 1000f;
             sound.Play();
         }
 
