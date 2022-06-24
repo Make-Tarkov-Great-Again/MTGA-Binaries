@@ -360,8 +360,8 @@ namespace SIT.Tarkov.Core.Raid.Aki
             sound.spatialize = true;
             sound.dopplerLevel = 0.7f;
             sound.pitch = 0.6f;
-            sound.minDistance = 45.0f;
-            sound.maxDistance = 1000f;
+            sound.minDistance = 50.0f;
+            sound.maxDistance = 900.0f;
             sound.Play();
         }
 
