@@ -48,11 +48,25 @@ namespace SIT.Tarkov.Core
             return wsMethod;
         }
 
-        [PatchPostfix]
-        private static Uri PatchPostfix(Uri __instance)
+        [PatchPrefix]
+        private static bool PatchPrefix(ref Uri __result)
         {
-            return new Uri(__instance.ToString().Replace("wss:", "ws:"));
+            if (__result != null)
+            {
+                Logger.LogInfo("WebSocketPatch:PatchPrefix:" + __result.ToString());
+            }
+            //return new Uri(__instance.ToString().Replace("wss:", "ws:"));
+            __result = new Uri(PatchConstants.GetBackendUrl().Replace("https", "ws"));
+            return false;
         }
+
+        //[PatchPostfix]
+        //private static void PatchPostfix(ref Uri __result)
+        //{
+        //    Logger.LogInfo("WebSocketPatch:PatchPostfix:" + __result.ToString());
+        //    //return new Uri(__instance.ToString().Replace("wss:", "ws:"));
+        //    __result = new Uri(PatchConstants.GetBackendUrl().Replace("https", "ws"));
+        //}
     }
 
 }
