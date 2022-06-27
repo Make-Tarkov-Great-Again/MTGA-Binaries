@@ -17,6 +17,7 @@ namespace SIT.Tarkov.Core.AI
         public static Type ProfileCreatorType { get; set; }
         public static Type BotCreatorType { get; set; }
         public static Type RoleLimitDifficultyType { get; set; }
+        public static Type LocationBaseType { get; set; }
 
         public static Object BotControllerInstance { get; set; }
         public static MethodInfo SetSettingsMethod { get; set; }
@@ -99,6 +100,17 @@ namespace SIT.Tarkov.Core.AI
                     && PatchConstants.GetFieldFromType(x, "Limit") != null
                     && PatchConstants.GetFieldFromType(x, "Difficulty") != null
                     );
+
+            if (LocationBaseType == null)
+                LocationBaseType = PatchConstants.EftTypes.First(x => x.IsClass
+                    && PatchConstants.GetFieldFromType(x, "OpenZones") != null
+                    && PatchConstants.GetFieldFromType(x, "DisabledForScav") != null
+                    && PatchConstants.GetFieldFromType(x, "DisabledScavExits") != null
+                    );
+
+            Logger.LogInfo($"LocationBaseType:{LocationBaseType.Name}");
+
+
 
             if (SetSettingsMethod == null)
                 SetSettingsMethod = PatchConstants.GetMethodForType(BotControllerType, "SetSettings");

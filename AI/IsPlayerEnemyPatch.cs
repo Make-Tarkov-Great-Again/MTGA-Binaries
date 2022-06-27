@@ -28,7 +28,7 @@ namespace SIT.Tarkov.Core.AI
         {
             var otherPlayerHealthController = HealthControllerHelpers.GetActiveHealthController(player);
             var otherPlayerIsAlive = HealthControllerHelpers.IsAlive(otherPlayerHealthController);
-            __result = true;
+            __result = otherPlayerIsAlive;
         }
     }
 }

@@ -30,11 +30,21 @@ namespace SIT.Tarkov.Core.AI
             , WildSpawnType ___wildSpawnType_1
             )
         {
-            __result = ___wildSpawnType_0 != role 
-                || ___wildSpawnType_1 != role 
-                || role == WildSpawnType.pmcBot 
-                || ___wildSpawnType_0 == WildSpawnType.pmcBot
-                || ___wildSpawnType_1 == WildSpawnType.pmcBot;
+            //__result = ___wildSpawnType_0 != role 
+            //    || ___wildSpawnType_1 != role 
+            //    || role == WildSpawnType.pmcBot 
+            //    || ___wildSpawnType_0 == WildSpawnType.pmcBot
+            //    || ___wildSpawnType_1 == WildSpawnType.pmcBot;
+
+            //__result = IsEnemyRole(role, ___wildSpawnType_0) || IsEnemyRole(role, ___wildSpawnType_1);
+            __result = IsEnemyRole(role, ___wildSpawnType_0);// || IsEnemyRole(role, ___wildSpawnType_1);
+        }
+
+        public static bool IsEnemyRole(WildSpawnType myRole, WildSpawnType enemyRole)
+        {
+            return myRole == WildSpawnType.pmcBot
+                || enemyRole == WildSpawnType.pmcBot
+                || (enemyRole != myRole && (enemyRole != WildSpawnType.marksman && myRole != WildSpawnType.assault));
         }
     }
 }
