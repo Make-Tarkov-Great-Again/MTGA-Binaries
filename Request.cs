@@ -99,9 +99,14 @@ namespace SIT.Tarkov.Core
         public byte[] GetData(string url, bool hasHost = false)
         {
             var ms = new MemoryStream();
-            Send(url, "GET").CopyTo(ms);
+            var dataStream = Send(url, "GET");
+            if (dataStream != null)
+            {
+                dataStream.CopyTo(ms);
 
-            return ms.ToArray();
+                return ms.ToArray();
+            }
+            return null;
         }
 
         public void PutJson(string url, string data, bool compress = true)

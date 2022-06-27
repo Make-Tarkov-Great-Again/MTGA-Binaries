@@ -28,7 +28,7 @@ namespace SIT.Tarkov.Core.Menus
             UpdatableToggle ____scavWars, UpdatableToggle ____taggedAndCursed)
         {
 
-            Logger.LogInfo("AutoSetOfflineMatch.PatchPostfix");
+            //Logger.LogInfo("AutoSetOfflineMatch.PatchPostfix");
 
             var warningPanel = GameObject.Find("Warning Panel");
             UnityEngine.Object.Destroy(warningPanel);
@@ -79,9 +79,9 @@ namespace SIT.Tarkov.Core.Menus
             {
                 //if (raidSettings == null)
                 //{
-                Logger.LogInfo("AutoSetOfflineMatch.Request");
+                //Logger.LogInfo("AutoSetOfflineMatch.Request");
 
-                var json = new Request(null, SIT.Tarkov.Core.PatchConstants.GetBackendUrl()).GetJson("/singleplayer/settings/raid/menu");
+                var json = new Request().GetJson("/singleplayer/settings/raid/menu");
 
                 if (string.IsNullOrWhiteSpace(json))
                 {
@@ -92,7 +92,7 @@ namespace SIT.Tarkov.Core.Menus
                 try
                 {
                     raidSettings = JsonConvert.DeserializeObject<DefaultRaidSettings>(json);
-                    Logger.LogInfo("Obtained DefaultRaidSettings from Server");
+                    //Logger.LogInfo("Obtained DefaultRaidSettings from Server");
                 }
                 catch (Exception exception)
                 {

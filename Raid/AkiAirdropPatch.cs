@@ -302,7 +302,7 @@ namespace SIT.Tarkov.Core.Raid.Aki
         private AirdropConfig GetConfigFromServer()
         {
             var url = "/singleplayer/airdrop/config";
-            var json = new Request(PatchConstants.GetPHPSESSID(), PatchConstants.GetBackendUrl()).GetJson(url);
+            var json = new Request().GetJson(url);
 
             var c = JsonConvert.DeserializeObject<AirdropConfig>(json);
             AirdropPatch.MaxDropCount =  c.maximumAirdopsPerRaid;

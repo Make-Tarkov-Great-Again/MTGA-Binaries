@@ -27,7 +27,7 @@ namespace SIT.Tarkov.Core
 
         public static void GetBundles()
         {
-            var json = new Request().GetJson("/singleplayer/bundles");
+            var json = new Request().GetJson("/getBundleList");
             var jArray = JArray.Parse(json);
 
             foreach (var jObj in jArray)
@@ -43,15 +43,22 @@ namespace SIT.Tarkov.Core
                 if (path.Contains("http"))
                 {
                     var filepath = CachePath + Regex.Split(path, "bundle/", RegexOptions.IgnoreCase)[1];
-                    var data = new Request().GetData(path, true);
-                    if (data.Length == 0)
+                    try
                     {
-                        PatchConstants.Logger.LogInfo("Bundle received is 0 bytes. WTF!");
-                        continue;
+                        var data = new Request().GetData(path, true);
+                        if (data != null && data.Length == 0)
+                        {
+                            PatchConstants.Logger.LogInfo("Bundle received is 0 bytes. WTF!");
+                            continue;
+                        }
+                        VFS.WriteFile(filepath, data);
+                        //PatchConstants.Logger.LogInfo($"Adding Custom Bundle : {filepath}");
+                        bundle.Path = filepath;
                     }
-                    VFS.WriteFile(filepath, data);
-                    //PatchConstants.Logger.LogInfo($"Adding Custom Bundle : {filepath}");
-                    bundle.Path = filepath;
+                    catch
+                    {
+
+                    }
                 }
 
                 //PatchConstants.Logger.LogInfo($"Adding Custom Bundle : {key} : {path} : dp={dependencyKeys.Length}");
