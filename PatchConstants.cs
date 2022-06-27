@@ -47,6 +47,10 @@ namespace SIT.Tarkov.Core
         public static Type PlayerInfoType { get; set; }
         public static Type PlayerCustomizationType { get; set; }
 
+        public static Type SpawnPointSystemInterfaceType { get; set; }
+        public static Type SpawnPointArrayInterfaceType { get; set; }
+        public static Type SpawnPointSystemClassType { get; set; }
+
 
         /// <summary>
         /// A Key/Value dictionary of storing & obtaining an array of types by name
@@ -284,56 +288,68 @@ namespace SIT.Tarkov.Core
             return await Task.Run(() => GetFieldOrPropertyFromInstance<T>(o, name, safeConvert));
         }
 
+        private static Dictionary<object, Dictionary<string, FieldInfo>> StoredFields { get; } = new Dictionary<object, Dictionary<string, FieldInfo>>();
+        private static Dictionary<object, Dictionary<string, FieldInfo>> StoredProperties { get; } = new Dictionary<object, Dictionary<string, FieldInfo>>();
+
         public static void SetFieldOrPropertyFromInstance<T>(object o, string name, T v)
         {
-            var properties = o.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public);
-            foreach (PropertyInfo property in properties)
+            var field = GetAllFieldsForObject(o).FirstOrDefault(x=>x.Name.ToLower() == (name.ToLower()));
+            if (field != null)
             {
-                if (property.Name.ToLower().Contains(name.ToLower()))
-                {
-                    property.SetValue(o, v);
-                }
+                //StoredFields.Add(o, )
+                field.SetValue(o, v);
             }
-            properties = o.GetType().GetProperties(BindingFlags.Instance | BindingFlags.NonPublic);
-            foreach (PropertyInfo property in properties)
-            {
-                if (property.Name.ToLower().Contains(name.ToLower()))
-                {
-                    property.SetValue(o, v);
-                }
-            }
-            properties = o.GetType().GetProperties(BindingFlags.Static | BindingFlags.Public);
-            foreach (PropertyInfo property in properties)
-            {
-                if (property.Name.ToLower().Contains(name.ToLower()))
-                {
-                    property.SetValue(o, v);
-                }
-            }
-            var fields = o.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public);
-            foreach (FieldInfo field in fields)
-            {
-                if (field.Name.ToLower().Contains(name.ToLower()))
-                {
-                    field.SetValue(o, v);
-                }
-            }
-            fields = o.GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic);
-            foreach (FieldInfo field in fields)
-            {
-                if (field.Name.ToLower().Contains(name.ToLower()))
-                {
-                    field.SetValue(o, v);
-                }
-            }
-            fields = o.GetType().GetFields(BindingFlags.Static | BindingFlags.Public);
-            foreach (FieldInfo field in fields)
-            {
-                if (field.Name.ToLower().Contains(name.ToLower()))
-                {
-                    field.SetValue(o, v);
-                }
-            }
+            var property = GetAllPropertiesForObject(o).FirstOrDefault(x => x.Name.ToLower() == (name.ToLower()));
+            if (property != null)
+                property.SetValue(o, v);
+            //var properties = o.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public);
+            //foreach (PropertyInfo property in properties)
+            //{
+            //    if (property.Name.ToLower().Contains(name.ToLower()))
+            //    {
+            //        property.SetValue(o, v);
+            //    }
+            //}
+            //properties = o.GetType().GetProperties(BindingFlags.Instance | BindingFlags.NonPublic);
+            //foreach (PropertyInfo property in properties)
+            //{
+            //    if (property.Name.ToLower().Contains(name.ToLower()))
+            //    {
+            //        property.SetValue(o, v);
+            //    }
+            //}
+            //properties = o.GetType().GetProperties(BindingFlags.Static | BindingFlags.Public);
+            //foreach (PropertyInfo property in properties)
+            //{
+            //    if (property.Name.ToLower().Contains(name.ToLower()))
+            //    {
+            //        property.SetValue(o, v);
+            //    }
+            //}
+            //var fields = o.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public);
+            //foreach (FieldInfo field in fields)
+            //{
+            //    if (field.Name.ToLower().Contains(name.ToLower()))
+            //    {
+            //        field.SetValue(o, v);
+            //    }
+            //}
+            //fields = o.GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic);
+            //foreach (FieldInfo field in fields)
+            //{
+            //    if (field.Name.ToLower().Contains(name.ToLower()))
+            //    {
+            //        field.SetValue(o, v);
+            //    }
+            //}
+            //fields = o.GetType().GetFields(BindingFlags.Static | BindingFlags.Public);
+            //foreach (FieldInfo field in fields)
+            //{
+            //    if (field.Name.ToLower().Contains(name.ToLower()))
+            //    {
+            //        field.SetValue(o, v);
+            //    }
+            //}
         }
 
         public static void ConvertDictionaryToObject(object o, Dictionary<string, object> dict)
@@ -470,7 +486,26 @@ namespace SIT.Tarkov.Core
                 Logger.LogInfo($"Loading PlayerCustomizationType:{PlayerCustomizationType.FullName}");
             }
 
-            
+
+            //SpawnPointSystemInterfaceType = PatchConstants.EftTypes.Single(x =>
+            //            x.GetMethods(PatchConstants.PrivateFlags).Any(x => x.Name.IndexOf("CheckFarthestFromOtherPlayers", StringComparison.OrdinalIgnoreCase) != -1)
+            //            && x.IsInterface
+            //        );
+            //Logger.LogInfo($"Loading SpawnPointSystemInterfaceType:{SpawnPointSystemInterfaceType.FullName}");
+
+            //SpawnPointSystemClassType = PatchConstants.EftTypes.Single(x =>
+            //            x.GetMethods(PatchConstants.PrivateFlags).Any(x => x.Name.IndexOf("CheckFarthestFromOtherPlayers", StringComparison.OrdinalIgnoreCase) != -1)
+            //            && x.IsClass
+            //        );
+            //Logger.LogInfo($"Loading SpawnPointSystemClassType:{SpawnPointSystemClassType.FullName}");
+
+
+            SpawnPointArrayInterfaceType = PatchConstants.EftTypes.Single(x =>
+                        PatchConstants.GetAllMethodsForType(x).Any(x => x.Name == "CreateSpawnPoint")
+                        && PatchConstants.GetAllMethodsForType(x).Any(x => x.Name == "DestroySpawnPoint")
+                        && x.IsInterface
+                    );
+            Logger.LogInfo($"Loading SpawnPointArrayInterfaceType:{SpawnPointArrayInterfaceType.FullName}");
         }
     }
 }

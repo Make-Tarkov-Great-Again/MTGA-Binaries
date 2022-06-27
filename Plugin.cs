@@ -8,6 +8,7 @@ using SIT.Tarkov.Core.Bundles;
 using SIT.Tarkov.Core.Menus;
 using SIT.Tarkov.Core.PlayerPatches;
 using SIT.Tarkov.Core.PlayerPatches.Health;
+using SIT.Tarkov.Core.Raid;
 using SIT.Tarkov.Core.Raid.Aki;
 using SIT.Tarkov.Core.SP;
 using SIT.Tarkov.Core.SP.Raid;
@@ -97,6 +98,7 @@ namespace SIT.A.Tarkov.Core
             // -------------------------------------
             // Raid
             new LoadBotDifficultyFromServer().Enable();
+            new SpawnPointPatch().Enable();
 
             // --------------------------------------
             // Health stuff
