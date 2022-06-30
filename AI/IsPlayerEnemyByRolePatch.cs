@@ -22,6 +22,12 @@ namespace SIT.Tarkov.Core.AI
                 PatchConstants.GetMethodForType(x, "IsPlayerEnemyByRole") != null), "IsPlayerEnemyByRole");
         }
 
+        [PatchPrefix]
+        public static bool PatchPrefix()
+        {
+            return false;
+        }
+
 
         [PatchPostfix]
         public static void PatchPostfix(ref bool __result

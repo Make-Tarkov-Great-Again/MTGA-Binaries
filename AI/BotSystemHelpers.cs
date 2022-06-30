@@ -19,6 +19,8 @@ namespace SIT.Tarkov.Core.AI
         public static Type RoleLimitDifficultyType { get; set; }
         public static Type LocationBaseType { get; set; }
 
+        public static Dictionary<string, Type> TypeDictionary { get; } = new Dictionary<string, Type>();
+
         public static Object BotControllerInstance { get; set; }
         public static MethodInfo SetSettingsMethod { get; set; }
         public static MethodInfo InitMethod { get; set; }
@@ -44,7 +46,7 @@ namespace SIT.Tarkov.Core.AI
                     && x.GetMethod("AddActivePLayer", BindingFlags.Public | BindingFlags.Instance) != null
                 );
 
-            Logger.LogInfo($"BotControllerType:{BotControllerType.Name}");
+            //Logger.LogInfo($"BotControllerType:{BotControllerType.Name}");
 
             if (BotPresetType == null)
                 BotPresetType = PatchConstants.EftTypes.Single(x => x.IsClass
@@ -54,7 +56,7 @@ namespace SIT.Tarkov.Core.AI
                     && PatchConstants.GetFieldFromType(x, "VisibleAngle") != null
                     );
 
-            Logger.LogInfo($"BotPresetType:{BotPresetType.Name}");
+            //Logger.LogInfo($"BotPresetType:{BotPresetType.Name}");
 
             if (BotScatteringType == null)
                 BotScatteringType = PatchConstants.EftTypes.Single(x => x.IsClass
@@ -64,7 +66,7 @@ namespace SIT.Tarkov.Core.AI
                     && PatchConstants.GetMethodForType(x, "Check") != null
                     );
 
-            Logger.LogInfo($"BotScatteringType:{BotScatteringType.Name}");
+            //Logger.LogInfo($"BotScatteringType:{BotScatteringType.Name}");
 
             if(BossSpawnRunnerType == null)
                 BossSpawnRunnerType = PatchConstants.EftTypes.Single(x => x.IsClass
@@ -73,7 +75,7 @@ namespace SIT.Tarkov.Core.AI
                     && x.GetMethod("Run", BindingFlags.Public | BindingFlags.Instance) != null
                     );
 
-            Logger.LogInfo($"BossSpawnRunnerType:{BossSpawnRunnerType.Name}");
+            //Logger.LogInfo($"BossSpawnRunnerType:{BossSpawnRunnerType.Name}");
 
             if(ProfileCreatorType == null)
                 ProfileCreatorType = PatchConstants.EftTypes.Last(x => x.IsClass
@@ -81,7 +83,7 @@ namespace SIT.Tarkov.Core.AI
                     && x.GetMethod("GetNewProfile", BindingFlags.NonPublic | BindingFlags.Instance) != null
                     );
 
-            Logger.LogInfo($"ProfileCreatorType:{ProfileCreatorType.Name}");
+            //Logger.LogInfo($"ProfileCreatorType:{ProfileCreatorType.Name}");
 
             if (BotCreatorType == null)
                 BotCreatorType = PatchConstants.EftTypes.Single(x => x.IsClass
@@ -92,7 +94,7 @@ namespace SIT.Tarkov.Core.AI
                     && x.GetMethod("method_2", BindingFlags.NonPublic | BindingFlags.Instance) != null
                     );
 
-            Logger.LogInfo($"BotCreatorType:{BotCreatorType.Name}");
+            //Logger.LogInfo($"BotCreatorType:{BotCreatorType.Name}");
 
             if(RoleLimitDifficultyType == null)
                 RoleLimitDifficultyType = PatchConstants.EftTypes.First(x => x.IsClass
@@ -108,29 +110,35 @@ namespace SIT.Tarkov.Core.AI
                     && PatchConstants.GetFieldFromType(x, "DisabledScavExits") != null
                     );
 
-            Logger.LogInfo($"LocationBaseType:{LocationBaseType.Name}");
+            //Logger.LogInfo($"LocationBaseType:{LocationBaseType.Name}");
 
-
+            if (!TypeDictionary.ContainsKey("BotOwner"))
+            {
+                TypeDictionary.Add("BotOwner", typeof(EFT.BotOwner));
+                TypeDictionary.Add("BotBrain", PatchConstants.GetPropertyFromType(TypeDictionary["BotOwner"], "Brain").PropertyType);
+                TypeDictionary.Add("BotBaseBrain", PatchConstants.GetPropertyFromType(TypeDictionary["BotBrain"], "BaseBrain").PropertyType);
+                TypeDictionary.Add("BotAgent", PatchConstants.GetPropertyFromType(TypeDictionary["BotBrain"], "Agent").PropertyType);
+            }
 
             if (SetSettingsMethod == null)
                 SetSettingsMethod = PatchConstants.GetMethodForType(BotControllerType, "SetSettings");
 
-            Logger.LogInfo($"SetSettingsMethod:{SetSettingsMethod.Name}");
+            //Logger.LogInfo($"SetSettingsMethod:{SetSettingsMethod.Name}");
 
             if (StopMethod == null)
                 StopMethod = PatchConstants.GetMethodForType(BotControllerType, "Stop");
 
-            Logger.LogInfo($"StopMethod:{StopMethod.Name}");
+            //Logger.LogInfo($"StopMethod:{StopMethod.Name}");
 
             if (InitMethod == null)
                 InitMethod = PatchConstants.GetMethodForType(BotControllerType, "Init");
 
-            Logger.LogInfo($"InitMethod:{InitMethod.Name}");
+            //Logger.LogInfo($"InitMethod:{InitMethod.Name}");
 
             if (AddActivePlayerMethod == null)
                 AddActivePlayerMethod = PatchConstants.GetMethodForType(BotControllerType, "AddActivePLayer");
 
-            Logger.LogInfo($"AddActivePlayerMethod:{AddActivePlayerMethod.Name}");
+            //Logger.LogInfo($"AddActivePlayerMethod:{AddActivePlayerMethod.Name}");
         }
 
         public static void AddActivePlayer(EFT.Player player)
@@ -224,6 +232,23 @@ namespace SIT.Tarkov.Core.AI
 
             StopMethod?.Invoke(BotControllerInstance
                 , new object[] {  });
+        }
+
+        public static void SetBotBrain(EFT.Player player, object brain)
+        {
+            var ai = PatchConstants.GetFieldOrPropertyFromInstance<object>(player, "AIData");
+            if (ai != null)
+            {
+                var botOwner = PatchConstants.GetFieldOrPropertyFromInstance<object>(ai, "BotOwner");
+                if (botOwner != null)
+                {
+                    var botBrain = PatchConstants.GetFieldOrPropertyFromInstance<object>(botOwner, "Brain");
+                    if (botBrain != null)
+                    {
+                        PatchConstants.SetFieldOrPropertyFromInstance(player, "BaseBrain", brain);
+                    }
+                }
+            }
         }
     }
 }

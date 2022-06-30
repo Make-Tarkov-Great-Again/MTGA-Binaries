@@ -22,10 +22,22 @@ namespace SIT.Tarkov.Core.AI
                 PatchConstants.GetMethodForType(x, "IsPlayerEnemy") != null), "IsPlayerEnemy");
         }
 
+        [PatchPrefix]
+        public static bool PatchPrefix()
+        {
+            return false;
+        }
 
         [PatchPostfix]
         public static void PatchPostfix(ref bool __result, object player)
         {
+            var p = player as EFT.Player;
+            if (p != null)
+            {
+                if (p.AIData.IsAI)
+                {
+                }
+            }
             var otherPlayerHealthController = HealthControllerHelpers.GetActiveHealthController(player);
             var otherPlayerIsAlive = HealthControllerHelpers.IsAlive(otherPlayerHealthController);
             __result = otherPlayerIsAlive;
