@@ -15,13 +15,13 @@ namespace SIT.Tarkov.Core
         [PatchPrefix]
         static void PrefixPatch(ref bool isOnline)
         {
-            isOnline = false;
+            isOnline = true;
         }
 
         [PatchPostfix]
         static void PostfixPatch(ref bool isOnline)
         {
-            isOnline = true;
+            isOnline = false;
         }
 
         protected override MethodBase GetTargetMethod()

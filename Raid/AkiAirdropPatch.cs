@@ -10,6 +10,8 @@ using Comfort.Common;
 using Newtonsoft.Json;
 using SIT.Tarkov.Core;
 using SIT.A.Tarkov.Core.Spawners.Grenades;
+using EFT.Airdrop;
+using EFT.SynchronizableObjects;
 
 /***
  * Full Credit for this patch goes to SPT-Aki team. Specifically CWX!
@@ -26,8 +28,7 @@ namespace SIT.Tarkov.Core.Raid.Aki
         public static Type AirDropLogicClassType;
         public AirdropBoxPatch()
         {
-            AirDropLogicClassType = PatchConstants.EftTypes.Single(x
-                => x.GetMethod("ParachuteFadeCoroutine", BindingFlags.Public | BindingFlags.Instance) != null);
+            AirDropLogicClassType = PatchConstants.EftTypes.Single(x => PatchConstants.GetFieldFromType(x, "airdropSynchronizableObject_0") != null);
             //Logger.LogInfo(GetType().Name + ":" + AirDropLogicClassType.Name);
         }
 
@@ -167,6 +168,11 @@ namespace SIT.Tarkov.Core.Raid.Aki
             airdropPoints = LocationScene.GetAll<AirdropPoint>().OrderBy(_ => Guid.NewGuid()).ToList();
             PatchConstants.Logger.LogInfo($"AirdropComponent:Start:Number of Points:{airdropPoints.Count}");
 
+            if(planes.Length == 0)
+            {
+                return;
+            }    
+
             config = GetConfigFromServer();
             dropChance = ChanceToSpawn();
             dropHeight = UnityEngine.Random.Range(config.planeMinFlyHeight, config.planeMaxFlyHeight);
@@ -192,7 +198,7 @@ namespace SIT.Tarkov.Core.Raid.Aki
 
         public void FixedUpdate() // https://docs.unity3d.com/ScriptReference/MonoBehaviour.FixedUpdate.html
         {
-            if (gameWorld == null)
+            if (gameWorld == null || planes.Length == 0 || boxes.Length == 0 || airdropPoints.Count == 0)
             {
                 return;
             }
@@ -324,7 +330,7 @@ namespace SIT.Tarkov.Core.Raid.Aki
 
         public void ScriptStart()
         {
-            PatchConstants.Logger.LogInfo("AirdropComponent:ScriptStart");
+            //PatchConstants.Logger.LogInfo("AirdropComponent:ScriptStart");
 
             if (!ShouldAirdropOccur())
             {

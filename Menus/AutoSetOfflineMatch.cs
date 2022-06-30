@@ -17,6 +17,7 @@ namespace SIT.Tarkov.Core.Menus
     {
         public AutoSetOfflineMatch()
         {
+            _ = typeof(RaidSettings);
         }
 
         private static DefaultRaidSettings raidSettings = null;
@@ -25,7 +26,7 @@ namespace SIT.Tarkov.Core.Menus
         [PatchPostfix]
         public static void PatchPostfix(UpdatableToggle ____offlineModeToggle, UpdatableToggle ____botsEnabledToggle,
             DropDownBox ____aiAmountDropdown, DropDownBox ____aiDifficultyDropdown, UpdatableToggle ____enableBosses,
-            UpdatableToggle ____scavWars, UpdatableToggle ____taggedAndCursed)
+            UpdatableToggle ____scavWars, UpdatableToggle ____taggedAndCursed, UpdatableToggle ____coopModeToggle)
         {
 
             //Logger.LogInfo("AutoSetOfflineMatch.PatchPostfix");
@@ -54,7 +55,6 @@ namespace SIT.Tarkov.Core.Menus
                 ____scavWars.isOn = raidSettings.ScavWars;
                 ____taggedAndCursed.isOn = raidSettings.TaggedAndCursed;
 
-
                 ____offlineModeToggle.gameObject.SetActive(false);
                 ____offlineModeToggle.enabled = false;
                 ____offlineModeToggle.interactable = false;
@@ -69,7 +69,7 @@ namespace SIT.Tarkov.Core.Menus
 
         protected override MethodBase GetTargetMethod()
         {
-            return typeof(EFT.UI.Matchmaker.MatchmakerOfflineRaid).GetMethod("Show", BindingFlags.NonPublic | BindingFlags.Instance);
+            return typeof(EFT.UI.Matchmaker.MatchmakerOfflineRaidScreen).GetMethod("Show", BindingFlags.NonPublic | BindingFlags.Instance);
         }
 
 

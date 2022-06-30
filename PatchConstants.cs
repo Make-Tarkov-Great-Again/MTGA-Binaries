@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using BepInEx.Logging;
 using Comfort.Common;
@@ -26,7 +27,7 @@ namespace SIT.Tarkov.Core
             { 
                 if( _eftTypes == null)
                 {
-                    _eftTypes = typeof(AbstractGame).Assembly.GetTypes();
+                    _eftTypes = typeof(AbstractGame).Assembly.GetTypes().OrderBy(t => t.Name).ToArray();
                 }
 
                 return _eftTypes; 
@@ -51,6 +52,17 @@ namespace SIT.Tarkov.Core
         public static Type SpawnPointArrayInterfaceType { get; set; }
         public static Type SpawnPointSystemClassType { get; set; }
 
+        public static Type BackendStaticConfigurationType { get; set; }
+        public static object BackendStaticConfigurationConfigInstance { get; set; }
+
+        public static class CharacterControllerSettings
+        {
+            public static object CharacterControllerInstance { get; set; }
+            public static CharacterControllerSpawner.Mode ObservedPlayerMode { get; set; }
+            public static CharacterControllerSpawner.Mode ClientPlayerMode { get; set; }
+            public static CharacterControllerSpawner.Mode BotPlayerMode { get; set; }
+        }
+
 
         /// <summary>
         /// A Key/Value dictionary of storing & obtaining an array of types by name
@@ -60,7 +72,7 @@ namespace SIT.Tarkov.Core
         /// <summary>
         /// A Key/Value dictionary of storing & obtaining a type by name
         /// </summary>
-        public static readonly Dictionary<string, Type> TypeDictionary = new Dictionary<string, Type>();
+        public static Dictionary<string, Type> TypeDictionary { get; } = new Dictionary<string, Type>();
 
         /// <summary>
         /// A Key/Value dictionary of storing & obtaining a method by type and name
@@ -189,6 +201,7 @@ namespace SIT.Tarkov.Core
                 | BindingFlags.Static
                 | BindingFlags.Instance
                 | BindingFlags.FlattenHierarchy
+                | BindingFlags.CreateInstance
                 ))
             {
                 if (debug)
@@ -291,65 +304,26 @@ namespace SIT.Tarkov.Core
         private static Dictionary<object, Dictionary<string, FieldInfo>> StoredFields { get; } = new Dictionary<object, Dictionary<string, FieldInfo>>();
         private static Dictionary<object, Dictionary<string, FieldInfo>> StoredProperties { get; } = new Dictionary<object, Dictionary<string, FieldInfo>>();
 
+        public static void SetFieldOrPropertyFromInstance(object o, string name, object v)
+        {
+            var field = GetAllFieldsForObject(o).FirstOrDefault(x => x.Name.ToLower() == (name.ToLower()));
+            if (field != null)
+                field.SetValue(o, v);
+
+            var property = GetAllPropertiesForObject(o).FirstOrDefault(x => x.Name.ToLower() == (name.ToLower()));
+            if (property != null)
+                property.SetValue(o, v);
+        }
+
         public static void SetFieldOrPropertyFromInstance<T>(object o, string name, T v)
         {
             var field = GetAllFieldsForObject(o).FirstOrDefault(x=>x.Name.ToLower() == (name.ToLower()));
             if (field != null)
-            {
-                //StoredFields.Add(o, )
                 field.SetValue(o, v);
-            }
+
             var property = GetAllPropertiesForObject(o).FirstOrDefault(x => x.Name.ToLower() == (name.ToLower()));
             if (property != null)
                 property.SetValue(o, v);
-            //var properties = o.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public);
-            //foreach (PropertyInfo property in properties)
-            //{
-            //    if (property.Name.ToLower().Contains(name.ToLower()))
-            //    {
-            //        property.SetValue(o, v);
-            //    }
-            //}
-            //properties = o.GetType().GetProperties(BindingFlags.Instance | BindingFlags.NonPublic);
-            //foreach (PropertyInfo property in properties)
-            //{
-            //    if (property.Name.ToLower().Contains(name.ToLower()))
-            //    {
-            //        property.SetValue(o, v);
-            //    }
-            //}
-            //properties = o.GetType().GetProperties(BindingFlags.Static | BindingFlags.Public);
-            //foreach (PropertyInfo property in properties)
-            //{
-            //    if (property.Name.ToLower().Contains(name.ToLower()))
-            //    {
-            //        property.SetValue(o, v);
-            //    }
-            //}
-            //var fields = o.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public);
-            //foreach (FieldInfo field in fields)
-            //{
-            //    if (field.Name.ToLower().Contains(name.ToLower()))
-            //    {
-            //        field.SetValue(o, v);
-            //    }
-            //}
-            //fields = o.GetType().GetFields(BindingFlags.Instance | BindingFlags.NonPublic);
-            //foreach (FieldInfo field in fields)
-            //{
-            //    if (field.Name.ToLower().Contains(name.ToLower()))
-            //    {
-            //        field.SetValue(o, v);
-            //    }
-            //}
-            //fields = o.GetType().GetFields(BindingFlags.Static | BindingFlags.Public);
-            //foreach (FieldInfo field in fields)
-            //{
-            //    if (field.Name.ToLower().Contains(name.ToLower()))
-            //    {
-            //        field.SetValue(o, v);
-            //    }
-            //}
         }
 
         public static void ConvertDictionaryToObject(object o, Dictionary<string, object> dict)
@@ -428,9 +402,34 @@ namespace SIT.Tarkov.Core
             return GetAllMethodsForType(StartWithTokenType).Single(x=>x.Name == "StartWithToken").Invoke(null, new object[] { name }) as IDisposable;
         }
 
+        /// <summary>
+        /// Invoke an async Task<object> method
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="outputType"></param>
+        /// <param name="method"></param>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        //public static async Task<object> InvokeAsyncMethod(Type type, Type outputType, string method, object[] param)
+        //{
+        //    var m = PatchConstants.GetAllMethodsForType(type).First(x => x.Name == method);// foo.GetType().GetMethod(nameof(IFoo.Get));
+        //    Logger.LogInfo("InvokeAsyncMethod." + m.Name);
+
+        //    //var builder = AsyncTaskMethodBuilder.Create();
+
+        //    var generic = m.MakeGenericMethod(outputType);
+        //    var task = (Task)generic.Invoke(type, param);
+
+        //    await task.ConfigureAwait(false);
+
+        //    var resultProperty = task.GetType().GetProperty("Result");
+        //    return resultProperty.GetValue(task);
+
+        //}
+
         static PatchConstants()
         {
-            if(Logger == null)  
+            if (Logger == null)
                 Logger = BepInEx.Logging.Logger.CreateLogSource("SIT.Tarkov.Core.PatchConstants");
 
             TypesDictionary.Add("EftTypes", EftTypes);
@@ -441,7 +440,7 @@ namespace SIT.Tarkov.Core
             BackendInterfaceType = EftTypes.Single(x => x.GetMethods().Select(y => y.Name).Contains("CreateClientSession") && x.IsInterface);
             SessionInterfaceType = EftTypes.Single(x => x.GetMethods().Select(y => y.Name).Contains("GetPhpSessionId") && x.IsInterface);
             MessageNotificationType = EftTypes.Single(x => x.GetMethods(BindingFlags.Static | BindingFlags.Public).Select(y => y.Name).Contains("DisplayMessageNotification"));
-            if(MessageNotificationType == null)
+            if (MessageNotificationType == null)
             {
                 Logger.LogInfo("SIT.Tarkov.Core:PatchConstants():MessageNotificationType:Not Found");
             }
@@ -455,7 +454,7 @@ namespace SIT.Tarkov.Core
                .First(t => t.GetField("Converters", BindingFlags.Static | BindingFlags.Public) != null);
             JsonConverterDefault = JsonConverterType.GetField("Converters", BindingFlags.Static | BindingFlags.Public).GetValue(null) as JsonConverter[];
 
-            StartWithTokenType = PatchConstants.EftTypes.Single(x =>  GetAllMethodsForType(x).Count(y=>y.Name =="StartWithToken") == 1);
+            StartWithTokenType = PatchConstants.EftTypes.Single(x => GetAllMethodsForType(x).Count(y => y.Name == "StartWithToken") == 1);
 
             BotSystemHelpers.Setup();
 
@@ -467,23 +466,23 @@ namespace SIT.Tarkov.Core
                     //(PatchConstants.GetFieldFromType(x, "General") != null
                     //|| PatchConstants.GetPropertyFromType(x, "General") != null)
                     );
-                Logger.LogInfo($"Loading JobPriorityType:{JobPriorityType.FullName}");
+                //Logger.LogInfo($"Loading JobPriorityType:{JobPriorityType.FullName}");
             }
 
-            if(PlayerInfoType == null)
+            if (PlayerInfoType == null)
             {
                 PlayerInfoType = PatchConstants.EftTypes.Single(x =>
                     PatchConstants.GetAllMethodsForType(x).Any(x => x.Name == "AddBan")
                     && PatchConstants.GetAllMethodsForType(x).Any(x => x.Name == "RemoveBan")
                     );
-                Logger.LogInfo($"Loading PlayerInfoType:{PlayerInfoType.FullName}");
+                //Logger.LogInfo($"Loading PlayerInfoType:{PlayerInfoType.FullName}");
             }
 
             if (PlayerCustomizationType == null)
             {
                 var profileType = typeof(EFT.Profile);
                 PlayerCustomizationType = PatchConstants.GetFieldFromType(typeof(EFT.Profile), "Customization").FieldType;
-                Logger.LogInfo($"Loading PlayerCustomizationType:{PlayerCustomizationType.FullName}");
+                //Logger.LogInfo($"Loading PlayerCustomizationType:{PlayerCustomizationType.FullName}");
             }
 
 
@@ -505,7 +504,57 @@ namespace SIT.Tarkov.Core
                         && PatchConstants.GetAllMethodsForType(x).Any(x => x.Name == "DestroySpawnPoint")
                         && x.IsInterface
                     );
-            Logger.LogInfo($"Loading SpawnPointArrayInterfaceType:{SpawnPointArrayInterfaceType.FullName}");
+            //Logger.LogInfo($"Loading SpawnPointArrayInterfaceType:{SpawnPointArrayInterfaceType.FullName}");
+
+            BackendStaticConfigurationType = PatchConstants.EftTypes.Single(x =>
+                    PatchConstants.GetAllMethodsForType(x).Any(x => x.Name == "LoadApplicationConfig")
+            //&& PatchConstants.GetFieldFromType(x, "BackendUrl") != null
+            //&& PatchConstants.GetFieldFromType(x, "Config") != null
+            );
+
+            //Logger.LogInfo($"Loading BackendStaticConfigurationType:{BackendStaticConfigurationType.FullName}");
+
+            if (!TypeDictionary.ContainsKey("StatisticsSession"))
+            {
+                TypeDictionary.Add("StatisticsSession", PatchConstants.EftTypes.OrderBy(x => x.Name).First(x =>
+                    x.IsClass
+                    && PatchConstants.GetAllMethodsForType(x).Any(x => x.Name == "BeginStatisticsSession")
+                    && PatchConstants.GetAllMethodsForType(x).Any(x => x.Name == "EndStatisticsSession")
+                ));
+                //Logger.LogInfo($"StatisticsSession:{TypeDictionary["StatisticsSession"].FullName}");
+            }
+
+            if (!TypeDictionary.ContainsKey("FilterCustomization"))
+            {
+                TypeDictionary.Add("FilterCustomization", PatchConstants.EftTypes.OrderBy(x => x.Name).First(x =>
+                    x.IsClass
+                    && PatchConstants.GetAllMethodsForType(x).Any(x => x.Name == "FilterCustomization")
+                ));
+                Logger.LogInfo($"FilterCustomization:{TypeDictionary["FilterCustomization"].FullName}");
+            }
+
+            TypeDictionary.Add("Profile", PatchConstants.EftTypes.First(x =>
+               x.IsClass && x.FullName == "EFT.Profile"
+           ));
+
+            TypeDictionary.Add("Profile.Customization", PatchConstants.EftTypes.First(x =>
+                x.IsClass
+                && x.BaseType == typeof(Dictionary<EBodyModelPart, string>)
+            ));
+
+            TypeDictionary.Add("Profile.Inventory", PatchConstants.EftTypes.First(x =>
+                x.IsClass
+                && PatchConstants.GetAllMethodsForType(x).Any(x => x.Name == "UpdateTotalWeight")
+                && PatchConstants.GetAllMethodsForType(x).Any(x => x.Name == "GetAllItemByTemplate")
+                && PatchConstants.GetAllMethodsForType(x).Any(x => x.Name == "GetItemsInSlots")
+            ));
+
+            //TypeDictionary.Add("Profile.Inventory.Equipment", PatchConstants.EftTypes.First(x =>
+            //    x.IsClass
+            //    && PatchConstants.GetAllMethodsForType(x).Any(x => x.Name == "BeginStatisticsSession")
+            //    && PatchConstants.GetAllMethodsForType(x).Any(x => x.Name == "EndStatisticsSession")
+            //));
+
         }
     }
 }

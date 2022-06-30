@@ -23,7 +23,7 @@ namespace SIT.Tarkov.Core.PlayerPatches.Health
             object __instance
             , EBodyPart bodyPart
             , float value
-            , GStruct260 damageInfo)
+            , object damageInfo)
         {
             if (__instance == HealthListener.Instance.MyHealthController)
             {

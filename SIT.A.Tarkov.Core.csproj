@@ -65,8 +65,4 @@
       <HintPath>..\Tarkov.References\UnityEngine.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
-  
-  <ItemGroup>
-    <Folder Include="Misc\" />
-  </ItemGroup>
 </Project>

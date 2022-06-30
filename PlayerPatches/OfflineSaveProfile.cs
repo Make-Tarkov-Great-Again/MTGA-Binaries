@@ -17,24 +17,26 @@ namespace SIT.Tarkov.Core
             // compile-time check
             //_ = nameof(ClientMetrics.Metrics);
 
+            _ = nameof(MainApplication);
+            _ = nameof(EFT.RaidSettings);
 
             //_defaultJsonConverters = Traverse.Create(converterClass).Field<JsonConverter[]>("Converters").Value;
         }
 
         protected override MethodBase GetTargetMethod()
         {
-            foreach (var method in Constants.Instance.MainApplicationType.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly))
+            foreach (var method in PatchConstants.GetAllMethodsForType(PatchConstants.EftTypes.Single(x=>x.Name == "MainApplication")))
             {
                 if (method.Name.StartsWith("method") &&
-                    method.GetParameters().Length >= 6 &&
+                    method.GetParameters().Length >= 3 &&
                     method.GetParameters()[0].Name == "profileId" &&
-                    method.GetParameters()[0].ParameterType.Name == "String" &&
-                    method.GetParameters()[3].Name == "isLocal" &&
-                    method.GetParameters()[3].ParameterType.Name == "Boolean"
-                    
+                    method.GetParameters()[1].Name == "savageProfile" &&
+                    method.GetParameters()[2].Name == "location" &&
+                    method.GetParameters().Any(x => x.Name == "result") &&
+                    method.GetParameters()[method.GetParameters().Length-1].Name == "timeHasComeScreenController"
                     )
                 {
-                    //Logger.Log(BepInEx.Logging.LogLevel.Info, method.Name);
+                    Logger.Log(BepInEx.Logging.LogLevel.Info, method.Name);
                     return method;
                 }
             }
@@ -45,38 +47,30 @@ namespace SIT.Tarkov.Core
 
         [PatchPrefix]
         public static bool PatchPrefix(
-            ref ESideType ___esideType_0
+            ref EFT.RaidSettings ____raidSettings
             , ref Result<EFT.ExitStatus, TimeSpan, object> result
-            , ref bool isLocal)
+            )
         //    [PatchPostfix]
         //public static void PatchPostfix(ref ESideType ___esideType_0, ref object result)
         {
             Logger.LogInfo("OfflineSaveProfile::PatchPrefix");
-            isLocal = false;
+            // isLocal = false;
+            ____raidSettings.RaidMode = ERaidMode.Online;
 
             var session = ClientAccesor.GetClientApp().GetClientBackEndSession();
             var isPlayerScav = false;
             var profile = session.Profile;
 
-            if (___esideType_0 == ESideType.Savage)
+            if (____raidSettings.Side == ESideType.Savage)
             {
                 profile = session.ProfileOfPet;
                 isPlayerScav = true;
             }
 
             var currentHealth = HealthListener.Instance.CurrentHealth;
-            //var currentHealth = new PlayerHealth();
-            //currentHealth.Energy = 100;
-            //currentHealth.Hydration = 100;
-            //currentHealth.Health = HealthListener.Instance.CurrentHealth.Health;
-            //var currentHealth = 400;
-
-            //SaveProfileProgress(SIT.Tarkov.Core.PatchConstants.GetBackendUrl(), session.GetPhpSessionId(), result.Value0, profile, currentHealth, isPlayerScav);
-
+            
             var beUrl = SIT.Tarkov.Core.PatchConstants.GetBackendUrl();
             var sessionId = SIT.Tarkov.Core.PatchConstants.GetPHPSESSID();
-            Logger.LogInfo(beUrl);
-            //Logger.LogInfo(sessionId);
 
             SaveProfileProgress(beUrl
                 , sessionId
@@ -84,7 +78,7 @@ namespace SIT.Tarkov.Core
                 , profile
                 , currentHealth
                 , isPlayerScav);
-            //Utility.Progression.SaveLootUtil.SaveProfileProgress(ClientAccesor.BackendUrl, session.GetPhpSessionId(), result.Value0, profile, currentHealth, isPlayerScav);
+
             return true;
         }
 

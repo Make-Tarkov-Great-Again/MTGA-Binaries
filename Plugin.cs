@@ -6,6 +6,7 @@ using SIT.Tarkov.Core;
 using SIT.Tarkov.Core.AI;
 using SIT.Tarkov.Core.Bundles;
 using SIT.Tarkov.Core.Menus;
+using SIT.Tarkov.Core.Misc;
 using SIT.Tarkov.Core.PlayerPatches;
 using SIT.Tarkov.Core.PlayerPatches.Health;
 using SIT.Tarkov.Core.Raid;
@@ -63,7 +64,7 @@ namespace SIT.A.Tarkov.Core
 
             // --------- SCAV MODE ---------------------
             new DisableScavModePatch().Enable();
-            new ForceLocalGamePatch().Enable();
+            //new ForceLocalGamePatch().Enable();
 
             //new FilterProfilesPatch().Enable();
             //new BossSpawnChancePatch().Enable();
@@ -75,16 +76,20 @@ namespace SIT.A.Tarkov.Core
             new AirdropPatch(Config).Enable();
 
             // --------- AI -----------------------
-            new IsEnemyPatch().Enable();
-            new IsPlayerEnemyPatch().Enable();
-            new IsPlayerEnemyByRolePatch().Enable();
+            var enableSITAISystem = Config.Bind("AI", "Enable SIT AI", true).Value;
+            if (enableSITAISystem)
+            {
+                new IsEnemyPatch().Enable();
+                new IsPlayerEnemyPatch().Enable();
+                new IsPlayerEnemyByRolePatch().Enable();
+                new BotBrainActivatePatch().Enable();
+            }
 
             // -------------------------------------
             // Matchmaker
             new AutoSetOfflineMatch().Enable();
-            new BringBackInsuranceScreen().Enable();
+            //new BringBackInsuranceScreen().Enable();
             new DisableReadyButtonOnFirstScreen().Enable();
-            new DisableReadyButtonOnSelectLocation().Enable();
 
             // -------------------------------------
             // Progression
@@ -108,13 +113,10 @@ namespace SIT.A.Tarkov.Core
             new ChangeEnergyPatch().Enable();
             new ChangeHydrationPatch().Enable();
 
-
-
-
-
-
-
-
+            if (MongoIDPatch.MongoIDExists)
+            {
+                new MongoIDPatch().Enable();
+            }
 
             // Plugin startup logic
             Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
@@ -137,27 +139,64 @@ namespace SIT.A.Tarkov.Core
 
         private void SceneManager_sceneLoaded(Scene arg0, LoadSceneMode arg1)
         {
+            GetPoolManager();
+            GetBackendConfigurationInstance();
+
+        }
+
+        private void GetBackendConfigurationInstance()
+        {
+            if (
+                            PatchConstants.BackendStaticConfigurationType != null &&
+                            PatchConstants.BackendStaticConfigurationConfigInstance == null)
+            {
+                PatchConstants.BackendStaticConfigurationConfigInstance = PatchConstants.GetPropertyFromType(PatchConstants.BackendStaticConfigurationType, "Config").GetValue(null);
+                //Logger.LogInfo($"BackendStaticConfigurationConfigInstance Type:{ PatchConstants.BackendStaticConfigurationConfigInstance.GetType().Name }");
+            }
+            
+            if (PatchConstants.BackendStaticConfigurationConfigInstance != null
+                && PatchConstants.CharacterControllerSettings.CharacterControllerInstance == null
+                )
+            {
+                PatchConstants.CharacterControllerSettings.CharacterControllerInstance
+                    = PatchConstants.GetFieldOrPropertyFromInstance<object>(PatchConstants.BackendStaticConfigurationConfigInstance, "CharacterController", false);
+                Logger.LogInfo($"PatchConstants.CharacterControllerInstance Type:{ PatchConstants.CharacterControllerSettings.CharacterControllerInstance.GetType().Name }");
+            }
+
+            if (PatchConstants.CharacterControllerSettings.CharacterControllerInstance != null
+                && PatchConstants.CharacterControllerSettings.ClientPlayerMode == null
+                )
+            {
+                PatchConstants.CharacterControllerSettings.ClientPlayerMode
+                    = PatchConstants.GetFieldOrPropertyFromInstance<CharacterControllerSpawner.Mode>(PatchConstants.CharacterControllerSettings.CharacterControllerInstance, "ClientPlayerMode", false);
+
+                PatchConstants.CharacterControllerSettings.ObservedPlayerMode
+                    = PatchConstants.GetFieldOrPropertyFromInstance<CharacterControllerSpawner.Mode>(PatchConstants.CharacterControllerSettings.CharacterControllerInstance, "ObservedPlayerMode", false);
+
+                PatchConstants.CharacterControllerSettings.BotPlayerMode
+                    = PatchConstants.GetFieldOrPropertyFromInstance<CharacterControllerSpawner.Mode>(PatchConstants.CharacterControllerSettings.CharacterControllerInstance, "BotPlayerMode", false);
+            }
+
+        }
+
+        private void GetPoolManager()
+        {
             if (PatchConstants.PoolManagerType == null)
             {
                 PatchConstants.PoolManagerType = PatchConstants.EftTypes.Single(x => PatchConstants.GetAllMethodsForType(x).Any(x => x.Name == "LoadBundlesAndCreatePools"));
-                Logger.LogInfo($"Loading PoolManagerType:{ PatchConstants.PoolManagerType.FullName}");
+                //Logger.LogInfo($"Loading PoolManagerType:{ PatchConstants.PoolManagerType.FullName}");
 
-                Logger.LogInfo($"Getting PoolManager Instance");
+                //Logger.LogInfo($"Getting PoolManager Instance");
                 Type generic = typeof(Comfort.Common.Singleton<>);
                 Type[] typeArgs = { PatchConstants.PoolManagerType };
                 ConstructedBundleAndPoolManagerSingletonType = generic.MakeGenericType(typeArgs);
-                Logger.LogInfo(PatchConstants.PoolManagerType.FullName);
-                Logger.LogInfo(ConstructedBundleAndPoolManagerSingletonType.FullName);
+                //Logger.LogInfo(PatchConstants.PoolManagerType.FullName);
+                //Logger.LogInfo(ConstructedBundleAndPoolManagerSingletonType.FullName);
 
                 new LoadBotTemplatesPatch().Enable();
                 new RemoveUsedBotProfile().Enable();
                 //new CreateFriendlyAIPatch().Enable();
-
             }
-
-
-
-
         }
 
         private Type ConstructedBundleAndPoolManagerSingletonType { get; set; }
