@@ -21,12 +21,12 @@ namespace SIT.Tarkov.Core.Misc
         [PatchPrefix]
         public static bool PatchPrefix(ref string id)
         {
-            Logger.LogInfo("MongoIDPatch: Id to Parse: " + id);
-            if(id.StartsWith("I-"))
+            if(id.StartsWith("I-") || id.Length > 24)
             {
+                Logger.LogInfo("MongoIDPatch: Id to Parse: " + id);
                 id = new MongoID(true);
+                Logger.LogInfo("MongoIDPatch: NewId: " + id);
             }
-            Logger.LogInfo("MongoIDPatch: NewId: " + id);
             return true;
         }
     }

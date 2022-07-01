@@ -46,11 +46,26 @@ namespace SIT.Tarkov.Core.AI
             __result = IsEnemyRole(role, ___wildSpawnType_0);// || IsEnemyRole(role, ___wildSpawnType_1);
         }
 
+        static List<WildSpawnType> ScavRoles = new List<WildSpawnType>() { WildSpawnType.assault, WildSpawnType.assaultGroup, WildSpawnType.marksman };
+        static List<WildSpawnType> KnightRoles = new List<WildSpawnType>() { WildSpawnType.bossKnight, WildSpawnType.followerBigPipe, WildSpawnType.followerBirdEye };
+        //static List<WildSpawnType> BossRoles = new List<WildSpawnType>() { WildSpawnType.bossKnight, WildSpawnType.followerBigPipe, WildSpawnType.followerBirdEye };
+        static List<WildSpawnType> PMCRoles = new List<WildSpawnType>() { WildSpawnType.pmcBot };
+
         public static bool IsEnemyRole(WildSpawnType myRole, WildSpawnType enemyRole)
         {
-            return myRole == WildSpawnType.pmcBot
-                || enemyRole == WildSpawnType.pmcBot
-                || (enemyRole != myRole && (enemyRole != WildSpawnType.marksman && myRole != WildSpawnType.assault));
+            // PMCs kill everyone and everyone kills PMCs
+            if (PMCRoles.Contains(myRole) || PMCRoles.Contains(enemyRole))
+                return true;
+
+            // Scavs don't kill other scavs
+            if (ScavRoles.Contains(myRole) && ScavRoles.Contains(enemyRole))
+                return false;
+
+            // Knight guys kill everyone else
+            if (KnightRoles.Contains(myRole) && !KnightRoles.Contains(enemyRole))
+                return true;
+
+            return false;
         }
     }
 }

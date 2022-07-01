@@ -161,6 +161,8 @@ namespace SIT.Tarkov.Core.Raid.Aki
             planePositivePosition = 3000f;
             planeNegativePosition = -3000f;
 
+            var asoTest = LocationScene.GetAll<AirplaneSynchronizableObject>();
+            PatchConstants.Logger.LogInfo($"AirdropComponent:Start:asoTest:{asoTest.Count()}");
             planes = LocationScene.GetAll<SynchronizableObject>().Where(x => x.GetComponent<AirplaneSynchronizableObject>()).ToArray();
             PatchConstants.Logger.LogInfo($"AirdropComponent:Start:Number of Planes:{planes.Length}");
             boxes = LocationScene.GetAll<SynchronizableObject>().Where(x => x.GetComponent<AirdropSynchronizableObject>()).ToArray();
