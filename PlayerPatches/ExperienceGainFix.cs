@@ -21,14 +21,13 @@ namespace SIT.Tarkov.Core
         [PatchPostfix]
         static void PostfixPatch(ref bool isOnline)
         {
-            isOnline = false;
+            //isOnline = false;
         }
 
         protected override MethodBase GetTargetMethod()
         {
             var returnedType = PatchConstants.EftTypes.Single(x =>
                  x.FullName.StartsWith(typeof(EFT.UI.SessionEnd.SessionResultExperienceCount).FullName)
-                 //x.FullName.StartsWith("EFT.UI.SessionEnd.SessionResultExperienceCount")
                  && PatchConstants.GetPropertyFromType(x, "KeyScreen") != null
                  );
             //Logger.LogInfo(returnedType.FullName);

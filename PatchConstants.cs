@@ -165,6 +165,14 @@ namespace SIT.Tarkov.Core
             return json.SITParseJson<T>();
         }
 
+        public static object GetSingletonInstance(Type singletonInstanceType)
+        {
+            Type generic = typeof(Comfort.Common.Singleton<>);
+            Type[] typeArgs = { singletonInstanceType };
+            var genericType = generic.MakeGenericType(typeArgs);
+            return PatchConstants.GetPropertyFromType(genericType, "Instance").GetValue(null, null);
+        }
+
         public static PropertyInfo GetPropertyFromType(Type t, string name)
         {
             var properties = t.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
