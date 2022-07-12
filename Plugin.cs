@@ -1,4 +1,5 @@
 ﻿using BepInEx;
+using Comfort.Common;
 using EFT;
 using Microsoft.Win32;
 using SIT.A.Tarkov.Core.Hideout;
@@ -151,12 +152,17 @@ namespace SIT.A.Tarkov.Core
             
         }
 
+        GameWorld gameWorld = null;
+
+
         private void SceneManager_sceneLoaded(Scene arg0, LoadSceneMode arg1)
         {
             GetPoolManager();
             GetBackendConfigurationInstance();
 
             IllCatchYouCSRINPeeps();
+
+            gameWorld = Singleton<GameWorld>.Instance;
         }
 
         private void GetBackendConfigurationInstance()
@@ -233,7 +239,7 @@ namespace SIT.A.Tarkov.Core
                     PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: BundleAndPoolManager is missing");
                     return null;
                 }
-                var task = LoadBundlesAndCreatePoolsMethod.Invoke(BundleAndPoolManager,
+                Task task = LoadBundlesAndCreatePoolsMethod.Invoke(BundleAndPoolManager,
                     new object[] {
                     Enum.Parse(poolsCategoryType, "Raid")
                     , Enum.Parse(assemblyTypeType, "Local")
@@ -242,22 +248,52 @@ namespace SIT.A.Tarkov.Core
                     , null
                     , default(CancellationToken)
                     }
-                    );
+                    ) as Task;
                 //PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: task is " + task.GetType());
 
                 if (task != null) // && task.GetType() == typeof(Task))
                 {
-                    var t = task as Task;
-                    //PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: t is " + t.GetType());
-                    return t;
+                    //var t = task as Task;
+                    PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: task is " + task.GetType());
+                    return task;
                 }
             }
             catch (Exception ex)
             {
+                PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools -- ERROR ->>>");
                 PatchConstants.Logger.LogInfo(ex.ToString());
             }
             return null;
         }
+
+        //public static void LoadBundlesAndCreatePoolsSync(ResourceKey[] resources)
+        //{
+        //    try
+        //    {
+        //        if (BundleAndPoolManager == null)
+        //        {
+        //            PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: BundleAndPoolManager is missing");
+        //            return;
+        //        }
+        //        var task = (Task)LoadBundlesAndCreatePoolsMethod.Invoke(BundleAndPoolManager,
+        //            new object[] {
+        //            Enum.Parse(poolsCategoryType, "Raid")
+        //            , Enum.Parse(assemblyTypeType, "Local")
+        //            , resources
+        //            , PatchConstants.GetPropertyFromType(PatchConstants.JobPriorityType, "General").GetValue(null, null)
+        //            , null
+        //            , default(CancellationToken)
+        //            }
+        //            );
+
+        //        task.Wait();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools -- ERROR ->>>");
+        //        PatchConstants.Logger.LogInfo(ex.ToString());
+        //    }
+        //}
 
         void FixedUpdate()
         {

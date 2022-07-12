@@ -9,8 +9,8 @@ using System.Threading;
 //using WaveInfo = GClass984; // not used // search for: Difficulty and chppse gclass with lower number whic hcontains Role and Limit variables
 //using BotsPresets = GClass552; // Search for GetNewProfile
 //using BotData = GInterface15; // Search for PrepareToLoadBackend
-//using PoolManager = GClass1487; // Search for LoadBundlesAndCreatePools
-//using JobPriority = GClass2549; // Search for General
+using PoolManager = GClass1556; // Search for LoadBundlesAndCreatePools
+using JobPriority = GClass2633; // Search for General
 using SIT.Tarkov.Core;
 using System;
 using System.Collections.Generic;
@@ -173,21 +173,24 @@ namespace SIT.Tarkov.Core.SP
             public Task<Profile> LoadBundles(Task<Profile> task)
             {
                 Profile = task.Result;
+                //Logger.LogInfo($"LoadBotTemplatesPatch.LoadBundles");
 
                 //LoadBundlesAndCreatePoolsMethod.Invoke(BundleManager, Enum.Parse()
 
-                var loadTask = Plugin.LoadBundlesAndCreatePools(Profile.GetAllPrefabPaths(false).ToArray());
+                //var loadTask = Plugin.LoadBundlesAndCreatePools(Profile.GetAllPrefabPaths(false).ToArray());
+                //Plugin.LoadBundlesAndCreatePoolsSync(Profile.GetAllPrefabPaths(false).ToArray());
 
-                //var loadTask = Singleton.CreateInstance(constructed);
-                //    .LoadBundlesAndCreatePools(PoolManager.PoolsCategory.Raid,
-                //                               PoolManager.AssemblyType.Local,
-                //                               Profile.GetAllPrefabPaths(false).ToArray(),
-                //                               JobPriority.General,
-                //                               null,
-                //                               default(CancellationToken));
+                var loadTask = Singleton<PoolManager>.Instance
+                    .LoadBundlesAndCreatePools(PoolManager.PoolsCategory.Raid,
+                                               PoolManager.AssemblyType.Local,
+                                               Profile.GetAllPrefabPaths(false).ToArray(),
+                                               JobPriority.General,
+                                               null,
+                                               default(CancellationToken));
 
                 return loadTask.ContinueWith(GetProfile, TaskScheduler);
                 //return null;
+                //return task.ContinueWith(GetProfile, TaskScheduler);
             }
 
             private Profile GetProfile(Task task)

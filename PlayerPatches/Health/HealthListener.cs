@@ -63,10 +63,10 @@ namespace SIT.Tarkov.Core.PlayerPatches.Health
         /// <param name="inRaid">true - when executed from raid</param>
         public void Init(object healthController, bool inRaid)
         {
-            if (healthController == MyHealthController)
+            if (healthController != null && healthController == MyHealthController)
                 return;
 
-            //PatchConstants.Logger.LogInfo("HealthListener:Init");
+            PatchConstants.Logger.LogInfo("HealthListener:Init");
 
             // cleanup
             //if (_disposable != null)
@@ -82,6 +82,7 @@ namespace SIT.Tarkov.Core.PlayerPatches.Health
             CurrentHealth.IsAlive = true;
 
             // init current health
+            //SetCurrentHealth(MyHealthController, CurrentHealth.Health, EBodyPart.Common);
             SetCurrentHealth(MyHealthController, CurrentHealth.Health, EBodyPart.Head);
             SetCurrentHealth(MyHealthController, CurrentHealth.Health, EBodyPart.Chest);
             SetCurrentHealth(MyHealthController, CurrentHealth.Health, EBodyPart.Stomach);
@@ -122,27 +123,15 @@ namespace SIT.Tarkov.Core.PlayerPatches.Health
                 CurrentHealth.GetType().GetProperty(v).SetValue(CurrentHealth, float.Parse(currentEnergy.ToString()));
             }
 
-
-            //var hydrydation = PatchConstants.GetAllPropertiesForObject(MyHealthController).FirstOrDefault(x => x.Name == "Hydration").GetValue(MyHealthController);
-
-            ////var hydrydation = SIT.Tarkov.Core.PatchConstants.GetFieldOrPropertyFromInstance<object>(_healthController, "Hydration", false);
-            //if (hydrydation == null)
-            //    return;
-
-            //PatchConstants.Logger.LogInfo("Energy and Hydration found!");
-
-            //var currentEnergy = PatchConstants.GetAllFieldsForObject(energy).FirstOrDefault(x => x.Name == "Current").GetValue(energy);
-            //var currentHydration = PatchConstants.GetAllFieldsForObject(hydrydation).FirstOrDefault(x => x.Name == "Current").GetValue(hydrydation);
-            ////PatchConstants.Logger.LogInfo(currentEnergy);
-            ////PatchConstants.Logger.LogInfo(currentHydration);
-
-            //CurrentHealth.Energy = float.Parse(currentEnergy.ToString());
         }
 
         private void SetCurrentHealth(object healthController, IReadOnlyDictionary<EBodyPart, BodyPartHealth> dictionary, EBodyPart bodyPart)
         {
             if (healthController == null)
+            {
+                PatchConstants.Logger.LogInfo("HealthListener:GetBodyPartHealth:HealthController is NULL");
                 return;
+            }
 
             //PatchConstants.Logger.LogInfo("HealthListener:GetBodyPartHealth");
 
@@ -172,46 +161,8 @@ namespace SIT.Tarkov.Core.PlayerPatches.Health
             var maximum = PatchConstants.GetAllFieldsForObject(bodyPartHealth).FirstOrDefault(x => x.Name == "Maximum").GetValue(bodyPartHealth).ToString();
             //var maximum = PatchConstants.GetFieldOrPropertyFromInstance<float>(bodyPartHealth, "Maximum", true);
 
-            //PatchConstants.Logger.LogInfo($"HealthListener:GetBodyPartHealth:{current}/{maximum}");
+            PatchConstants.Logger.LogInfo($"HealthListener:GetBodyPartHealth:{current}/{maximum}");
             dictionary[bodyPart].Initialize(float.Parse(current), float.Parse(maximum));
-
-            //Task.Run(async() => {
-            //    _runCheck = true;
-            //    do
-            //    {
-            //        await Task.Delay(1000);
-
-            //        var current = PatchConstants.GetFieldOrPropertyFromInstance<float>(bodyPartHealth, "Current", false);
-            //        var maximum = PatchConstants.GetFieldOrPropertyFromInstance<float>(bodyPartHealth, "Maximum", false);
-            //        if (dictionary.ContainsKey(bodyPart))
-            //        {
-            //            var diff = current += dictionary[bodyPart].Current;
-            //            if (diff != 0
-            //            && current < maximum)
-            //            {
-            //                if (diff + current > maximum)
-            //                    diff = maximum - current;
-
-            //                PatchConstants.Logger.LogInfo("Health Changed on " + bodyPart + " : " + diff);
-            //                CurrentHealth.Health[bodyPart].ChangeHealth(diff);
-            //                _simpleTimer.isHealthSynchronized = false;
-            //            }
-            //        }
-            //    } while (_runCheck);
-
-            //});
-
-
-            //// set effects
-            //if (healthController.IsBodyPartBroken(bodyPart))
-            //{
-            //    dictionary[bodyPart].AddEffect(BodyPartEffect.BreakPart);
-            //}
-            //else
-            //{
-            //    dictionary[bodyPart].RemoveEffect(BodyPartEffect.BreakPart);
-            //}
-
 
         }
 

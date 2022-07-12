@@ -21,9 +21,12 @@ namespace SIT.Tarkov.SP
         public static async void PatchPostfix(
             object __instance
             , Task __result
-            , object ____healthController)
+            , object ____healthController
+            , object healthController)
         //public static void PatchPostfix(Player __instance, Task __result)
         {
+            
+
             //if (_playerAccountId == null)
             //{
             //    var backendSession = ClientAccesor.GetClientApp().GetClientBackEndSession();
@@ -31,8 +34,9 @@ namespace SIT.Tarkov.SP
             //    _playerAccountId = profile.AccountId;
             //}
 
-            //Logger.LogInfo($"ReplaceInPlayer:PatchPostfix: {__instance.GetType()}");
-           
+            Logger.LogInfo($"ReplaceInPlayer:PatchPostfix: {__instance.GetType()}");
+            Logger.LogInfo($"ReplaceInPlayer:PatchPostfix:healthController {healthController.GetType()}");
+
 
             var instanceProfile = __instance.GetType().GetProperty("Profile"
                 , BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy).GetValue(__instance);
@@ -88,15 +92,15 @@ namespace SIT.Tarkov.SP
             //    Logger.LogInfo(p.Name);
             //}
 
-            await __result;
+            //await __result;
 
                 //var listener = HealthListener.Instance;
                 //listener.Init(__instance.HealthController, true);
 
                 var listener = HealthListener.Instance;
-            //var healthController = PatchConstants.GetFieldOrPropertyFromInstance<object>(__instance, "HealthController", false);
+            var insthealthController = PatchConstants.GetFieldOrPropertyFromInstance<object>(__instance, "HealthController", false);
             //var healthController = ____healthController;
-           
+
             //    if (healthController != null)
             //    {
             //        //Logger.LogInfo("ReplaceInPlayer:PatchPostfix: found health controller " + healthController.GetType());
@@ -105,12 +109,13 @@ namespace SIT.Tarkov.SP
             //var healthController2 = __instance.GetType().GetProperty("HealthController", BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy).GetValue(__instance);
             ////Logger.LogInfo("ReplaceInPlayer:PatchPostfix: found health controller 2" + healthController2.GetType());
 
-            var activeHealthController = __instance.GetType().GetProperty("ActiveHealthController", BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy).GetValue(__instance);
+            //var activeHealthController = __instance.GetType().GetProperty("ActiveHealthController", BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy).GetValue(__instance);
             //Logger.LogInfo("ReplaceInPlayer:PatchPostfix: found active health controller " + activeHealthController.GetType());
-            if(activeHealthController != null)
+            //if (activeHealthController != null)
+            if (healthController != null)
             {
-                //listener.Init(healthController, true); // I changed this from healthController to activehealthcontroller when i moved from SP to Core
-                listener.Init(activeHealthController, true);
+                listener.Init(healthController, true); // I changed this from healthController to activehealthcontroller when i moved from SP to Core
+                //listener.Init(activeHealthController, true);
             }
 
             //listener.Init(__instance.HealthController, true);

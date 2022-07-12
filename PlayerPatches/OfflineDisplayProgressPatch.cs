@@ -53,7 +53,7 @@ namespace SIT.A.Tarkov.Core.PlayerPatches
             ref EFT.RaidSettings ____raidSettings
             )
         {
-            //____raidSettings.RaidMode = ERaidMode.Online;
+            ____raidSettings.RaidMode = ERaidMode.Online;
         }
     }
 }
