@@ -177,16 +177,16 @@ namespace SIT.Tarkov.Core.SP
 
                 //LoadBundlesAndCreatePoolsMethod.Invoke(BundleManager, Enum.Parse()
 
-                //var loadTask = Plugin.LoadBundlesAndCreatePools(Profile.GetAllPrefabPaths(false).ToArray());
+                var loadTask = Plugin.LoadBundlesAndCreatePools(Profile.GetAllPrefabPaths(false).ToArray());
                 //Plugin.LoadBundlesAndCreatePoolsSync(Profile.GetAllPrefabPaths(false).ToArray());
 
-                var loadTask = Singleton<PoolManager>.Instance
-                    .LoadBundlesAndCreatePools(PoolManager.PoolsCategory.Raid,
-                                               PoolManager.AssemblyType.Local,
-                                               Profile.GetAllPrefabPaths(false).ToArray(),
-                                               JobPriority.General,
-                                               null,
-                                               default(CancellationToken));
+                //var loadTask = Singleton<PoolManager>.Instance
+                //    .LoadBundlesAndCreatePools(PoolManager.PoolsCategory.Raid,
+                //                               PoolManager.AssemblyType.Local,
+                //                               Profile.GetAllPrefabPaths(false).ToArray(),
+                //                               JobPriority.General,
+                //                               null,
+                //                               default(CancellationToken));
 
                 return loadTask.ContinueWith(GetProfile, TaskScheduler);
                 //return null;

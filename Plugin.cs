@@ -215,7 +215,7 @@ namespace SIT.A.Tarkov.Core
                 //Logger.LogInfo(PatchConstants.PoolManagerType.FullName);
                 //Logger.LogInfo(ConstructedBundleAndPoolManagerSingletonType.FullName);
 
-                new LoadBotTemplatesPatch().Enable();
+                //new LoadBotTemplatesPatch().Enable();
                 new RemoveUsedBotProfile().Enable();
                 //new CreateFriendlyAIPatch().Enable();
             }
