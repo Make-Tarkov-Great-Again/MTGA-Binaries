@@ -3,6 +3,7 @@ using Comfort.Common;
 using EFT;
 using Microsoft.Win32;
 using SIT.A.Tarkov.Core.Hideout;
+using SIT.A.Tarkov.Core.Misc;
 using SIT.A.Tarkov.Core.PlayerPatches;
 using SIT.A.Tarkov.Core.SP;
 using SIT.A.Tarkov.Core.SP.Raid;
@@ -38,9 +39,6 @@ namespace SIT.A.Tarkov.Core
     {
         private void Awake()
         {
-
-            IllCatchYouCSRINPeeps();
-
             PatchConstants.GetBackendUrl();
 
             // - TURN OFF BS Checkers, FileChecker and BattlEye doesn't work BSG, I see cheaters ALL the time -----
@@ -90,7 +88,7 @@ namespace SIT.A.Tarkov.Core
             var enableSITAISystem = Config.Bind("AI", "Enable SIT AI", true).Value;
             if (enableSITAISystem)
             {
-                new IsEnemyPatch().Enable();
+                //new IsEnemyPatch().Enable();
                 new IsPlayerEnemyPatch().Enable();
                 new IsPlayerEnemyByRolePatch().Enable();
                 new BotBrainActivatePatch().Enable();
@@ -133,6 +131,9 @@ namespace SIT.A.Tarkov.Core
             new HideoutItemViewFactoryShowPatch().Enable();
             new ItemRequirementPanelShowPatch().Enable();
 
+            new LootContainerInitPatch().Enable();
+            new CollectLootPointsDataPatch().Enable();
+
             // Plugin startup logic
             Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
 
@@ -159,8 +160,6 @@ namespace SIT.A.Tarkov.Core
         {
             GetPoolManager();
             GetBackendConfigurationInstance();
-
-            IllCatchYouCSRINPeeps();
 
             gameWorld = Singleton<GameWorld>.Instance;
         }
@@ -239,24 +238,47 @@ namespace SIT.A.Tarkov.Core
                     PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: BundleAndPoolManager is missing");
                     return null;
                 }
-                Task task = LoadBundlesAndCreatePoolsMethod.Invoke(BundleAndPoolManager,
-                    new object[] {
-                    Enum.Parse(poolsCategoryType, "Raid")
-                    , Enum.Parse(assemblyTypeType, "Local")
-                    , resources
-                    , PatchConstants.GetPropertyFromType(PatchConstants.JobPriorityType, "General").GetValue(null, null)
-                    , null
-                    , default(CancellationToken)
-                    }
-                    ) as Task;
-                //PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: task is " + task.GetType());
 
-                if (task != null) // && task.GetType() == typeof(Task))
-                {
-                    //var t = task as Task;
-                    PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: task is " + task.GetType());
-                    return task;
-                }
+                var raidE = Enum.Parse(poolsCategoryType, "Raid");
+                PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: raidE is " + raidE.ToString());
+
+                var localE = Enum.Parse(assemblyTypeType, "Local");
+                PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: localE is " + localE.ToString());
+
+                var GenProp = PatchConstants.GetPropertyFromType(PatchConstants.JobPriorityType, "General").GetValue(null, null);
+                PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: GenProp is " + GenProp.ToString());
+
+
+                return PatchConstants.InvokeAsyncStaticByReflection(
+                    LoadBundlesAndCreatePoolsMethod,
+                    BundleAndPoolManager
+                    , raidE
+                    , localE
+                    , resources
+                    , GenProp
+                    , (object o) => { PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: Progressing!"); }
+                    , default(CancellationToken)
+                    );
+
+                //Task task = LoadBundlesAndCreatePoolsMethod.Invoke(BundleAndPoolManager,
+                //    new object[] {
+                //    Enum.Parse(poolsCategoryType, "Raid")
+                //    , Enum.Parse(assemblyTypeType, "Local")
+                //    , resources
+                //    , PatchConstants.GetPropertyFromType(PatchConstants.JobPriorityType, "General").GetValue(null, null)
+                //    , null
+                //    , default(CancellationToken)
+                //    }
+                //    ) as Task;
+                ////PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: task is " + task.GetType());
+
+                //if (task != null) // && task.GetType() == typeof(Task))
+                //{
+                //    task.ContinueWith(t => { PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools loaded"); });
+                //    //var t = task as Task;
+                //    PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: task is " + task.GetType());
+                //    return task;
+                //}
             }
             catch (Exception ex)
             {
@@ -320,6 +342,72 @@ namespace SIT.A.Tarkov.Core
                     }
                 }
             }
+        }
+
+
+        internal static bool LegalityCheck()
+        {
+            byte[] w1 = new byte[198] { 79, 102, 102, 105, 99, 105, 97, 108, 32, 71, 97, 109, 101, 32, 110, 111, 116, 32, 102, 111, 117, 110, 100, 44, 32, 119, 101, 32, 119, 105, 108, 108, 32, 98, 101, 32, 112, 114, 111, 109, 112, 116, 105, 110, 103, 32, 116, 104, 105, 115, 32, 109, 101, 115, 115, 97, 103, 101, 32, 101, 97, 99, 104, 32, 108, 97, 117, 110, 99, 104, 44, 32, 117, 110, 108, 101, 115, 115, 32, 121, 111, 117, 32, 103, 101, 116, 32, 111, 102, 102, 105, 99, 105, 97, 108, 32, 103, 97, 109, 101, 46, 32, 87, 101, 32, 108, 111, 118, 101, 32, 116, 111, 32, 115, 117, 112, 112, 111, 114, 116, 32, 111, 102, 102, 105, 99, 105, 97, 108, 32, 99, 114, 101, 97, 116, 111, 114, 115, 32, 115, 111, 32, 109, 97, 107, 101, 32, 115, 117, 114, 101, 32, 116, 111, 32, 103, 101, 116, 32, 111, 102, 102, 105, 99, 105, 97, 108, 32, 103, 97, 109, 101, 32, 97, 108, 115, 111, 46, 32, 74, 117, 115, 116, 69, 109, 117, 84, 97, 114, 107, 111, 118, 32, 84, 101, 97, 109, 46 };
+            byte[] w2 = new byte[23] { 78, 111, 32, 79, 102, 102, 105, 99, 105, 97, 108, 32, 71, 97, 109, 101, 32, 70, 111, 117, 110, 100, 33 };
+            try
+            {
+                List<byte[]> varList = new List<byte[]>() {
+                    //Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\EscapeFromTarkov
+                    new byte[80] { 83, 111, 102, 116, 119, 97, 114, 101, 92, 87, 111, 119, 54, 52, 51, 50, 78, 111, 100, 101, 92, 77, 105, 99, 114, 111, 115, 111, 102, 116, 92, 87, 105, 110, 100, 111, 119, 115, 92, 67, 117, 114, 114, 101, 110, 116, 86, 101, 114, 115, 105, 111, 110, 92, 85, 110, 105, 110, 115, 116, 97, 108, 108, 92, 69, 115, 99, 97, 112, 101, 70, 114, 111, 109, 84, 97, 114, 107, 111, 118 },
+                    //InstallLocation
+                    new byte[15] { 73, 110, 115, 116, 97, 108, 108, 76, 111, 99, 97, 116, 105, 111, 110 },
+                    //DisplayVersion
+                    new byte[14] { 68, 105, 115, 112, 108, 97, 121, 86, 101, 114, 115, 105, 111, 110 },
+                    //EscapeFromTarkov.exe
+                    new byte[20] { 69, 115, 99, 97, 112, 101, 70, 114, 111, 109, 84, 97, 114, 107, 111, 118, 46, 101, 120, 101 }
+                };
+                //@"Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\EscapeFromTarkov"
+                RegistryKey key = Registry.LocalMachine.OpenSubKey(Encoding.ASCII.GetString(varList[0]));
+                if (key != null)
+                {
+                    //"InstallLocation"
+                    object path = key.GetValue(Encoding.ASCII.GetString(varList[1]));
+                    //"DisplayVersion"
+                    object version = key.GetValue(Encoding.ASCII.GetString(varList[2]));
+                    if (path != null && version != null)
+                    {
+                        var foundGameFiles = path.ToString();
+                        var foundGameVersions = version.ToString();
+                        string gamefilepath = Path.Combine(foundGameFiles, Encoding.ASCII.GetString(varList[3]));
+                        if (LC1A(gamefilepath))
+                        {
+                            if (LC2B(gamefilepath))
+                            {
+                                return LC3C(gamefilepath);
+                            }
+                        }
+                    }
+                }
+            }
+            catch
+            {
+            }
+            PatchConstants.Logger.LogError("Illegal game found. Buy the fucking game, you cheepskate cunt. Bye!!");
+            Application.Quit();
+            return false;
+        }
+
+        internal static bool LC1A(string gfp)
+        {
+            var fiGFP = new FileInfo(gfp);
+            return (fiGFP.Exists && fiGFP.Length >= 647 * 1000);
+        }
+
+        internal static bool LC2B(string gfp)
+        {
+            var fiBE = new FileInfo(gfp.Replace(".exe", "_BE.exe"));
+            return (fiBE.Exists && fiBE.Length >= 1024000);
+        }
+
+        internal static bool LC3C(string gfp)
+        {
+            var diBattlEye = new DirectoryInfo(gfp.Replace("EscapeFromTarkov.exe", "BattlEye"));
+            return (diBattlEye.Exists);
         }
 
         internal static bool IllCatchYouCSRINPeeps()

@@ -20,13 +20,17 @@ namespace SIT.A.Tarkov.Core.SP
         [PatchPostfix]
         public static void PatchPostfix(LootableContainer __instance, object interactionResult)
         {
-            Logger.LogInfo($"LootableContainerInteractPatch:PatchPostfix");
-            Logger.LogInfo($"{__instance.Id}");
-            Logger.LogInfo($"{__instance.ItemOwner.ID}");
-            Logger.LogInfo($"{__instance.ItemOwner.Name}");
-            Logger.LogInfo($"{__instance.ItemOwner.ContainerName}");
+            //Logger.LogInfo($"LootableContainerInteractPatch:PatchPostfix");
+            //Logger.LogInfo($"{__instance.Id}");
+            //Logger.LogInfo($"{__instance.ItemOwner.ID}");
+            //Logger.LogInfo($"{__instance.ItemOwner.Name}");
+            //Logger.LogInfo($"{__instance.ItemOwner.ContainerName}");
 
             Dictionary<string, string> args = new Dictionary<string, string>();
+            args.Add("Id", __instance.Id);
+            args.Add("ItemOwner.Id", __instance.ItemOwner.ID);
+            args.Add("ItemOwner.Name", __instance.ItemOwner.Name);
+            args.Add("ItemOwner.ContainerName", __instance.ItemOwner.ContainerName);
             //var s = args.SITToJsonAsync().GetAwaiter().GetResult();
             _ = new Request().PostJsonAsync("/client/raid/person/lootingContainer", JsonConvert.SerializeObject(args));
         }

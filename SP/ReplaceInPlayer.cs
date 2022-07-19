@@ -34,8 +34,8 @@ namespace SIT.Tarkov.SP
             //    _playerAccountId = profile.AccountId;
             //}
 
-            Logger.LogInfo($"ReplaceInPlayer:PatchPostfix: {__instance.GetType()}");
-            Logger.LogInfo($"ReplaceInPlayer:PatchPostfix:healthController {healthController.GetType()}");
+            //Logger.LogInfo($"ReplaceInPlayer:PatchPostfix: {__instance.GetType()}");
+            //Logger.LogInfo($"ReplaceInPlayer:PatchPostfix:healthController {healthController.GetType()}");
 
 
             var instanceProfile = __instance.GetType().GetProperty("Profile"

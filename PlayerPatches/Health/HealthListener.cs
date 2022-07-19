@@ -66,7 +66,7 @@ namespace SIT.Tarkov.Core.PlayerPatches.Health
             if (healthController != null && healthController == MyHealthController)
                 return;
 
-            PatchConstants.Logger.LogInfo("HealthListener:Init");
+            //PatchConstants.Logger.LogInfo("HealthListener:Init");
 
             // cleanup
             //if (_disposable != null)
@@ -108,7 +108,7 @@ namespace SIT.Tarkov.Core.PlayerPatches.Health
                     return;
 
                 var currentEnergy = PatchConstants.GetAllFieldsForObject(valuestruct).FirstOrDefault(x => x.Name == "Current").GetValue(valuestruct);
-                PatchConstants.Logger.LogInfo(currentEnergy);
+                //PatchConstants.Logger.LogInfo(currentEnergy);
                 CurrentHealth.GetType().GetProperty(v).SetValue(CurrentHealth, float.Parse(currentEnergy.ToString()));
             }
             else if (PatchConstants.GetAllFieldsForObject(MyHealthController).Any(x => x.Name == v))
@@ -118,7 +118,7 @@ namespace SIT.Tarkov.Core.PlayerPatches.Health
                     return;
 
                 var currentEnergy = PatchConstants.GetAllFieldsForObject(valuestruct).FirstOrDefault(x => x.Name == "Current").GetValue(valuestruct);
-                PatchConstants.Logger.LogInfo(currentEnergy);
+                //PatchConstants.Logger.LogInfo(currentEnergy);
 
                 CurrentHealth.GetType().GetProperty(v).SetValue(CurrentHealth, float.Parse(currentEnergy.ToString()));
             }
@@ -161,7 +161,7 @@ namespace SIT.Tarkov.Core.PlayerPatches.Health
             var maximum = PatchConstants.GetAllFieldsForObject(bodyPartHealth).FirstOrDefault(x => x.Name == "Maximum").GetValue(bodyPartHealth).ToString();
             //var maximum = PatchConstants.GetFieldOrPropertyFromInstance<float>(bodyPartHealth, "Maximum", true);
 
-            PatchConstants.Logger.LogInfo($"HealthListener:GetBodyPartHealth:{current}/{maximum}");
+            //PatchConstants.Logger.LogInfo($"HealthListener:GetBodyPartHealth:{current}/{maximum}");
             dictionary[bodyPart].Initialize(float.Parse(current), float.Parse(maximum));
 
         }

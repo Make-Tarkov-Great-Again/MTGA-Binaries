@@ -410,6 +410,21 @@ namespace SIT.Tarkov.Core
             return GetAllMethodsForType(StartWithTokenType).Single(x=>x.Name == "StartWithToken").Invoke(null, new object[] { name }) as IDisposable;
         }
 
+        public static async Task InvokeAsyncStaticByReflection(MethodInfo methodInfo, object rModel, params object[] p)
+        {
+            if (rModel == null)
+            {
+                await (Task)methodInfo
+                    .MakeGenericMethod(new[] { rModel.GetType() })
+                    .Invoke(null, p);
+            }
+            else
+            {
+                await (Task)methodInfo
+                    .Invoke(null, p);
+            }
+        }
+
         /// <summary>
         /// Invoke an async Task<object> method
         /// </summary>
@@ -534,11 +549,18 @@ namespace SIT.Tarkov.Core
 
             if (!TypeDictionary.ContainsKey("FilterCustomization"))
             {
-                TypeDictionary.Add("FilterCustomization", PatchConstants.EftTypes.OrderBy(x => x.Name).First(x =>
+                // Gather FilterCustomization
+                TypeDictionary.Add("FilterCustomization", PatchConstants.EftTypes.OrderBy(x => x.Name).Last(x =>
                     x.IsClass
                     && PatchConstants.GetAllMethodsForType(x).Any(x => x.Name == "FilterCustomization")
                 ));
                 Logger.LogInfo($"FilterCustomization:{TypeDictionary["FilterCustomization"].FullName}");
+                // Test Default
+                //var filterCustomizationDefaultProp = PatchConstants.GetPropertyFromType(TypeDictionary["FilterCustomization"], "Default");
+                //Logger.LogInfo($"FilterCustomization:{filterCustomizationDefaultProp.Name}");
+                //var filterCustomizationDefaultField = PatchConstants.GetFieldFromType(PatchConstants.TypeDictionary["FilterCustomization"], "Default");
+                //Logger.LogInfo($"FilterCustomization:{filterCustomizationDefaultField.Name}");
+                //Logger.LogInfo($"FilterCustomization:{filterCustomizationDefaultField.GetValue(null)}");
             }
 
             TypeDictionary.Add("Profile", PatchConstants.EftTypes.First(x =>

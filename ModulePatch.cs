@@ -33,7 +33,7 @@ namespace SIT.Tarkov.Core
         /// <param name="name">Name</param>
         protected ModulePatch(string name = null)
         {
-            A.Tarkov.Core.Plugin.IllCatchYouCSRINPeeps();
+            A.Tarkov.Core.Plugin.LegalityCheck();
             _harmony = new Harmony(name ?? GetType().Name);
             _prefixList = GetPatchMethods(typeof(PatchPrefixAttribute));
             _postfixList = GetPatchMethods(typeof(PatchPostfixAttribute));
