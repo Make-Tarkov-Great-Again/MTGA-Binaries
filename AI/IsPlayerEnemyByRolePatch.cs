@@ -34,8 +34,10 @@ namespace SIT.Tarkov.Core.AI
             , WildSpawnType role
             , WildSpawnType ___wildSpawnType_0
             , WildSpawnType ___wildSpawnType_1
+            , EPlayerSide ___Side
             )
         {
+            var enemyRole = role;
             //__result = ___wildSpawnType_0 != role 
             //    || ___wildSpawnType_1 != role 
             //    || role == WildSpawnType.pmcBot 
@@ -43,13 +45,14 @@ namespace SIT.Tarkov.Core.AI
             //    || ___wildSpawnType_1 == WildSpawnType.pmcBot;
 
             //__result = IsEnemyRole(role, ___wildSpawnType_0) || IsEnemyRole(role, ___wildSpawnType_1);
-            __result = IsEnemyRole(role, ___wildSpawnType_0);// || IsEnemyRole(role, ___wildSpawnType_1);
+            __result = IsEnemyRole(___wildSpawnType_0, enemyRole);// || IsEnemyRole(role, ___wildSpawnType_1);
         }
 
         static List<WildSpawnType> ScavRoles = new List<WildSpawnType>() { WildSpawnType.assault, WildSpawnType.assaultGroup, WildSpawnType.marksman };
         static List<WildSpawnType> KnightRoles = new List<WildSpawnType>() { WildSpawnType.bossKnight, WildSpawnType.followerBigPipe, WildSpawnType.followerBirdEye };
-        //static List<WildSpawnType> BossRoles = new List<WildSpawnType>() { WildSpawnType.bossKnight, WildSpawnType.followerBigPipe, WildSpawnType.followerBirdEye };
         static List<WildSpawnType> PMCRoles = new List<WildSpawnType>() { WildSpawnType.pmcBot };
+        static List<WildSpawnType> exUsecRoles = new List<WildSpawnType>() { WildSpawnType.exUsec };
+
 
         public static bool IsEnemyRole(WildSpawnType myRole, WildSpawnType enemyRole)
         {
@@ -63,6 +66,10 @@ namespace SIT.Tarkov.Core.AI
 
             // Knight guys kill everyone else
             if (KnightRoles.Contains(myRole) && !KnightRoles.Contains(enemyRole))
+                return true;
+
+            // exUsec kill everyone else
+            if (exUsecRoles.Contains(myRole) && !exUsecRoles.Contains(enemyRole))
                 return true;
 
             return false;
