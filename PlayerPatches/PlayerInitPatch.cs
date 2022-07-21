@@ -32,7 +32,7 @@ namespace SIT.Tarkov.Core.PlayerPatches
                 BotSystemHelpers.AddActivePlayer(__instance);
             }
 
-            PatchConstants.DisplayMessageNotification($"{__instance.Profile.Nickname}:{__instance.Side}:{__instance.Profile.Info.Settings.Role} has spawned");
+            //PatchConstants.DisplayMessageNotification($"{__instance.Profile.Nickname}:{__instance.Side}:{__instance.Profile.Info.Settings.Role} has spawned");
         }
     }
 }

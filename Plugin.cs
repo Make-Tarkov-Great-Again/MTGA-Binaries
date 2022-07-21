@@ -216,7 +216,7 @@ namespace SIT.A.Tarkov.Core
                 //Logger.LogInfo(ConstructedBundleAndPoolManagerSingletonType.FullName);
 
                 //new LoadBotTemplatesPatch().Enable();
-                new RemoveUsedBotProfile().Enable();
+                //new RemoveUsedBotProfile().Enable();
                 //new CreateFriendlyAIPatch().Enable();
             }
         }
@@ -229,6 +229,64 @@ namespace SIT.A.Tarkov.Core
 
         public static MethodInfo LoadBundlesAndCreatePoolsMethod { get; set; }
 
+        public static async void LoadBundlesAndCreatePoolsAsync(ResourceKey[] resources)
+        {
+            try
+            {
+                if (BundleAndPoolManager == null)
+                {
+                    PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: BundleAndPoolManager is missing");
+                    return;
+                }
+
+                var raidE = Enum.Parse(poolsCategoryType, "Raid");
+                //PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: raidE is " + raidE.ToString());
+
+                var localE = Enum.Parse(assemblyTypeType, "Local");
+                //PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: localE is " + localE.ToString());
+
+                var GenProp = PatchConstants.GetPropertyFromType(PatchConstants.JobPriorityType, "General").GetValue(null, null);
+                //PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: GenProp is " + GenProp.ToString());
+
+
+                await PatchConstants.InvokeAsyncStaticByReflection(
+                    LoadBundlesAndCreatePoolsMethod,
+                    BundleAndPoolManager
+                    , raidE
+                    , localE
+                    , resources
+                    , GenProp
+                    , (object o) => { PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: Progressing!"); }
+                    , default(CancellationToken)
+                    );
+
+                //Task task = LoadBundlesAndCreatePoolsMethod.Invoke(BundleAndPoolManager,
+                //    new object[] {
+                //    Enum.Parse(poolsCategoryType, "Raid")
+                //    , Enum.Parse(assemblyTypeType, "Local")
+                //    , resources
+                //    , PatchConstants.GetPropertyFromType(PatchConstants.JobPriorityType, "General").GetValue(null, null)
+                //    , null
+                //    , default(CancellationToken)
+                //    }
+                //    ) as Task;
+                ////PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: task is " + task.GetType());
+
+                //if (task != null) // && task.GetType() == typeof(Task))
+                //{
+                //    task.ContinueWith(t => { PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools loaded"); });
+                //    //var t = task as Task;
+                //    PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: task is " + task.GetType());
+                //    return task;
+                //}
+            }
+            catch (Exception ex)
+            {
+                PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools -- ERROR ->>>");
+                PatchConstants.Logger.LogInfo(ex.ToString());
+            }
+        }
+
         public static Task LoadBundlesAndCreatePools(ResourceKey[] resources)
         {
             try
@@ -240,13 +298,13 @@ namespace SIT.A.Tarkov.Core
                 }
 
                 var raidE = Enum.Parse(poolsCategoryType, "Raid");
-                PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: raidE is " + raidE.ToString());
+                //PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: raidE is " + raidE.ToString());
 
                 var localE = Enum.Parse(assemblyTypeType, "Local");
-                PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: localE is " + localE.ToString());
+                //PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: localE is " + localE.ToString());
 
                 var GenProp = PatchConstants.GetPropertyFromType(PatchConstants.JobPriorityType, "General").GetValue(null, null);
-                PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: GenProp is " + GenProp.ToString());
+                //PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: GenProp is " + GenProp.ToString());
 
 
                 return PatchConstants.InvokeAsyncStaticByReflection(

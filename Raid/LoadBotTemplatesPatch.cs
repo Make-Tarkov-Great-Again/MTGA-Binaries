@@ -96,51 +96,108 @@ namespace SIT.Tarkov.Core.SP
         public static bool PatchPrefix(ref Task<Profile> __result, object __instance, object data)
         {
             var taskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
-            var taskAwaiter = (Task<Profile>)null;
-            var profile = (EFT.Profile)_getNewProfileMethod.Invoke(__instance, parameters: new object[] { data });
-            //var profile
-            if (profile == null)
-            {
-                // load from server
-                //Logger.LogInfo("Loading bot profile from server");
 
-                var pptlbMethod = data.GetType().GetMethod("PrepareToLoadBackend", BindingFlags.Instance | BindingFlags.Public);
-                var typeOfThisShit = PatchConstants.EftTypes.Single(x =>
-                    PatchConstants.GetFieldFromType(x, "Role") != null
-                    && PatchConstants.GetFieldFromType(x, "Limit") != null
-                    && PatchConstants.GetFieldFromType(x, "Difficulty") != null
-                );
-                Type genericList = typeof(List<>);
-                Type[] typeArgs = { typeOfThisShit };
-                Type constructed = genericList.MakeGenericType(typeArgs);
+            Task<Profile> res = null;
+            var task = Task.Run(() => {
+
+                Task<Profile> taskAwaiter = null;
+                var profile = (EFT.Profile)_getNewProfileMethod.Invoke(__instance, parameters: new object[] { data });
+                //var profile
+                if (profile == null)
+                {
+                    // load from server
+                    //Logger.LogInfo("Loading bot profile from server");
+
+                    if (PrepareToLoadBackendMethod == null)
+                        PrepareToLoadBackendMethod = data.GetType().GetMethod("PrepareToLoadBackend", BindingFlags.Instance | BindingFlags.Public);
+
+                    var typeOfThisShit = PatchConstants.EftTypes.Single(x =>
+                        PatchConstants.GetFieldFromType(x, "Role") != null
+                        && PatchConstants.GetFieldFromType(x, "Limit") != null
+                        && PatchConstants.GetFieldFromType(x, "Difficulty") != null
+                    );
+                    Type genericList = typeof(List<>);
+                    Type[] typeArgs = { typeOfThisShit };
+                    Type constructed = genericList.MakeGenericType(typeArgs);
 
 
-                //PatchConstants.GetAllFieldsForObject(data).ExecuteForEach(x => Logger.LogInfo("f" + x.Name));
-                //PatchConstants.GetAllPropertiesForObject(data).ExecuteForEach(x => Logger.LogInfo("p" + x.Name));
+                    var source = Activator.CreateInstance(constructed, PrepareToLoadBackendMethod.Invoke(data, new object[] { 1 }));
+                    var backendSession = PatchConstants.BackEndSession;
+                    if (LoadBotsMethod == null)
+                        LoadBotsMethod = PatchConstants.GetMethodForType(backendSession.GetType(), "LoadBots");
 
-                //requestedRole = PatchConstants.GetFieldOrPropertyFromInstance<string>(data, "Role");
-                //Logger.LogInfo(requestedRole);
+                    var botsTask = (Task<Profile[]>)LoadBotsMethod.Invoke(backendSession, new object[] { source });
+                    taskAwaiter = botsTask.ContinueWith(GetFirstResult, taskScheduler);
+                }
+                else
+                {
+                    // return cached profile
+                    //Logger.LogInfo("Loading bot profile from cache");
+                    taskAwaiter = Task.FromResult(profile);
+                }
 
+                // load bundles for bot profile
+                //var continuation = new Continuation(taskScheduler);
+                Plugin.LoadBundlesAndCreatePoolsAsync(taskAwaiter.Result.GetAllPrefabPaths(true).ToArray());
+                //res = taskAwaiter.ContinueWith(continuation.LoadBundles, taskScheduler).Unwrap();
+                res = taskAwaiter;
 
-                var source = Activator.CreateInstance(constructed, pptlbMethod.Invoke(data, new object[] { 1 }));
-                var backendSession = PatchConstants.BackEndSession;
-                var botsTask = (Task<Profile[]>)PatchConstants.GetMethodForType(backendSession.GetType(), "LoadBots").Invoke(backendSession, new object[] { source });
-                taskAwaiter = botsTask.ContinueWith(GetFirstResult, taskScheduler);
-            }
-            else
-            {
-                // return cached profile
-                //Logger.LogInfo("Loading bot profile from cache");
-                taskAwaiter = Task.FromResult(profile);
-            }
+            });
 
-            // load bundles for bot profile
-            var continuation = new Continuation(taskScheduler);
-            var r = taskAwaiter.ContinueWith(continuation.LoadBundles, taskScheduler).Unwrap();
-            //    __result = taskAwaiter.ContinueWith(continuation.LoadBundles, taskScheduler).Unwrap();
-            __result = r;
+            task.Wait();
+            __result = res;
+
             return false;
-            //return true;
+        }
+
+        private static MethodInfo LoadBotsMethod = null;
+        private static MethodInfo PrepareToLoadBackendMethod = null;
+
+        [PatchPostfix]
+        //public static bool PatchPrefix(ref Task<Profile> __result, object __instance, BotData data)
+        public static void PatchPostfix(ref Task<Profile> __result, object __instance, object data)
+        {
+            //var taskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
+            //var taskAwaiter = (Task<Profile>)null;
+            //var profile = (EFT.Profile)_getNewProfileMethod.Invoke(__instance, parameters: new object[] { data });
+            ////var profile
+            //if (profile == null)
+            //{
+            //    // load from server
+            //    //Logger.LogInfo("Loading bot profile from server");
+
+            //    if(PrepareToLoadBackendMethod == null)
+            //        PrepareToLoadBackendMethod = data.GetType().GetMethod("PrepareToLoadBackend", BindingFlags.Instance | BindingFlags.Public);
+
+            //    var typeOfThisShit = PatchConstants.EftTypes.Single(x =>
+            //        PatchConstants.GetFieldFromType(x, "Role") != null
+            //        && PatchConstants.GetFieldFromType(x, "Limit") != null
+            //        && PatchConstants.GetFieldFromType(x, "Difficulty") != null
+            //    );
+            //    Type genericList = typeof(List<>);
+            //    Type[] typeArgs = { typeOfThisShit };
+            //    Type constructed = genericList.MakeGenericType(typeArgs);
+
+
+            //    var source = Activator.CreateInstance(constructed, PrepareToLoadBackendMethod.Invoke(data, new object[] { 1 }));
+            //    var backendSession = PatchConstants.BackEndSession;
+            //    if (LoadBotsMethod == null)
+            //        LoadBotsMethod = PatchConstants.GetMethodForType(backendSession.GetType(), "LoadBots");
+
+            //    var botsTask = (Task<Profile[]>)LoadBotsMethod.Invoke(backendSession, new object[] { source });
+            //    taskAwaiter = botsTask.ContinueWith(GetFirstResult, taskScheduler);
+            //}
+            //else
+            //{
+            //    // return cached profile
+            //    //Logger.LogInfo("Loading bot profile from cache");
+            //    taskAwaiter = Task.FromResult(profile);
+            //}
+
+            //// load bundles for bot profile
+            //var continuation = new Continuation(taskScheduler);
+            //var r = taskAwaiter.ContinueWith(continuation.LoadBundles, taskScheduler).Unwrap();
+            //__result = r;
         }
 
         public static string requestedRole;
@@ -177,20 +234,9 @@ namespace SIT.Tarkov.Core.SP
 
                 //LoadBundlesAndCreatePoolsMethod.Invoke(BundleManager, Enum.Parse()
 
-                var loadTask = Plugin.LoadBundlesAndCreatePools(Profile.GetAllPrefabPaths(false).ToArray());
-                //Plugin.LoadBundlesAndCreatePoolsSync(Profile.GetAllPrefabPaths(false).ToArray());
-
-                //var loadTask = Singleton<PoolManager>.Instance
-                //    .LoadBundlesAndCreatePools(PoolManager.PoolsCategory.Raid,
-                //                               PoolManager.AssemblyType.Local,
-                //                               Profile.GetAllPrefabPaths(false).ToArray(),
-                //                               JobPriority.General,
-                //                               null,
-                //                               default(CancellationToken));
+                var loadTask = Plugin.LoadBundlesAndCreatePools(Profile.GetAllPrefabPaths(true).ToArray());
 
                 return loadTask.ContinueWith(GetProfile, TaskScheduler);
-                //return null;
-                //return task.ContinueWith(GetProfile, TaskScheduler);
             }
 
             private Profile GetProfile(Task task)
