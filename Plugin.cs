@@ -3,6 +3,7 @@ using Comfort.Common;
 using EFT;
 using Microsoft.Win32;
 using SIT.A.Tarkov.Core.Hideout;
+using SIT.A.Tarkov.Core.Menus;
 using SIT.A.Tarkov.Core.Misc;
 using SIT.A.Tarkov.Core.PlayerPatches;
 using SIT.A.Tarkov.Core.SP;
@@ -133,6 +134,8 @@ namespace SIT.A.Tarkov.Core
 
             new LootContainerInitPatch().Enable();
             new CollectLootPointsDataPatch().Enable();
+
+            new SetupItemActionsSettingsPatch().Enable();
 
             // Plugin startup logic
             Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
