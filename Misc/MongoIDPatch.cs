@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace SIT.Tarkov.Core.Misc
 {
+    /// <summary>
+    /// Force bad JET Ids to become what BSG code expects
+    /// </summary>
     internal class MongoIDPatch : ModulePatch
     {
         public static bool MongoIDExists = PatchConstants.EftTypes.Any(x => x.FullName == "EFT.MongoID");

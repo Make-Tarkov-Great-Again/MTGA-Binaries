@@ -42,6 +42,9 @@ namespace SIT.A.Tarkov.Core
         {
             PatchConstants.GetBackendUrl();
 
+            // - Check to ensure an up to date Server is running this library
+            //new Request().PostJson("/client/sit-validator", null);
+
             // - TURN OFF BS Checkers, FileChecker and BattlEye doesn't work BSG, I see cheaters ALL the time -----
             new ConsistencySinglePatch().Enable();
             new ConsistencyMultiPatch().Enable();
@@ -74,12 +77,6 @@ namespace SIT.A.Tarkov.Core
 
             // --------- SCAV MODE ---------------------
             new DisableScavModePatch().Enable();
-            //new ForceLocalGamePatch().Enable();
-
-            //new FilterProfilesPatch().Enable();
-            //new BossSpawnChancePatch().Enable();
-            //new LocalGameStartingPatch().Enable();
-            //LocalGameStartingPatch.LocalGameStarted += LocalGameStartingPatch_LocalGameStarted;
 
             // --------- Airdrop -----------------------
             new AirdropBoxPatch().Enable();
@@ -95,8 +92,7 @@ namespace SIT.A.Tarkov.Core
                 new BotBrainActivatePatch().Enable();
             }
 
-            // -------------------------------------
-            // Matchmaker
+            // --------- Matchmaker ----------------
             new AutoSetOfflineMatch().Enable();
             //new BringBackInsuranceScreen().Enable();
             new DisableReadyButtonOnFirstScreen().Enable();
@@ -124,6 +120,8 @@ namespace SIT.A.Tarkov.Core
             new ChangeEnergyPatch().Enable();
             new ChangeHydrationPatch().Enable();
 
+            // ----------------------------------------------------------------
+            // MongoID. This forces bad JET ids to become what BSG Code expects
             if (MongoIDPatch.MongoIDExists)
             {
                 new MongoIDPatch().Enable();
@@ -145,12 +143,6 @@ namespace SIT.A.Tarkov.Core
 
         }
 
-        //private void LocalGameStartingPatch_LocalGameStarted()
-        //{
-        //    Logger.LogInfo($"Local Game Started");
-        //    new LocalGameSpawnAICoroutinePatch().Enable();
-        //}
-
         private void SceneManager_sceneUnloaded(Scene arg0)
         {
             
@@ -170,8 +162,8 @@ namespace SIT.A.Tarkov.Core
         private void GetBackendConfigurationInstance()
         {
             if (
-                            PatchConstants.BackendStaticConfigurationType != null &&
-                            PatchConstants.BackendStaticConfigurationConfigInstance == null)
+                PatchConstants.BackendStaticConfigurationType != null &&
+                PatchConstants.BackendStaticConfigurationConfigInstance == null)
             {
                 PatchConstants.BackendStaticConfigurationConfigInstance = PatchConstants.GetPropertyFromType(PatchConstants.BackendStaticConfigurationType, "Config").GetValue(null);
                 //Logger.LogInfo($"BackendStaticConfigurationConfigInstance Type:{ PatchConstants.BackendStaticConfigurationConfigInstance.GetType().Name }");
