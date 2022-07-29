@@ -55,8 +55,18 @@ namespace SIT.Tarkov.Core
             {
                 Logger.LogInfo("WebSocketPatch:PatchPrefix:" + __result.ToString());
             }
-            //return new Uri(__instance.ToString().Replace("wss:", "ws:"));
-            __result = new Uri(PatchConstants.GetBackendUrl().Replace("https", "ws"));
+            if (PatchConstants.GetBackendUrl().Contains("https"))
+            {
+                __result = new Uri(PatchConstants.GetBackendUrl().Replace("https", "wss"));
+                Logger.LogInfo("[WEBSOCKET] URL contains https, changing to wss");
+
+            } 
+            else
+            {
+                __result = new Uri(PatchConstants.GetBackendUrl().Replace("http", "ws"));
+                Logger.LogInfo("[WEBSOCKET] URL contains http, changing to ws");
+            }
+            Logger.LogInfo("[WEBSOCKET] Patched");
             return false;
         }
 
