@@ -63,6 +63,9 @@ namespace SIT.A.Tarkov.Core
                 new EasyBundlePatch().Enable();
             }
 
+            // -------- Graphic Slider Config ----------
+            new GraphicsMenu().Enable();
+
             // --------- Container Id Debug ------------
             new LootableContainerInteractPatch().Enable();
 
