@@ -64,7 +64,9 @@ namespace SIT.A.Tarkov.Core
             }
 
             // -------- Graphic Slider Config ----------
-            new GraphicsMenu().Enable();
+            Logger.LogInfo("we tryin");
+            new GraphicsMenu();
+            Logger.LogInfo("idk if we worked");
 
             // --------- Container Id Debug ------------
             new LootableContainerInteractPatch().Enable();
