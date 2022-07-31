@@ -7,10 +7,23 @@
 This is by no means designed for cheats or illegally downloading the game. This is purely for educational and game modification purposes. You must buy the game to use this. 
 You can obtain it here. [https://www.escapefromtarkov.com](https://www.escapefromtarkov.com)
 
+## Discord
+
+You can [join here](https://shorturl.at/abHVW). Please be aware there is a strict NO PIRACY policy to this project. Any piracy talk in the discord is a bannable offence. Do not join unless you own the game!
+
 ## Summary
 
-This is a ~~port~~ **rewrite** of the Just Emu Tarkov core functionality to allow the game to run without worrying about BattlEye and its File Checker using BepInEx. The primary design of this versus 
-others of its kind is that it can be used with ALL versions of EFT.
+The Stay in Tarkov Core handles almost everything to create the Single Player experience of Escape from Tarkov.
+Including but not limited to:
+- Turning off BattlEye (lets be honest, it doesn't work anyway BSG, please change to something else!)
+- Turning off FileChecker (this is BSG's own checker, this needs to be turned off to allow us to mod the game) - See FileChecker
+- Setting up Auto Singleplayer mode (see Menus)
+- Fixing bots / AI to shoot each other (see AI)
+- Fixing bots / AI to become "PMC" (see AI)
+- Fixing "offline" mode to use only the designated online spawn points
+- Fixing "offline" mode to save Progression of the character (something I used was in Live in some form!)
+- Fixing "offline" mode to save Health of the character (something I used was in Live in some form!)
+- Lots more
 
 
 ## Which version of BepInEx is this built for?
@@ -46,4 +59,4 @@ start ./Clients/EmuTarkov/EscapeFromTarkov.exe -token=AID062158106353313252ruc -
 
 ## License
 
->>SOME<< of the original core functionality completed by TheMaoci, AppeazeTheCheese and the SPT-Aki team. There may be licenses pertaining to them within this source.
+>>SOME<< of the original core functionality completed by JustEmuTarkov and SPT-Aki teams. There may be licenses pertaining to them within this source.
