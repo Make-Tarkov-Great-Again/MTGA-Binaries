@@ -28,16 +28,16 @@ namespace SIT.A.Tarkov.Core.PlayerPatches
 
                     if (balle.GetParameters().IsNullOrEmpty() == false)
                     {
-                        Logger.LogInfo("Method Parameters: " + balle.GetPr());
-                        //we're getting here and it's crashing
-                        if (balle.GetParameters().Length != 3 &&
-                            balle.GetParameters()[0].Name != "onHidden" &&
-                            balle.GetParameters()[1].Name != "fastDrop" &&
-                            balle.GetParameters()[2].Name != "nextControllerItem")
-                        {
-                            Logger.LogInfo("Found: " + balle.Name + ", returning!");
-                            return balle;
-                        }
+                        //Logger.LogInfo("Method Parameters: " + balle.GetPr());
+                        ////we're getting here and it's crashing
+                        //if (balle.GetParameters().Length != 3 &&
+                        //    balle.GetParameters()[0].Name != "onHidden" &&
+                        //    balle.GetParameters()[1].Name != "fastDrop" &&
+                        //    balle.GetParameters()[2].Name != "nextControllerItem")
+                        //{
+                        //    Logger.LogInfo("Found: " + balle.Name + ", returning!");
+                        //    return balle;
+                        //}
                         Logger.LogInfo("Method: " + method.FullName + " does not have correct Start, continuing");
                         continue;
                     }

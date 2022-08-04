@@ -141,8 +141,8 @@ namespace SIT.A.Tarkov.Core
                 new EasyBundlePatch().Enable();
             }
             
-            GraphicsMenu();
-            new WeaponDrawSpeed().Enable();
+            SetupMoreGraphicsMenuOptions();
+            //new WeaponDrawSpeed().Enable();
 
         }
 
@@ -162,7 +162,7 @@ namespace SIT.A.Tarkov.Core
             gameWorld = Singleton<GameWorld>.Instance;
         }
 
-        public void GraphicsMenu()
+        public void SetupMoreGraphicsMenuOptions()
         {
             Logger.LogInfo("Adjusting sliders for Overall Visibility and LOD Quality");
             var TypeOfGraphicsSettingsTab = typeof(EFT.UI.Settings.GraphicsSettingsTab);
