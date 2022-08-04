@@ -131,8 +131,6 @@ namespace SIT.A.Tarkov.Core
             SceneManager.sceneLoaded += SceneManager_sceneLoaded;
             SceneManager.sceneUnloaded += SceneManager_sceneUnloaded;
 
-            GraphicsMenu();
-
             // - Loading Bundles from Server. Working Aki version with some tweaks by me -----
             var enableBundles = Config.Bind("Bundles", "Enable", true);
             if (enableBundles != null && enableBundles.Value == true)
@@ -142,6 +140,9 @@ namespace SIT.A.Tarkov.Core
                 new EasyAssetsPatch().Enable();
                 new EasyBundlePatch().Enable();
             }
+            
+            GraphicsMenu();
+            new WeaponDrawSpeed().Enable();
 
         }
 
@@ -203,7 +204,6 @@ namespace SIT.A.Tarkov.Core
             readOnlyCollection_3.SetValue(null, Collection_3);
             Logger.LogInfo("Adjusted sliders for Overall Visibility and LOD Quality");
         }
-
         private void GetBackendConfigurationInstance()
         {
             if (
