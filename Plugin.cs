@@ -53,16 +53,6 @@ namespace SIT.A.Tarkov.Core
             new UnityWebRequestPatch().Enable();
             new WebSocketPatch().Enable();
 
-            // - Loading Bundles from Server. Working Aki version with some tweaks by me -----
-            var enableBundles = Config.Bind("Bundles", "Enable", true);
-            if (enableBundles != null && enableBundles.Value == true)
-            {
-                BundleSetup.Init();
-                BundleManager.GetBundles();
-                new EasyAssetsPatch().Enable();
-                new EasyBundlePatch().Enable();
-            }
-
             // --------- Container Id Debug ------------
             new LootableContainerInteractPatch().Enable();
 
@@ -141,11 +131,24 @@ namespace SIT.A.Tarkov.Core
             SceneManager.sceneLoaded += SceneManager_sceneLoaded;
             SceneManager.sceneUnloaded += SceneManager_sceneUnloaded;
 
+            // - Loading Bundles from Server. Working Aki version with some tweaks by me -----
+            var enableBundles = Config.Bind("Bundles", "Enable", true);
+            if (enableBundles != null && enableBundles.Value == true)
+            {
+                BundleSetup.Init();
+                BundleManager.GetBundles(); // Crash happens here
+                new EasyAssetsPatch().Enable();
+                new EasyBundlePatch().Enable();
+            }
+            
+            GraphicsMenu();
+            new WeaponDrawSpeed().Enable();
+
         }
 
         private void SceneManager_sceneUnloaded(Scene arg0)
         {
-            
+
         }
 
         GameWorld gameWorld = null;
@@ -159,6 +162,48 @@ namespace SIT.A.Tarkov.Core
             gameWorld = Singleton<GameWorld>.Instance;
         }
 
+        public void GraphicsMenu()
+        {
+            Logger.LogInfo("Adjusting sliders for Overall Visibility and LOD Quality");
+            var TypeOfGraphicsSettingsTab = typeof(EFT.UI.Settings.GraphicsSettingsTab);
+
+            var readOnlyCollection_0 = TypeOfGraphicsSettingsTab.GetField(
+                "readOnlyCollection_0",
+                BindingFlags.Static |
+                BindingFlags.NonPublic
+                );
+
+            var readOnlyCollection_3 = TypeOfGraphicsSettingsTab.GetField(
+                "readOnlyCollection_3",
+                BindingFlags.Static |
+                BindingFlags.NonPublic
+                );
+
+            List<float> overallVisibility = new();
+            for (int i = 0; i <= 11; i++)
+            {
+                overallVisibility.Add(400 + (i * 50));
+            }
+
+            for (int i = 0; i <= 4; i++)
+            {
+                overallVisibility.Add(1000 + (i * 500));
+            }
+
+
+            List<float> lodQuality = new();
+            for (int i = 0; i <= 9; i++)
+            {
+                lodQuality.Add((float)(2 + (i * 0.25)));
+            }
+
+            var Collection_0 = Array.AsReadOnly<float>(overallVisibility.ToArray());
+            var Collection_3 = Array.AsReadOnly<float>(lodQuality.ToArray());
+
+            readOnlyCollection_0.SetValue(null, Collection_0);
+            readOnlyCollection_3.SetValue(null, Collection_3);
+            Logger.LogInfo("Adjusted sliders for Overall Visibility and LOD Quality");
+        }
         private void GetBackendConfigurationInstance()
         {
             if (
@@ -168,14 +213,14 @@ namespace SIT.A.Tarkov.Core
                 PatchConstants.BackendStaticConfigurationConfigInstance = PatchConstants.GetPropertyFromType(PatchConstants.BackendStaticConfigurationType, "Config").GetValue(null);
                 //Logger.LogInfo($"BackendStaticConfigurationConfigInstance Type:{ PatchConstants.BackendStaticConfigurationConfigInstance.GetType().Name }");
             }
-            
+
             if (PatchConstants.BackendStaticConfigurationConfigInstance != null
                 && PatchConstants.CharacterControllerSettings.CharacterControllerInstance == null
                 )
             {
                 PatchConstants.CharacterControllerSettings.CharacterControllerInstance
                     = PatchConstants.GetFieldOrPropertyFromInstance<object>(PatchConstants.BackendStaticConfigurationConfigInstance, "CharacterController", false);
-                Logger.LogInfo($"PatchConstants.CharacterControllerInstance Type:{ PatchConstants.CharacterControllerSettings.CharacterControllerInstance.GetType().Name }");
+                Logger.LogInfo($"PatchConstants.CharacterControllerInstance Type:{PatchConstants.CharacterControllerSettings.CharacterControllerInstance.GetType().Name}");
             }
 
             if (PatchConstants.CharacterControllerSettings.CharacterControllerInstance != null
@@ -194,7 +239,7 @@ namespace SIT.A.Tarkov.Core
 
         }
 
-        
+
 
         private void GetPoolManager()
         {
@@ -286,7 +331,7 @@ namespace SIT.A.Tarkov.Core
         {
             try
             {
-                if(BundleAndPoolManager == null)
+                if (BundleAndPoolManager == null)
                 {
                     PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: BundleAndPoolManager is missing");
                     return null;
@@ -372,7 +417,7 @@ namespace SIT.A.Tarkov.Core
 
         void FixedUpdate()
         {
-            if(PatchConstants.PoolManagerType != null && ConstructedBundleAndPoolManagerSingletonType != null && BundleAndPoolManager == null)
+            if (PatchConstants.PoolManagerType != null && ConstructedBundleAndPoolManagerSingletonType != null && BundleAndPoolManager == null)
             {
                 BundleAndPoolManager = PatchConstants.GetPropertyFromType(ConstructedBundleAndPoolManagerSingletonType, "Instance").GetValue(null, null); //Activator.CreateInstance(PatchConstants.PoolManagerType);
                 if (BundleAndPoolManager != null)
