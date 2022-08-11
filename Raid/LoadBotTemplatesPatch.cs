@@ -9,8 +9,7 @@ using System.Threading;
 //using WaveInfo = GClass984; // not used // search for: Difficulty and chppse gclass with lower number whic hcontains Role and Limit variables
 //using BotsPresets = GClass552; // Search for GetNewProfile
 //using BotData = GInterface15; // Search for PrepareToLoadBackend
-using PoolManager = GClass1556; // Search for LoadBundlesAndCreatePools
-using JobPriority = GClass2633; // Search for General
+//using JobPriority = GClass2633; // Search for General
 using SIT.Tarkov.Core;
 using System;
 using System.Collections.Generic;

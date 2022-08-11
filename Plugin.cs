@@ -279,26 +279,28 @@ namespace SIT.A.Tarkov.Core
                     return;
                 }
 
-                var raidE = Enum.Parse(poolsCategoryType, "Raid");
-                //PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: raidE is " + raidE.ToString());
+                //var raidE = Enum.Parse(poolsCategoryType, "Raid");
+                ////PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: raidE is " + raidE.ToString());
 
-                var localE = Enum.Parse(assemblyTypeType, "Local");
-                //PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: localE is " + localE.ToString());
+                //var localE = Enum.Parse(assemblyTypeType, "Local");
+                ////PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: localE is " + localE.ToString());
 
-                var GenProp = PatchConstants.GetPropertyFromType(PatchConstants.JobPriorityType, "General").GetValue(null, null);
+                //var GenProp = PatchConstants.GetPropertyFromType(PatchConstants.JobPriorityType, "General").GetValue(null, null);
                 //PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: GenProp is " + GenProp.ToString());
 
+                await Singleton<PoolManager>.Instance.LoadBundlesAndCreatePools(
+                    PoolManager.PoolsCategory.Raid, PoolManager.AssemblyType.Local, resources, GJobYield.General, null, CancellationToken.None);
 
-                await PatchConstants.InvokeAsyncStaticByReflection(
-                    LoadBundlesAndCreatePoolsMethod,
-                    BundleAndPoolManager
-                    , raidE
-                    , localE
-                    , resources
-                    , GenProp
-                    , (object o) => { PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: Progressing!"); }
-                    , default(CancellationToken)
-                    );
+                //await PatchConstants.InvokeAsyncStaticByReflection(
+                //    LoadBundlesAndCreatePoolsMethod,
+                //    BundleAndPoolManager
+                //    , raidE
+                //    , localE
+                //    , resources
+                //    , GenProp
+                //    , (object o) => { PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: Progressing!"); }
+                //    , default(CancellationToken)
+                //    );
 
                 //Task task = LoadBundlesAndCreatePoolsMethod.Invoke(BundleAndPoolManager,
                 //    new object[] {

@@ -149,9 +149,9 @@ namespace SIT.Tarkov.Core.AI
                 return;
             }
 
-            Logger.LogInfo($"AddActivePlayer:{player.Profile.AccountId}");
+            //Logger.LogInfo($"AddActivePlayer:{player.Profile.AccountId}");
 
-            AddActivePlayerMethod?.Invoke(BotControllerInstance, new object[] { player });
+            //AddActivePlayerMethod?.Invoke(BotControllerInstance, new object[] { player });
         }
 
         public static void SetSettings(int maxCount, Array botPresets, Array botScattering)
