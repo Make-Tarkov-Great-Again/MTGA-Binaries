@@ -145,14 +145,14 @@ namespace SIT.Tarkov.Core
         public static Type JsonConverterType { get; }
         public static JsonConverter[] JsonConverterDefault { get; }
 
-        private static object _backEndSession;
-        public static object BackEndSession
+        private static ISession _backEndSession;
+        public static ISession BackEndSession
         {
             get
             {
                 if (_backEndSession == null)
                 {
-                    _backEndSession = GetMethodForType(typeof(ClientApplication), "GetClientBackEndSession").Invoke(Singleton<ClientApplication>.Instance, new object[] { });
+                    _backEndSession = Singleton<ClientApplication>.Instance.GetClientBackEndSession();
                 }
 
                 return _backEndSession;

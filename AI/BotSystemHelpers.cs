@@ -77,13 +77,14 @@ namespace SIT.Tarkov.Core.AI
 
             //Logger.LogInfo($"BossSpawnRunnerType:{BossSpawnRunnerType.Name}");
 
-            if(ProfileCreatorType == null)
-                ProfileCreatorType = PatchConstants.EftTypes.Last(x => x.IsClass
-                    && PatchConstants.GetPropertyFromType(x, "BundlesLoading") != null
-                    && x.GetMethod("GetNewProfile", BindingFlags.NonPublic | BindingFlags.Instance) != null
-                    );
+            if (ProfileCreatorType == null)
+                ProfileCreatorType = typeof(BotPresets);
+                //ProfileCreatorType = PatchConstants.EftTypes.Last(x => x.IsClass
+                //    && x.GetMethod("GetNewProfile", BindingFlags.NonPublic | BindingFlags.Instance) != null
+                //    && x.GetMethod("GetNewProfile", BindingFlags.NonPublic | BindingFlags.Instance) != null
+                //    );
 
-            //Logger.LogInfo($"ProfileCreatorType:{ProfileCreatorType.Name}");
+            Logger.LogInfo($"ProfileCreatorType:{ProfileCreatorType.Name}");
 
             if (BotCreatorType == null)
                 BotCreatorType = PatchConstants.EftTypes.Single(x => x.IsClass
