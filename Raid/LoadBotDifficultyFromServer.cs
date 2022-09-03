@@ -36,7 +36,7 @@ namespace SIT.Tarkov.SP
             if(JsonToUrlCache.ContainsKey(url))
                 return JsonToUrlCache[url];
 
-            var json = new Request(PatchConstants.GetPHPSESSID(), PatchConstants.GetBackendUrl()).GetJson(url);
+            var json = new SIT.Tarkov.Core.Request(PatchConstants.GetPHPSESSID(), PatchConstants.GetBackendUrl()).GetJson(url);
 
             if (string.IsNullOrWhiteSpace(json))
             {

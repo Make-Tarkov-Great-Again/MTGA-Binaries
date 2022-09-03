@@ -19,17 +19,19 @@ namespace SIT.Tarkov.Core.PlayerPatches.Health
                 );
         }
 
-        public static object ReadyMadeDamageInstance;
+        public static DamageInfo ReadyMadeDamageInstance;
 
-        public static object CreateDamageInfoTypeFromDict(Dictionary<string, object> dict)
+        public static DamageInfo CreateDamageInfoTypeFromDict(Dictionary<string, object> dict)
         {
-            if(ReadyMadeDamageInstance == null)
-                ReadyMadeDamageInstance = Activator.CreateInstance(GetDamageInfoType());
+            ReadyMadeDamageInstance = new DamageInfo();
 
             PatchConstants.GetFieldFromType(ReadyMadeDamageInstance.GetType(), "Damage").SetValue(ReadyMadeDamageInstance, float.Parse(dict["damage"].ToString()));
             PatchConstants.GetFieldFromType(ReadyMadeDamageInstance.GetType(), "DamageType").SetValue(ReadyMadeDamageInstance, Enum.Parse(typeof(EDamageType), dict["damageType"].ToString()));
 
-            //PatchConstants.ConvertDictionaryToObject(ReadyMadeDamageInstance, dict);
+            PatchConstants.GetFieldFromType(ReadyMadeDamageInstance.GetType(), "ArmorDamage").SetValue(ReadyMadeDamageInstance, float.Parse(dict["armorDamage"].ToString()));
+            PatchConstants.GetFieldFromType(ReadyMadeDamageInstance.GetType(), "DidArmorDamage").SetValue(ReadyMadeDamageInstance, float.Parse(dict["didArmorDamage"].ToString()));
+            PatchConstants.GetFieldFromType(ReadyMadeDamageInstance.GetType(), "DidBodyDamage").SetValue(ReadyMadeDamageInstance, float.Parse(dict["didBodyDamage"].ToString()));
+
             return ReadyMadeDamageInstance;
         }
 

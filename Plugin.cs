@@ -54,7 +54,7 @@ namespace SIT.A.Tarkov.Core
             new WebSocketPatch().Enable();
 
             // --------- Container Id Debug ------------
-            new LootableContainerInteractPatch().Enable();
+            //new LootableContainerInteractPatch().Enable();
 
             // --------- PMC Dogtags -------------------
             new UpdateDogtagPatch().Enable();
@@ -100,7 +100,8 @@ namespace SIT.A.Tarkov.Core
             // -------------------------------------
             // Raid
             new LoadBotDifficultyFromServer().Enable();
-            new SpawnPointPatch().Enable();
+            //new SpawnPointPatch().Enable();
+            //new BossSpawnChancePatch().Enable();
 
             // --------------------------------------
             // Health stuff

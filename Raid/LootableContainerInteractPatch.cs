@@ -32,7 +32,7 @@ namespace SIT.A.Tarkov.Core.SP
             args.Add("ItemOwner.Name", __instance.ItemOwner.Name);
             args.Add("ItemOwner.ContainerName", __instance.ItemOwner.ContainerName);
             //var s = args.SITToJsonAsync().GetAwaiter().GetResult();
-            _ = new Request().PostJsonAsync("/client/raid/person/lootingContainer", JsonConvert.SerializeObject(args));
+            _ = new SIT.Tarkov.Core.Request().PostJsonAsync("/client/raid/person/lootingContainer", JsonConvert.SerializeObject(args));
         }
     }
 }

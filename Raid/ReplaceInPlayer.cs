@@ -25,7 +25,7 @@ namespace SIT.Tarkov.SP
             , object healthController)
         //public static void PatchPostfix(Player __instance, Task __result)
         {
-            
+
 
             //if (_playerAccountId == null)
             //{

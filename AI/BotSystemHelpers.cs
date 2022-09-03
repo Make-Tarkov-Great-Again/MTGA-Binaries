@@ -111,7 +111,7 @@ namespace SIT.Tarkov.Core.AI
                     && PatchConstants.GetFieldFromType(x, "DisabledScavExits") != null
                     );
 
-            //Logger.LogInfo($"LocationBaseType:{LocationBaseType.Name}");
+            Logger.LogInfo($"LocationBaseType:{LocationBaseType.Name}");
 
             if (!TypeDictionary.ContainsKey("BotOwner"))
             {

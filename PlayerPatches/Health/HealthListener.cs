@@ -66,7 +66,7 @@ namespace SIT.Tarkov.Core.PlayerPatches.Health
             if (healthController != null && healthController == MyHealthController)
                 return;
 
-            //PatchConstants.Logger.LogInfo("HealthListener:Init");
+            PatchConstants.Logger.LogInfo("HealthListener:Init");
 
             // cleanup
             //if (_disposable != null)
