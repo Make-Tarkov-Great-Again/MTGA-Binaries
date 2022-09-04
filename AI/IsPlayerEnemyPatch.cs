@@ -31,7 +31,7 @@ namespace SIT.Tarkov.Core.AI
 
         [PatchPostfix]
         public static void PatchPostfix(ref bool __result
-            , IAIDetails player
+            , IPerson player
             , WildSpawnType ___wildSpawnType_0
             , WildSpawnType ___wildSpawnType_1
             )
@@ -40,14 +40,21 @@ namespace SIT.Tarkov.Core.AI
             {
                 if (player.AIData.IsAI)
                 {
-                    if(player.Profile != null && player.Profile.Info != null && player.Profile.Info.Settings != null)
+                    if (player.Profile != null && player.Profile.Info != null && player.Profile.Info.Settings != null)
                     {
-                        bool isEnemyRole = IsPlayerEnemyByRolePatch.IsEnemyRole(___wildSpawnType_0, player.Profile.Info.Settings.Role);
+                        var otherAIPlayerRole = player.AIData.BotOwner.Profile.Info.Settings.Role;
+
+                        bool isEnemyRole = IsPlayerEnemyByRolePatch.IsEnemyRole(___wildSpawnType_0, otherAIPlayerRole);
                         var otherPlayerHealthController = HealthControllerHelpers.GetActiveHealthController(player);
                         var otherPlayerIsAlive = HealthControllerHelpers.IsAlive(otherPlayerHealthController);
                         __result = otherPlayerIsAlive && isEnemyRole;
                         return;
                     }
+                }
+                else
+                {
+                    __result = true;
+                    return;
                 }
 
             }
