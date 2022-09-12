@@ -11,8 +11,7 @@ namespace SIT.Tarkov.SP
     {
         public ItemDroppedAtPlace_Beacon()  { }
 
-        protected override MethodBase GetTargetMethod() => typeof(EFT.Player)
-            .GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly)
+        protected override MethodBase GetTargetMethod() => PatchConstants.GetAllMethodsForType(typeof(EFT.Player))
             .Single(IsTargetMethod);
 
         private bool IsTargetMethod(MethodInfo method)

@@ -15,22 +15,7 @@ namespace SIT.Tarkov.Core.SP
 {
     class UpdateDogtagPatch : ModulePatch
     {
-        //private static Func<Player, Equipment> getEquipmentProperty;
-
-        public UpdateDogtagPatch() 
-        {
-            // compile-time checks
-            //_ = nameof(Equipment.GetSlot);
-            //_ = nameof(StDamage.Weapon);
-
-            //getEquipmentProperty = typeof(Player)
-            //    .GetProperty("Equipment", BindingFlags.NonPublic | BindingFlags.Instance)
-            //    .GetGetMethod(true)
-            //    .CreateDelegate(typeof(Func<Player, Equipment>)) as Func<Player, Equipment>;
-        }
-
-        protected override MethodBase GetTargetMethod() => typeof(Player)
-            .GetMethod("OnBeenKilledByAggressor", BindingFlags.NonPublic | BindingFlags.Instance);
+        protected override MethodBase GetTargetMethod() => PatchConstants.GetMethodForType(typeof(EFT.Player), "OnBeenKilledByAggressor");
 
         [PatchPostfix]
         public static void PatchPostfix(Player __instance, Player aggressor, object damageInfo)

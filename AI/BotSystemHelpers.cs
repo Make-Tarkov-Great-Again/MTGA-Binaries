@@ -78,7 +78,7 @@ namespace SIT.Tarkov.Core.AI
             //Logger.LogInfo($"BossSpawnRunnerType:{BossSpawnRunnerType.Name}");
 
             if (ProfileCreatorType == null)
-                ProfileCreatorType = typeof(BotPresets);
+                ProfileCreatorType = typeof(BotPresetClass);
                 //ProfileCreatorType = PatchConstants.EftTypes.Last(x => x.IsClass
                 //    && x.GetMethod("GetNewProfile", BindingFlags.NonPublic | BindingFlags.Instance) != null
                 //    && x.GetMethod("GetNewProfile", BindingFlags.NonPublic | BindingFlags.Instance) != null

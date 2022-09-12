@@ -14,7 +14,7 @@ namespace SIT.Tarkov.SP
         protected override MethodBase GetTargetMethod()
         {
             //return typeof(Player).GetMethod("Init", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
-            return typeof(LocalPlayer).GetMethod("Init", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+            return PatchConstants.GetMethodForType(typeof(LocalPlayer), "Init");
         }
 
         [PatchPostfix]

@@ -1,4 +1,5 @@
-﻿using BepInEx;
+﻿using Aki.Custom.Airdrops.Patches;
+using BepInEx;
 using Comfort.Common;
 using EFT;
 using Microsoft.Win32;
@@ -16,7 +17,6 @@ using SIT.Tarkov.Core.Misc;
 using SIT.Tarkov.Core.PlayerPatches;
 using SIT.Tarkov.Core.PlayerPatches.Health;
 using SIT.Tarkov.Core.Raid;
-using SIT.Tarkov.Core.Raid.Aki;
 using SIT.Tarkov.Core.SP;
 using SIT.Tarkov.Core.SP.Raid;
 using SIT.Tarkov.Core.SP.ScavMode;
@@ -69,8 +69,9 @@ namespace SIT.A.Tarkov.Core
             new DisableScavModePatch().Enable();
 
             // --------- Airdrop -----------------------
-            new AirdropBoxPatch().Enable();
-            new AirdropPatch(Config).Enable();
+            //new AirdropBoxPatch().Enable();
+            //new AirdropPatch(Config).Enable();
+            new AirdropPatch().Enable();
 
             // --------- AI -----------------------
             var enableSITAISystem = Config.Bind("AI", "Enable SIT AI", true).Value;
@@ -80,6 +81,7 @@ namespace SIT.A.Tarkov.Core
                 new IsPlayerEnemyPatch().Enable();
                 new IsPlayerEnemyByRolePatch().Enable();
                 new BotBrainActivatePatch().Enable();
+                new BotSelfEnemyPatch().Enable();
             }
 
             // --------- Matchmaker ----------------
@@ -141,8 +143,14 @@ namespace SIT.A.Tarkov.Core
                 new EasyAssetsPatch().Enable();
                 new EasyBundlePatch().Enable();
             }
-            
-            SetupMoreGraphicsMenuOptions();
+
+            //var enableRagdollBodies = Config.Bind("SERVPH Ragdoll Bodies", "Enable", true);
+            //if (enableRagdollBodies != null && enableRagdollBodies.Value == true)
+            //{
+            //    new PlayerPatches.SERVPH.SERVPHBodyPatch();
+            //}
+
+            //SetupMoreGraphicsMenuOptions();
             //new WeaponDrawSpeed().Enable();
 
         }
@@ -290,7 +298,7 @@ namespace SIT.A.Tarkov.Core
                 //PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: GenProp is " + GenProp.ToString());
 
                 await Singleton<PoolManager>.Instance.LoadBundlesAndCreatePools(
-                    PoolManager.PoolsCategory.Raid, PoolManager.AssemblyType.Local, resources, GJobYield.General, null, CancellationToken.None);
+                    PoolManager.PoolsCategory.Raid, PoolManager.AssemblyType.Local, resources, JobPriority.General, null, CancellationToken.None);
 
                 //await PatchConstants.InvokeAsyncStaticByReflection(
                 //    LoadBundlesAndCreatePoolsMethod,
@@ -425,7 +433,7 @@ namespace SIT.A.Tarkov.Core
                 BundleAndPoolManager = PatchConstants.GetPropertyFromType(ConstructedBundleAndPoolManagerSingletonType, "Instance").GetValue(null, null); //Activator.CreateInstance(PatchConstants.PoolManagerType);
                 if (BundleAndPoolManager != null)
                 {
-                    Logger.LogInfo("BundleAndPoolManager Singleton Instance found: " + BundleAndPoolManager.GetType().FullName);
+                    //Logger.LogInfo("BundleAndPoolManager Singleton Instance found: " + BundleAndPoolManager.GetType().FullName);
                     poolsCategoryType = BundleAndPoolManager.GetType().GetNestedType("PoolsCategory");
                     if (poolsCategoryType != null)
                     {

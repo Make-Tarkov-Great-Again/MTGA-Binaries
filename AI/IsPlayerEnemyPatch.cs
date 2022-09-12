@@ -38,27 +38,24 @@ namespace SIT.Tarkov.Core.AI
         {
             if (player != null)
             {
+                __result = true;
+
                 if (player.AIData.IsAI)
                 {
                     if (player.Profile != null && player.Profile.Info != null && player.Profile.Info.Settings != null)
                     {
                         var otherAIPlayerRole = player.AIData.BotOwner.Profile.Info.Settings.Role;
 
-                        bool isEnemyRole = IsPlayerEnemyByRolePatch.IsEnemyRole(___wildSpawnType_0, otherAIPlayerRole);
-                        var otherPlayerHealthController = HealthControllerHelpers.GetActiveHealthController(player);
-                        var otherPlayerIsAlive = HealthControllerHelpers.IsAlive(otherPlayerHealthController);
-                        __result = otherPlayerIsAlive && isEnemyRole;
-                        return;
+                        bool isEnemyRole =
+                            IsPlayerEnemyByRolePatch.IsEnemyRole(___wildSpawnType_0, otherAIPlayerRole)
+                            || IsPlayerEnemyByRolePatch.IsEnemyRole(___wildSpawnType_1, otherAIPlayerRole);
+                        //var otherPlayerHealthController = HealthControllerHelpers.GetActiveHealthController(player);
+                        //var otherPlayerIsAlive = HealthControllerHelpers.IsAlive(otherPlayerHealthController);
+                        //__result = otherPlayerIsAlive && isEnemyRole;
+                        __result = isEnemyRole;
                     }
                 }
-                else
-                {
-                    __result = true;
-                    return;
-                }
-
             }
-            __result = false;
         }
     }
 }

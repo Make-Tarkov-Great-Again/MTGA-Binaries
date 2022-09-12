@@ -25,7 +25,6 @@ Including but not limited to:
 - Fixing "offline" mode to save Health of the character (something I used was in Live in some form!)
 - Lots more
 
-
 ## Which version of BepInEx is this built for?
 Version 5
 
@@ -56,6 +55,11 @@ Place the built .dll in the BepInEx plugins folder
 start ./Clients/EmuTarkov/EscapeFromTarkov.exe -token=AID062158106353313252ruc -config={"BackendUrl":"https://localhost:7777","Version":"live"}
 ```
 - If BepInEx is working a console should open and display the module "plugin" as started
+
+## Thanks List
+- SPT-Aki team
+- JET team
+- SERVPH for https://github.com/S3RAPH-1M/SERVPH-Mods/tree/main/VisceralRagdolls
 
 ## License
 

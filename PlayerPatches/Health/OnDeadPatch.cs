@@ -32,13 +32,14 @@ namespace SIT.Tarkov.Core.PlayerPatches.Health
             }
         }
 
-        protected override MethodBase GetTargetMethod() => typeof(Player)
-            .GetMethod("OnDead", BindingFlags.NonPublic | BindingFlags.Instance);
+        protected override MethodBase GetTargetMethod() => PatchConstants.GetMethodForType(typeof(Player), "OnDead");
 
         [PatchPostfix]
         public static void PatchPostfix(EFT.Player __instance, EDamageType damageType)
         {
             Player deadPlayer = __instance;
+            if (deadPlayer == null)
+                return;
 
             if(OnPersonKilled != null)
             {
@@ -46,7 +47,12 @@ namespace SIT.Tarkov.Core.PlayerPatches.Health
             }
 
             var killedBy = PatchConstants.GetFieldOrPropertyFromInstance<Player>(deadPlayer, "LastAggressor", false);
+            if (killedBy == null)
+                return;
+
             var killedByLastAggressor = PatchConstants.GetFieldOrPropertyFromInstance<Player>(killedBy, "LastAggressor", false);
+            if (killedByLastAggressor == null)
+                return;
 
             if (DisplayDeathMessage)
             {

@@ -4,11 +4,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
-//using IHealthController = GInterface195; // ActiveBuffsNames
-//using StDamage = GStruct262; // BodyPartColliderType
-//using IEffect = GInterface153; // AddWholeTime
-using SIT.Tarkov.Core;
-
 namespace SIT.Tarkov.Core.PlayerPatches.Health
 {
     public class HealthListener
@@ -66,7 +61,7 @@ namespace SIT.Tarkov.Core.PlayerPatches.Health
             if (healthController != null && healthController == MyHealthController)
                 return;
 
-            PatchConstants.Logger.LogInfo("HealthListener:Init");
+            //PatchConstants.Logger.LogInfo("HealthListener:Init");
 
             // cleanup
             //if (_disposable != null)

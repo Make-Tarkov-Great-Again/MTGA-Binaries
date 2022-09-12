@@ -190,6 +190,28 @@ namespace SIT.Tarkov.Core
           
         }
 
+        public static FieldInfo GetFieldFromTypeByFieldType(Type objectType, Type fieldType)
+        {
+            var fields = objectType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+            //foreach(var f in fields)
+            //{
+            //    Logger.LogInfo("Field:" + f.Name);
+            //}
+            return fields.FirstOrDefault(x => x.FieldType == fieldType);
+
+        }
+
+        public static PropertyInfo GetPropertyFromTypeByPropertyType(Type objectType, Type propertyType)
+        {
+            var fields = objectType.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+            //foreach (var f in fields)
+            //{
+            //    Logger.LogInfo("Prop:" + f.Name);
+            //}
+            return fields.FirstOrDefault(x => x.PropertyType == propertyType);
+
+        }
+
         public static MethodInfo GetMethodForType(Type t, string methodName, bool debug = false)
         {
             return GetAllMethodsForType(t, debug).LastOrDefault(x => x.Name.ToLower() == methodName.ToLower()); 
@@ -244,6 +266,9 @@ namespace SIT.Tarkov.Core
 
         public static IEnumerable<PropertyInfo> GetAllPropertiesForObject(object o)
         {
+            if (o == null)
+                return new List<PropertyInfo>();
+
             var t = o.GetType();
             var props = t.GetProperties(BindingFlags.Instance | BindingFlags.Public).ToList();
             props.AddRange(t.GetProperties(BindingFlags.Instance | BindingFlags.NonPublic));
