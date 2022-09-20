@@ -31,7 +31,7 @@ namespace SIT.Tarkov.Core.AI
 
         [PatchPostfix]
         public static void PatchPostfix(ref bool __result
-            , IPerson player
+            , IAIDetails player
             , WildSpawnType ___wildSpawnType_0
             , WildSpawnType ___wildSpawnType_1
             )

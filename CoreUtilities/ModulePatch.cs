@@ -117,7 +117,7 @@ namespace SIT.Tarkov.Core
 		            _harmony.Patch(target, ilmanipulator: ilmanipulator);
                 }
 
-                Logger.LogInfo($"Enabled patch {_harmony.Id}");
+                //Logger.LogInfo($"Enabled patch {_harmony.Id}");
             }
             catch (Exception ex)
             {

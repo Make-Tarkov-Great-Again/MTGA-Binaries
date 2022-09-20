@@ -23,7 +23,7 @@ namespace SIT.Tarkov.Core.AI
         [PatchPrefix]
         private static bool PatchPrefix(BotOwner __instance, BotGroupClass group)
         {
-            IPerson selfToRemove = null;
+            IAIDetails selfToRemove = null;
 
             foreach (var enemy in group.Enemies)
             {
