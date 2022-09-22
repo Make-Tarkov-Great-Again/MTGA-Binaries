@@ -1,12 +1,6 @@
-﻿using EFT;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Comfort.Common;
+using EFT;
 using UnityEngine;
-using Comfort;
-using Comfort.Common;
 
 
 namespace MTGA.Core.Spawners.Grenades
@@ -37,7 +31,7 @@ namespace MTGA.Core.Spawners.Grenades
 
 		private void Tick()
 		{
-			Vector3 Position = ((Component)this).transform.Position;
+			Vector3 Position = ((Component)this).transform.position;
 			Position.x += UnityEngine.Random.Range(0f - ExplosiveGrenadeSpawner.range, ExplosiveGrenadeSpawner.range);
 			Position.z += UnityEngine.Random.Range(0f - ExplosiveGrenadeSpawner.range, ExplosiveGrenadeSpawner.range);
 			Position.y += 300f;
