@@ -1,5 +1,5 @@
-﻿using SIT.Tarkov.Core;
-using SIT.Tarkov.Core.AI;
+﻿using MTGA.Core;
+using MTGA.Core.AI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SIT.Tarkov.Core.LocalGame
+namespace MTGA.Core.LocalGame
 {
     // <summary>
     /// Target that smethod_3 like
@@ -18,7 +18,7 @@ namespace SIT.Tarkov.Core.LocalGame
         public static event Action LocalGameStarted;
         protected override MethodBase GetTargetMethod()
         {
-            var t = SIT.Tarkov.Core.PatchConstants.EftTypes.FirstOrDefault(x => x.FullName.StartsWith("EFT.LocalGame"));
+            var t = MTGA.Core.PatchConstants.EftTypes.FirstOrDefault(x => x.FullName.StartsWith("EFT.LocalGame"));
             if (t == null)
                 Logger.LogInfo($"LocalGameStartingPatch:Type is NULL");
 

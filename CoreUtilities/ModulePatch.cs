@@ -4,7 +4,7 @@ using System.Reflection;
 using BepInEx.Logging;
 using HarmonyLib;
 
-namespace SIT.Tarkov.Core
+namespace MTGA.Core
 {
     public abstract class ModulePatch
     {

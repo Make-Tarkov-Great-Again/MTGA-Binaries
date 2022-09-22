@@ -1,7 +1,7 @@
 using System;
 using System.Reflection.Emit;
 
-namespace SIT.Tarkov.Core
+namespace MTGA.Core
 {
     public class Code
     {

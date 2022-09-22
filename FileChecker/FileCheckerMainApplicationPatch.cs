@@ -1,6 +1,6 @@
 ﻿using EFT;
 using FilesChecker;
-using SIT.Tarkov.Core;
+using MTGA.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SIT.A.Tarkov.Core.FileChecker
+namespace MTGA.Core.FileChecker
 {
     public class FileCheckerMainApplicationPatch : ModulePatch
     {

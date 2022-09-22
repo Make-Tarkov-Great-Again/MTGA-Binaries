@@ -10,11 +10,11 @@ using EFT;
 using EFT.Communications;
 using FilesChecker;
 using Newtonsoft.Json;
-using SIT.A.Tarkov.Core.Web;
-using SIT.Tarkov.Core.AI;
+using MTGA.Core.Web;
+using MTGA.Core.AI;
 using UnityEngine;
 
-namespace SIT.Tarkov.Core
+namespace MTGA.Core
 {
     public static class PatchConstants
     {
@@ -161,8 +161,8 @@ namespace SIT.Tarkov.Core
 
         public static T DoSafeConversion<T>(object o)
         {
-            var json = o.SITToJson();
-            return json.SITParseJson<T>();
+            var json = o.MTGAToJson();
+            return json.MTGAParseJson<T>();
         }
 
         public static object GetSingletonInstance(Type singletonInstanceType)
@@ -313,7 +313,7 @@ namespace SIT.Tarkov.Core
             if(property != null)
             {
                 if (safeConvert)
-                    return Tarkov.Core.PatchConstants.DoSafeConversion<T>(property.GetValue(o));
+                    return MTGA.Core.PatchConstants.DoSafeConversion<T>(property.GetValue(o));
                 else 
                     return (T)property.GetValue(o);
             }
@@ -321,7 +321,7 @@ namespace SIT.Tarkov.Core
             if(field != null)
             {
                 if (safeConvert)
-                    return Tarkov.Core.PatchConstants.DoSafeConversion<T>(field.GetValue(o));
+                    return MTGA.Core.PatchConstants.DoSafeConversion<T>(field.GetValue(o));
                 else
                     return (T)field.GetValue(o);
             }
@@ -376,7 +376,7 @@ namespace SIT.Tarkov.Core
             }
         }
 
-        public static string SITToJson(this object o)
+        public static string MTGAToJson(this object o)
         {
             return JsonConvert.SerializeObject(o
                     , new JsonSerializerSettings()
@@ -386,15 +386,15 @@ namespace SIT.Tarkov.Core
                     );
         }
 
-        public static async Task<string> SITToJsonAsync(this object o)
+        public static async Task<string> MTGAToJsonAsync(this object o)
         {
             return await Task.Run(() =>
             {
-                return SITToJson(o);
+                return MTGAToJson(o);
             });
         }
 
-        public static T SITParseJson<T>(this string str)
+        public static T MTGAParseJson<T>(this string str)
         {
             return (T)JsonConvert.DeserializeObject<T>(str
                     , new JsonSerializerSettings()
@@ -478,7 +478,7 @@ namespace SIT.Tarkov.Core
         static PatchConstants()
         {
             if (Logger == null)
-                Logger = BepInEx.Logging.Logger.CreateLogSource("SIT.Tarkov.Core.PatchConstants");
+                Logger = BepInEx.Logging.Logger.CreateLogSource("MTGA.Core.PatchConstants");
 
             TypesDictionary.Add("EftTypes", EftTypes);
 
@@ -490,12 +490,12 @@ namespace SIT.Tarkov.Core
             MessageNotificationType = EftTypes.Single(x => x.GetMethods(BindingFlags.Static | BindingFlags.Public).Select(y => y.Name).Contains("DisplayMessageNotification"));
             if (MessageNotificationType == null)
             {
-                Logger.LogInfo("SIT.Tarkov.Core:PatchConstants():MessageNotificationType:Not Found");
+                Logger.LogInfo("MTGA.Core:PatchConstants():MessageNotificationType:Not Found");
             }
             GroupingType = EftTypes.Single(x => x.GetMethods(BindingFlags.Public | BindingFlags.Static).Select(y => y.Name).Contains("CreateRaidPlayer"));
             if (GroupingType != null)
             {
-                Logger.LogInfo("SIT.Tarkov.Core:PatchConstants():Found GroupingType:" + GroupingType.FullName);
+                Logger.LogInfo("MTGA.Core:PatchConstants():Found GroupingType:" + GroupingType.FullName);
             }
 
             JsonConverterType = typeof(AbstractGame).Assembly.GetTypes()

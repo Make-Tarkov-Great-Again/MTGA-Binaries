@@ -1,7 +1,7 @@
 using System;
 using JetBrains.Annotations;
 
-namespace SIT.Tarkov.Core
+namespace MTGA.Core
 {
     [MeansImplicitUse]
 	[AttributeUsage(AttributeTargets.Method)]

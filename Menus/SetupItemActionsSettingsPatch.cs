@@ -1,5 +1,5 @@
 ﻿using HarmonyLib;
-using SIT.Tarkov.Core;
+using MTGA.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SIT.A.Tarkov.Core.Menus
+namespace MTGA.Core.Menus
 {
     internal class SetupItemActionsSettingsPatch : ModulePatch
     {

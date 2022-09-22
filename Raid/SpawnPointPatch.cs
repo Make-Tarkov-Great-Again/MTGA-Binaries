@@ -1,7 +1,7 @@
 ﻿using EFT;
 using EFT.Game.Spawning;
 using HarmonyLib;
-using SIT.Tarkov.Core;
+using MTGA.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,13 +10,13 @@ using System.Text;
 using System.Threading.Tasks;
 
 /***
- * Full Credit for this patch goes to SPT-Aki team.
+ * Full Credit for this patch goes to SPT-AKI team.
  * Original Source is found here - https://dev.sp-tarkov.com/SPT-AKI/Modules. 
  * Paulov. Made changes to have better reflection and less hardcoding
  */
 
 
-namespace SIT.Tarkov.Core.Raid
+namespace MTGA.Core.Raid
 {
     /// <summary>
     /// 

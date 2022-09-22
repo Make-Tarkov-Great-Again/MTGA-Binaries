@@ -4,9 +4,9 @@ using System.Linq;
 using System.Reflection;
 using Comfort.Common;
 using EFT.InventoryLogic;
-using SIT.Tarkov.Core;
+using MTGA.Core;
 
-namespace SIT.A.Tarkov.Core.Spawners
+namespace MTGA.Core.Spawners
 {
     public class ItemFactory
 	{

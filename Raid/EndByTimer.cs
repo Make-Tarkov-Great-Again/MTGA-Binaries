@@ -1,11 +1,11 @@
 ﻿using EFT;
-using SIT.Tarkov.Core;
+using MTGA.Core;
 using System;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
-namespace SIT.Tarkov.Core.Raid
+namespace MTGA.Core.Raid
 {
     public class EndByTimer : ModulePatch
     {

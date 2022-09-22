@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System;
 
-namespace SIT.Tarkov.Core
+namespace MTGA.Core
 {
     public static class ClientAccesor
     {

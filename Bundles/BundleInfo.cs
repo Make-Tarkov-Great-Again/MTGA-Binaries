@@ -1,4 +1,4 @@
-﻿namespace SIT.Tarkov.Core
+﻿namespace MTGA.Core
 {
     public class BundleInfo
     {

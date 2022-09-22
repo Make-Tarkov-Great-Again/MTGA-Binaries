@@ -8,7 +8,7 @@ using System.Linq;
 using UnityEngine;
 
 /***
- * Full Credit for this patch goes to SPT-Aki team. Specifically CWX!
+ * Full Credit for this patch goes to SPT-AKI team. Specifically CWX!
  * Original Source is found here - https://dev.sp-tarkov.com/SPT-AKI/Modules. 
 */
 namespace Aki.Custom.Airdrops.Utils
@@ -17,7 +17,7 @@ namespace Aki.Custom.Airdrops.Utils
     {
         public static AirdropConfigModel GetConfigFromServer()
         {
-            var json = new SIT.Tarkov.Core.Request().GetJson("/singleplayer/airdrop/config");
+            var json = new MTGA.Core.Request().GetJson("/singleplayer/airdrop/config");
             return JsonConvert.DeserializeObject<AirdropConfigModel>(json);
         }
 

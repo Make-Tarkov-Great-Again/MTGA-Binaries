@@ -1,4 +1,4 @@
-﻿using SIT.Tarkov.Core;
+﻿using MTGA.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SIT.A.Tarkov.Core.Misc
+namespace MTGA.Core.Misc
 {
     internal class LootContainerInitPatch : ModulePatch
     {

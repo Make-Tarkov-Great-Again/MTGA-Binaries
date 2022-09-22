@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using Aki.Custom.Airdrops.Models;
 using System.Linq;
 /***
- * Full Credit for this patch goes to SPT-Aki team. Specifically CWX!
+ * Full Credit for this patch goes to SPT-AKI team. Specifically CWX!
  * Original Source is found here - https://dev.sp-tarkov.com/SPT-AKI/Modules. 
 */
 namespace Aki.Custom.Airdrops.Utils
@@ -66,7 +66,7 @@ namespace Aki.Custom.Airdrops.Utils
 
         private List<AirdropLootModel> GetLoot()
         {
-            var json = new SIT.Tarkov.Core.Request().GetJson("/client/location/getAirdropLoot");
+            var json = new MTGA.Core.Request().GetJson("/client/location/getAirdropLoot");
             var loot = JsonConvert.DeserializeObject<List<AirdropLootModel>>(json);
 
             return loot;

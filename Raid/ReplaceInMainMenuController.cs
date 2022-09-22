@@ -1,11 +1,11 @@
 ﻿//using MainMenuController = GClass1504; // SelectedDateTime
 //using IHealthController = GInterface195; // CarryingWeightAbsoluteModifier
 using System.Reflection;
-using SIT.Tarkov.Core;
+using MTGA.Core;
 using System.Linq;
-using SIT.Tarkov.Core.PlayerPatches.Health;
+using MTGA.Core.PlayerPatches.Health;
 
-namespace SIT.Tarkov.SP
+namespace MTGA.SP
 {
     public class ReplaceInMainMenuController : ModulePatch
     {
@@ -19,12 +19,12 @@ namespace SIT.Tarkov.SP
 
         protected override MethodBase GetTargetMethod()
         {
-            var mmc = SIT.Tarkov.Core.PatchConstants.EftTypes.Single(x =>
-                (SIT.Tarkov.Core.PatchConstants.GetFieldFromType(x, "HealthController") != null
-                || SIT.Tarkov.Core.PatchConstants.GetPropertyFromType(x, "HealthController") != null)
+            var mmc = MTGA.Core.PatchConstants.EftTypes.Single(x =>
+                (MTGA.Core.PatchConstants.GetFieldFromType(x, "HealthController") != null
+                || MTGA.Core.PatchConstants.GetPropertyFromType(x, "HealthController") != null)
                 &&
-                 (SIT.Tarkov.Core.PatchConstants.GetFieldFromType(x, "SelectedDateTime") != null
-                || SIT.Tarkov.Core.PatchConstants.GetPropertyFromType(x, "SelectedDateTime") != null)
+                 (MTGA.Core.PatchConstants.GetFieldFromType(x, "SelectedDateTime") != null
+                || MTGA.Core.PatchConstants.GetPropertyFromType(x, "SelectedDateTime") != null)
                 );
             var m = mmc.GetMethod("method_1", BindingFlags.NonPublic | BindingFlags.Instance);
             return m;
@@ -38,7 +38,7 @@ namespace SIT.Tarkov.SP
             //Logger.LogInfo(__instance.GetType().FullName);
 
             //var healthController = __instance.GetType().GetProperty("HealthController", BindingFlags.Public | BindingFlags.Instance).GetValue(__instance);
-            var healthController = SIT.Tarkov.Core.PatchConstants.GetFieldOrPropertyFromInstance<object>(__instance, "HealthController", false);// __instance.HealthController;
+            var healthController = MTGA.Core.PatchConstants.GetFieldOrPropertyFromInstance<object>(__instance, "HealthController", false);// __instance.HealthController;
             if (healthController != null)
             {
                 //Logger.LogInfo("ReplaceInMainMenuController.PatchPostfix.HealthController found!");

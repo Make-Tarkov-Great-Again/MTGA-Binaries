@@ -1,5 +1,5 @@
-﻿using SIT.Tarkov.Core;
-using SIT.Tarkov.SP;
+﻿using MTGA.Core;
+using MTGA.SP;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SIT.Tarkov.Core.PlayerPatches.Health
+namespace MTGA.Core.PlayerPatches.Health
 {
     internal class ChangeHealthPatch : ModulePatch
     {

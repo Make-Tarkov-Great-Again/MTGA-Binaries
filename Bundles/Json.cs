@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace SIT.Tarkov.Core
+namespace MTGA.Core
 {
     public static class Json
 	{

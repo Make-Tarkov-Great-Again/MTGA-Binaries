@@ -1,4 +1,4 @@
-# SIT.Tarkov.Core
+# MTGA.Core
 
 ## Status - Complete
 
@@ -7,15 +7,11 @@
 This is by no means designed for cheats or illegally downloading the game. This is purely for educational and game modification purposes. You must buy the game to use this. 
 You can obtain it here. [https://www.escapefromtarkov.com](https://www.escapefromtarkov.com)
 
-## Discord
-
-You can [join here](https://shorturl.at/abHVW). Please be aware there is a strict NO PIRACY policy to this project. Any piracy talk in the discord is a bannable offence. Do not join unless you own the game!
-
 ## Summary
 
-The Stay in Tarkov Core handles almost everything to create the Single Player experience of Escape from Tarkov.
+The MTGA Core handles almost everything to create the Single Player experience of Escape from Tarkov.
 Including but not limited to:
-- Turning off BattlEye (lets be honest, it doesn't work anyway BSG, please change to something else!)
+- Turning off BattlEye
 - Turning off FileChecker (this is BSG's own checker, this needs to be turned off to allow us to mod the game) - See FileChecker
 - Setting up Auto Singleplayer mode (see Menus)
 - Fixing bots / AI to shoot each other (see AI)
@@ -57,10 +53,11 @@ start ./Clients/EmuTarkov/EscapeFromTarkov.exe -token=AID062158106353313252ruc -
 - If BepInEx is working a console should open and display the module "plugin" as started
 
 ## Thanks List
-- SPT-Aki team
+- PauloV
+- SPT-AKI team
 - JET team
 - SERVPH for https://github.com/S3RAPH-1M/SERVPH-Mods/tree/main/VisceralRagdolls
 
 ## License
 
->>SOME<< of the original core functionality completed by JustEmuTarkov and SPT-Aki teams. There may be licenses pertaining to them within this source.
+>>SOME<< of the original core functionality completed by JustEmuTarkov and SPT-AKI teams. There may be licenses pertaining to them within this source.

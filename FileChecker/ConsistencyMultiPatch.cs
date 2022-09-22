@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using FilesChecker;
 
-namespace SIT.Tarkov.Core
+namespace MTGA.Core
 {
     public class ConsistencyMultiPatch : ModulePatch
     {

@@ -1,9 +1,9 @@
-﻿using SIT.Tarkov.Core;
+﻿using MTGA.Core;
 using System;
 using System.Linq;
 using System.Reflection;
 
-namespace SIT.Tarkov.Core
+namespace MTGA.Core
 {
     public class ExperienceGainFix : ModulePatch
     {

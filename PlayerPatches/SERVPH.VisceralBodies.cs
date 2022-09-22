@@ -1,4 +1,4 @@
-﻿using SIT.Tarkov.Core;
+﻿using MTGA.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 
-namespace SIT.A.Tarkov.Core.PlayerPatches.SERVPH
+namespace MTGA.Core.PlayerPatches.SERVPH
 {
 
 	/// <summary>

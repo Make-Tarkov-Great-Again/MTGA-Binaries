@@ -1,8 +1,8 @@
-﻿using SIT.Tarkov.Core;
+﻿using MTGA.Core;
 using System.Linq;
 using System.Reflection;
 
-namespace SIT.Tarkov.Core.Menus
+namespace MTGA.Core.Menus
 {
     public class BringBackInsuranceScreen : ModulePatch
     {

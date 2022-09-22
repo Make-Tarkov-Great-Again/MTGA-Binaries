@@ -1,6 +1,6 @@
 ﻿using EFT;
 using HarmonyLib;
-using SIT.Tarkov.Core;
+using MTGA.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Reflection;
 
 ////using BotData = GInterface15; // find ChooseProfile and get ginterface off that
 
-namespace SIT.Tarkov.SP.Raid
+namespace MTGA.SP.Raid
 {
     class RemoveUsedBotProfile : ModulePatch
     {

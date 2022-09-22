@@ -2,12 +2,12 @@
 using EFT.Bots;
 using EFT.UI;
 using Newtonsoft.Json;
-using SIT.Tarkov.Core;
+using MTGA.Core;
 using System;
 using System.Reflection;
 using UnityEngine;
 
-namespace SIT.Tarkov.Core.Menus
+namespace MTGA.Core.Menus
 {
     /// <summary>
     /// This patch sets matches to offline on screen enter also sets other variables directly from server settings

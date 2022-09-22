@@ -2,13 +2,13 @@
 using EFT;
 using HarmonyLib;
 using Newtonsoft.Json;
-using SIT.Tarkov.Core;
-using SIT.Tarkov.Core.PlayerPatches.Health;
+using MTGA.Core;
+using MTGA.Core.PlayerPatches.Health;
 using System;
 using System.Linq;
 using System.Reflection;
 
-namespace SIT.Tarkov.Core
+namespace MTGA.Core
 {
     public class OfflineSaveProfile : ModulePatch
     {
@@ -69,8 +69,8 @@ namespace SIT.Tarkov.Core
 
             var currentHealth = HealthListener.Instance.CurrentHealth;
             
-            var beUrl = SIT.Tarkov.Core.PatchConstants.GetBackendUrl();
-            var sessionId = SIT.Tarkov.Core.PatchConstants.GetPHPSESSID();
+            var beUrl = MTGA.Core.PatchConstants.GetBackendUrl();
+            var sessionId = MTGA.Core.PatchConstants.GetPHPSESSID();
 
             SaveProfileProgress(beUrl
                 , sessionId
@@ -95,7 +95,7 @@ namespace SIT.Tarkov.Core
                 isPlayerScav = isPlayerScav
             };
 
-            var convertedJson = request.SITToJson();
+            var convertedJson = request.MTGAToJson();
             new Request(session, backendUrl).PostJson("/raid/profile/save", convertedJson);
            
         }

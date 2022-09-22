@@ -10,16 +10,16 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
-using SIT.Tarkov.Core.Bundles;
+using MTGA.Core.Bundles;
 
 /***
- * Full Credit for this patch goes to SPT-Aki team
+ * Full Credit for this patch goes to SPT-AKI team
  * Original Source is found here - https://dev.sp-tarkov.com/SPT-AKI/Modules
  * Paulov. Made changes to have better reflection and less hardcoding
  */
 ////using DependencyGraph = DependencyGraph<IEasyBundle>;
 
-namespace SIT.Tarkov.Core
+namespace MTGA.Core
 {
     public class EasyAssetsPatch : ModulePatch
     {
@@ -139,7 +139,7 @@ namespace SIT.Tarkov.Core
             };
             //string filename = PatchConstants.GetAllPropertiesForObject(x.Key).Single(x => x.Name == "FileName").GetValue(x.Value).ToString();
             //uint crc = uint.Parse(PatchConstants.GetAllPropertiesForObject(x.Key).Single(x => x.Name == "Crc").GetValue(x.Value).ToString());
-            //string[] dependancies = Json.Deserialize<string[]>(PatchConstants.GetAllPropertiesForObject(x.Key).Single(x => x.Name == "Dependencies").GetValue(x.Value).SITToJson());
+            //string[] dependancies = Json.Deserialize<string[]>(PatchConstants.GetAllPropertiesForObject(x.Key).Single(x => x.Name == "Dependencies").GetValue(x.Value).MTGAToJson());
 
             //return new BundleDetails
             //{

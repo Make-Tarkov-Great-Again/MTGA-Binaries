@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SIT.Tarkov.Core.PlayerPatches.Health
+namespace MTGA.Core.PlayerPatches.Health
 {
     public class PlayerHealth
     {

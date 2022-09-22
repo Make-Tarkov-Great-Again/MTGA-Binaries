@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 
-namespace SIT.Tarkov.Core
+namespace MTGA.Core
 {
     public class Constants
     {

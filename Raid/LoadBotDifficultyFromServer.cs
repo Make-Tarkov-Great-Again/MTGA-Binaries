@@ -1,11 +1,11 @@
 ﻿using EFT;
-using SIT.Tarkov.Core;
+using MTGA.Core;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace SIT.Tarkov.SP
+namespace MTGA.SP
 {
     class LoadBotDifficultyFromServer : ModulePatch
     {
@@ -36,7 +36,7 @@ namespace SIT.Tarkov.SP
             if(JsonToUrlCache.ContainsKey(url))
                 return JsonToUrlCache[url];
 
-            var json = new SIT.Tarkov.Core.Request(PatchConstants.GetPHPSESSID(), PatchConstants.GetBackendUrl()).GetJson(url);
+            var json = new MTGA.Core.Request(PatchConstants.GetPHPSESSID(), PatchConstants.GetBackendUrl()).GetJson(url);
 
             if (string.IsNullOrWhiteSpace(json))
             {

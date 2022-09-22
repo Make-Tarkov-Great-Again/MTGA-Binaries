@@ -11,14 +11,14 @@ using UnityEngine;
  * ORIGINAL CODE written by MaoMao / TheMaoci. All credit goes to him! His code is closed source and subject to license.
  */
 
-namespace SIT.Tarkov.Core.SP.ScavMode
+namespace MTGA.Core.SP.ScavMode
 {
     /// <summary>
     /// 
     /// </summary>
     public class DisableScavModePatch : ModulePatch
     {
-        //static Vector3 PMCs_NewPosition = new Vector3(732.3394f, 540f, 0f); // position of PMC box inside UI (global position)
+        //static Vector3 PMCs_Newposition = new Vector3(732.3394f, 540f, 0f); // position of PMC box inside UI (global position)
 
         static DisableScavModePatch() { }
 

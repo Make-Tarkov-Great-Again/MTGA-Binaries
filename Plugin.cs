@@ -2,38 +2,25 @@
 using BepInEx;
 using Comfort.Common;
 using EFT;
-using Microsoft.Win32;
-using SIT.A.Tarkov.Core.Hideout;
-using SIT.A.Tarkov.Core.Menus;
-using SIT.A.Tarkov.Core.Misc;
-using SIT.A.Tarkov.Core.PlayerPatches;
-using SIT.A.Tarkov.Core.SP;
-using SIT.A.Tarkov.Core.SP.Raid;
-using SIT.Tarkov.Core;
-using SIT.Tarkov.Core.AI;
-using SIT.Tarkov.Core.Bundles;
-using SIT.Tarkov.Core.Menus;
-using SIT.Tarkov.Core.Misc;
-using SIT.Tarkov.Core.PlayerPatches;
-using SIT.Tarkov.Core.PlayerPatches.Health;
-using SIT.Tarkov.Core.Raid;
-using SIT.Tarkov.Core.SP;
-using SIT.Tarkov.Core.SP.Raid;
-using SIT.Tarkov.Core.SP.ScavMode;
-using SIT.Tarkov.SP;
-using SIT.Tarkov.SP.Raid;
+using MTGA.Core.Hideout;
+using MTGA.Core.Menus;
+using MTGA.Core.Misc;
+using MTGA.Core.PlayerPatches;
+using MTGA.Core.SP;
+using MTGA.Core.AI;
+using MTGA.Core.Bundles;
+using MTGA.Core.PlayerPatches.Health;
+using MTGA.Core.SP.ScavMode;
+using MTGA.SP;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace SIT.A.Tarkov.Core
+namespace MTGA.Core
 {
     [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
     public class Plugin : BaseUnityPlugin
@@ -43,7 +30,7 @@ namespace SIT.A.Tarkov.Core
             PatchConstants.GetBackendUrl();
 
             // - Check to ensure an up to date Server is running this library
-            //new Request().PostJson("/client/sit-validator", null);
+            //new Request().PostJson("/client/MTGA-validator", null);
 
             // - TURN OFF BS Checkers, FileChecker and BattlEye doesn't work BSG, I see cheaters ALL the time -----
             new ConsistencySinglePatch().Enable();
@@ -74,8 +61,8 @@ namespace SIT.A.Tarkov.Core
             new AirdropPatch().Enable();
 
             // --------- AI -----------------------
-            var enableSITAISystem = Config.Bind("AI", "Enable SIT AI", true).Value;
-            if (enableSITAISystem)
+            var enableMTGAAISystem = Config.Bind("AI", "Enable MTGA AI", true).Value;
+            if (enableMTGAAISystem)
             {
                 //new IsEnemyPatch().Enable();
                 new IsPlayerEnemyPatch().Enable();

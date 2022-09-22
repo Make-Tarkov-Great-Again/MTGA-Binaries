@@ -1,7 +1,7 @@
 using System.Reflection;
 using UnityEngine.Networking;
 
-namespace SIT.Tarkov.Core
+namespace MTGA.Core
 {
     public class UnityWebRequestPatch : ModulePatch
     {

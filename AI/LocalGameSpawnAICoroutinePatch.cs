@@ -1,5 +1,5 @@
-﻿using SIT.Tarkov.Core;
-using SIT.Tarkov.Core.LocalGame;
+﻿using MTGA.Core;
+using MTGA.Core.LocalGame;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SIT.Tarkov.Core.AI
+namespace MTGA.Core.AI
 {
     internal class LocalGameSpawnAICoroutinePatch : ModulePatch
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace SIT.Tarkov.Core.PlayerPatches.Health
+namespace MTGA.Core.PlayerPatches.Health
 {
     public class HealthListener
     {
@@ -43,10 +43,10 @@ namespace SIT.Tarkov.Core.PlayerPatches.Health
         // ctor
         private HealthListener()
         {
-            _request = new Request(PatchConstants.GetPHPSESSID(), SIT.Tarkov.Core.PatchConstants.GetBackendUrl());
+            _request = new Request(PatchConstants.GetPHPSESSID(), MTGA.Core.PatchConstants.GetBackendUrl());
             //_simpleTimer = JET.Mono.JET_Instance.Instance.GetOrAddComponent<SimpleTimer>();
             //_simpleTimer = Plugin.Instance.GetOrAddComponent<SimpleTimer>();
-            //_simpleTimer.syncHealthAction = () => Task.Run(() => _request.PostJson("/player/health/sync", CurrentHealth.SITToJson()));
+            //_simpleTimer.syncHealthAction = () => Task.Run(() => _request.PostJson("/player/health/sync", CurrentHealth.MTGAToJson()));
         }
 
         /// <summary>

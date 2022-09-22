@@ -1,7 +1,7 @@
 ﻿using System;
 using FilesChecker;
 
-namespace SIT.Tarkov.Core
+namespace MTGA.Core
 {
     public class FakeFileCheckerResult : ICheckResult
     {

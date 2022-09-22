@@ -1,5 +1,5 @@
 ﻿using EFT;
-using SIT.Tarkov.Core;
+using MTGA.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SIT.Tarkov.Core.SP.Raid
+namespace MTGA.Core.SP.Raid
 {
     public class FilterProfilesPatch : ModulePatch
     {

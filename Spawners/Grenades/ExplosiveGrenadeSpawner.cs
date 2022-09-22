@@ -8,7 +8,7 @@ using UnityEngine;
 using Comfort;
 using Comfort.Common;
 
-namespace SIT.A.Tarkov.Core.Spawners.Grenades
+namespace MTGA.Core.Spawners.Grenades
 {
     public class ExplosiveGrenadeSpawner : GrenadeSpawner
     {

@@ -6,7 +6,7 @@ using UnityEngine;
 using ComponentAce.Compression.Libs.zlib;
 using System.Threading.Tasks;
 
-namespace SIT.Tarkov.Core
+namespace MTGA.Core
 {
     public class Request : IDisposable
     {

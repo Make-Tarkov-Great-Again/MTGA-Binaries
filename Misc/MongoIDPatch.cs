@@ -1,5 +1,5 @@
 ﻿using EFT;
-using SIT.Tarkov.Core;
+using MTGA.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SIT.Tarkov.Core.Misc
+namespace MTGA.Core.Misc
 {
     /// <summary>
     /// Force bad JET Ids to become what BSG code expects

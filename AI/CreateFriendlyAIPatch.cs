@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using SIT.Tarkov.Core;
+using MTGA.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SIT.Tarkov.Core.AI
+namespace MTGA.Core.AI
 {
     public class CreateFriendlyAIPatch : ModulePatch
     {
@@ -71,7 +71,7 @@ namespace SIT.Tarkov.Core.AI
             //                //PatchConstants.GetMethodForType(botsGroup.GetType(), "AddNeutral").Invoke(botsGroup, new object[] { MyPlayer });
             //                //__instance.BotsGroup.RemoveInfo(MyPlayer);
             //                //__instance.BotsGroup.AddNeutral(MyPlayer);
-            //                //__instance.Teleport(MyPlayer.Position, true);
+            //                //__instance.Teleport(MyPlayer.position, true);
             //                NumberOfFriendlies++;
             //            }
             //        }

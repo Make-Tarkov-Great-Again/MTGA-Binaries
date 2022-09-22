@@ -11,7 +11,7 @@ using UnityEngine;
 //using Equipment = GClass2069; // GetSlot
 //using StDamage = GStruct252; // HittedBallisticCollider
 
-namespace SIT.Tarkov.Core.SP
+namespace MTGA.Core.SP
 {
     class UpdateDogtagPatch : ModulePatch
     {

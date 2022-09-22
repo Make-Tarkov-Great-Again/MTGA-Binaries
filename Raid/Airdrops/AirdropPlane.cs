@@ -3,7 +3,7 @@ using EFT.Airdrop;
 using EFT.SynchronizableObjects;
 using UnityEngine;
 /***
- * Full Credit for this patch goes to SPT-Aki team. Specifically CWX!
+ * Full Credit for this patch goes to SPT-AKI team. Specifically CWX!
  * Original Source is found here - https://dev.sp-tarkov.com/SPT-AKI/Modules. 
 */
 namespace Aki.Custom.Airdrops
@@ -14,18 +14,18 @@ namespace Aki.Custom.Airdrops
 
         public GameObject planeObject;
 
-        private float planePositivePosition = 3000f;
-        private float planeNegativePosition = -3000f;
-        private Vector3 planeStartPosition;
+        private float planePoMTGAiveposition = 3000f;
+        private float planeNegativeposition = -3000f;
+        private Vector3 planeStartposition;
         private Vector3 planeStartRotation;
         public bool planeEnabled = false;
         public GameObject counterMeasures;
 
         public async void Init(AirdropPoint airdropPoint, int dropHeight, float planeVolume)
         {
-            SetPosition(dropHeight);
+            Setposition(dropHeight);
 
-            planeObject = Instantiate(await BundlesUtil.LoadAssetAsync<GameObject>(planePath), planeStartPosition, Quaternion.Euler(planeStartRotation));
+            planeObject = Instantiate(await BundlesUtil.LoadAssetAsync<GameObject>(planePath), planeStartposition, Quaternion.Euler(planeStartRotation));
 
             var airplaneSync = planeObject.GetComponent<AirplaneSynchronizableObject>();
             airplaneSync.SetLogic(new AirplaneLogicClass());
@@ -65,25 +65,25 @@ namespace Aki.Custom.Airdrops
             airplaneAudio.Play();
         }
 
-        private void SetPosition(int dropHeight)
+        private void Setposition(int dropHeight)
         {
             var startNumber = Random.Range(1, 4);
             switch (startNumber)
             {
                 case 1:
-                    planeStartPosition = new Vector3(0, dropHeight, planeNegativePosition);
+                    planeStartposition = new Vector3(0, dropHeight, planeNegativeposition);
                     planeStartRotation = new Vector3(0, 0, 0);
                     break;
                 case 2:
-                    planeStartPosition = new Vector3(planeNegativePosition, dropHeight, 0);
+                    planeStartposition = new Vector3(planeNegativeposition, dropHeight, 0);
                     planeStartRotation = new Vector3(0, 90, 0);
                     break;
                 case 3:
-                    planeStartPosition = new Vector3(0, dropHeight, planePositivePosition);
+                    planeStartposition = new Vector3(0, dropHeight, planePoMTGAiveposition);
                     planeStartRotation = new Vector3(0, 180, 0);
                     break;
                 case 4:
-                    planeStartPosition = new Vector3(planePositivePosition, dropHeight, 0);
+                    planeStartposition = new Vector3(planePoMTGAiveposition, dropHeight, 0);
                     planeStartRotation = new Vector3(0, 270, 0);
                     break;
             }

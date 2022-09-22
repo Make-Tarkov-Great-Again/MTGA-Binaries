@@ -1,8 +1,8 @@
-﻿using SIT.Tarkov.Core;
+﻿using MTGA.Core;
 using System.Linq;
 using System.Reflection;
 
-namespace SIT.Tarkov.SP
+namespace MTGA.SP
 {
     /// <summary>
     /// Seems like this patch is fixed already. So its useless but i will leave it for future refference

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
-    <AssemblyName>SIT.A.Tarkov.Core</AssemblyName>
+    <AssemblyName>MTGA.Core</AssemblyName>
     <Description>My first plugin</Description>
     <Version>1.0.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

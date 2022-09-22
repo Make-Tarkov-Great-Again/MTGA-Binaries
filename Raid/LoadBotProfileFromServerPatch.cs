@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using SIT.Tarkov.Core;
+using MTGA.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SIT.Tarkov.Core.SP.Raid
+namespace MTGA.Core.SP.Raid
 {
     public class LoadBotProfileFromServerPatch : ModulePatch
     {
@@ -70,8 +70,8 @@ namespace SIT.Tarkov.Core.SP.Raid
 
                     //Dictionary<string, string> args = new Dictionary<string, string>();
                     //args.Add("Side", profile.Side.ToString());
-                    //args.Add("Settings", profile.Info.Settings.SITToJson());
-                    //var resultJson = new Request().PostJson("/client/raid/bots/getNewProfile", args.SITToJson());
+                    //args.Add("Settings", profile.Info.Settings.MTGAToJson());
+                    //var resultJson = new Request().PostJson("/client/raid/bots/getNewProfile", args.MTGAToJson());
                     //Logger.LogInfo("LoadBotProfileFromServerPatch.PatchPrefix: " + resultJson);
                     //Dictionary<string, object> result = JsonConvert.DeserializeObject<Dictionary<string, object>>(resultJson);
                     __result = profile;
@@ -83,7 +83,7 @@ namespace SIT.Tarkov.Core.SP.Raid
                 return true;
             }
             //var profilesInCache = PatchConstants.GetFieldOrPropertyFromInstance<List<EFT.Profile>>(__instance, "list_0");
-            //Logger.LogInfo("LoadBotProfileFromServerPatch.PatchPrefix: " + profilesInCache.SITToJson());
+            //Logger.LogInfo("LoadBotProfileFromServerPatch.PatchPrefix: " + profilesInCache.MTGAToJson());
 
             return false;
         }

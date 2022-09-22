@@ -2,10 +2,10 @@
 using Aki.Custom.Airdrops.Utils;
 using Comfort.Common;
 using EFT;
-using SIT.Tarkov.Core;
+using MTGA.Core;
 using UnityEngine;
 /***
- * Full Credit for this patch goes to SPT-Aki team. Specifically CWX!
+ * Full Credit for this patch goes to SPT-AKI team. Specifically CWX!
  * Original Source is found here - https://dev.sp-tarkov.com/SPT-AKI/Modules. 
 */
 namespace Aki.Custom.Airdrops

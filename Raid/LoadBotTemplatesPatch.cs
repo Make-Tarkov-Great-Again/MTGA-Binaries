@@ -10,12 +10,12 @@ using System.Threading;
 //using BotsPresets = GClass552; // Search for GetNewProfile
 //using BotData = GInterface15; // Search for PrepareToLoadBackend
 //using JobPriority = GClass2633; // Search for General
-using SIT.Tarkov.Core;
+using MTGA.Core;
 using System;
 using System.Collections.Generic;
-using SIT.A.Tarkov.Core;
+using MTGA.Core;
 
-namespace SIT.Tarkov.Core.SP
+namespace MTGA.Core.SP
 {
     public class LoadBotTemplatesPatch : ModulePatch
     {

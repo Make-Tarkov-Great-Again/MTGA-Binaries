@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SIT.Tarkov.Core.Bundles
+namespace MTGA.Core.Bundles
 {
     public static class BundleSetup
     {

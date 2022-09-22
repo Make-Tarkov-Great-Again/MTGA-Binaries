@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection.Emit;
 using HarmonyLib;
 
-namespace SIT.Tarkov.Core
+namespace MTGA.Core
 {
     /// <summary>
     /// Helper class to generate IL code for transpilers

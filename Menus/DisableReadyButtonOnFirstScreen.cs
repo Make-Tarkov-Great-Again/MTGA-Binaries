@@ -1,7 +1,7 @@
-﻿using SIT.Tarkov.Core;
+﻿using MTGA.Core;
 using System.Reflection;
 
-namespace SIT.Tarkov.Core.Menus
+namespace MTGA.Core.Menus
 {
     /// <summary>
     /// This Patch Disables the Ready button after you select the location so you will not be jumping to online match by default

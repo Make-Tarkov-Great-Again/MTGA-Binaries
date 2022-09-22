@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SIT.A.Tarkov.Core.Misc
+namespace MTGA.Core.Misc
 {
     internal class RemoveItemCountLimitPatch
     {

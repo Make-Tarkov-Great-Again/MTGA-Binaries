@@ -1,12 +1,12 @@
 ﻿using EFT;
-using SIT.Tarkov.Core;
+using MTGA.Core;
 using System.Reflection;
 
 /***
- * Full Credit for this patch goes to SPT-Aki team. Specifically CWX!
+ * Full Credit for this patch goes to SPT-AKI team. Specifically CWX!
  * Original Source is found here - https://dev.sp-tarkov.com/SPT-AKI/Modules. 
 */
-namespace SIT.Tarkov.Core.AI
+namespace MTGA.Core.AI
 {
     /// <summary>
     /// Goal: patch removes the current bot from its own enemy list - occurs when adding bots type to its enemy array in difficulty settings

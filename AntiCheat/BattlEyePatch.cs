@@ -2,7 +2,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace SIT.Tarkov.Core
+namespace MTGA.Core
 {
     public class BattlEyePatch : ModulePatch
     {

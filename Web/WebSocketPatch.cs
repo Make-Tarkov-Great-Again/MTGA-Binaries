@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net.WebSockets;
 using System.Reflection;
 
-namespace SIT.Tarkov.Core
+namespace MTGA.Core
 {
     /// <summary>
     /// The Web Socket patch affects the Notifications pushed from Web Server to the Client via Sockets

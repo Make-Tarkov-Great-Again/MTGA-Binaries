@@ -1,11 +1,11 @@
 ﻿using EFT;
-using SIT.Tarkov.Core;
-using SIT.Tarkov.Core.PlayerPatches.Health;
+using MTGA.Core;
+using MTGA.Core.PlayerPatches.Health;
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace SIT.Tarkov.SP
+namespace MTGA.SP
 {
     public class ReplaceInPlayer : ModulePatch
     {

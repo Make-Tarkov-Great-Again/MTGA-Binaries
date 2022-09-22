@@ -1,4 +1,4 @@
-﻿using SIT.Tarkov.Core;
+﻿using MTGA.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SIT.Tarkov.Core.AI
+namespace MTGA.Core.AI
 {
     public class BotSystemHelpers
     {
@@ -36,7 +36,7 @@ namespace SIT.Tarkov.Core.AI
 
         public static void Setup()
         {
-            Logger = BepInEx.Logging.Logger.CreateLogSource("SIT.Tarkov.Core.BotSystemHelpers");
+            Logger = BepInEx.Logging.Logger.CreateLogSource("MTGA.Core.BotSystemHelpers");
             //Logger = PatchConstants.Logger;
 
             if (BotControllerType == null)

@@ -4,16 +4,16 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System;
-using SIT.Tarkov.Core.Bundles;
+using MTGA.Core.Bundles;
 using UnityEngine;
 
 /***
- * Full Credit for this patch goes to SPT-Aki team
+ * Full Credit for this patch goes to SPT-AKI team
  * Original Source is found here - https://dev.sp-tarkov.com/SPT-AKI/Modules
  * Paulov. Made changes to have better reflection and less hardcoding
  */
 
-namespace SIT.Tarkov.Core
+namespace MTGA.Core
 {
     public class EasyBundlePatch : ModulePatch
     {

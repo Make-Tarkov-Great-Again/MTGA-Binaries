@@ -1,6 +1,6 @@
 ﻿using EFT.Interactive;
 using Newtonsoft.Json;
-using SIT.Tarkov.Core;
+using MTGA.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SIT.A.Tarkov.Core.SP
+namespace MTGA.Core.SP
 {
     internal class LootableContainerInteractPatch : ModulePatch
     {
@@ -31,8 +31,8 @@ namespace SIT.A.Tarkov.Core.SP
             args.Add("ItemOwner.Id", __instance.ItemOwner.ID);
             args.Add("ItemOwner.Name", __instance.ItemOwner.Name);
             args.Add("ItemOwner.ContainerName", __instance.ItemOwner.ContainerName);
-            //var s = args.SITToJsonAsync().GetAwaiter().GetResult();
-            _ = new SIT.Tarkov.Core.Request().PostJsonAsync("/client/raid/person/lootingContainer", JsonConvert.SerializeObject(args));
+            //var s = args.MTGAToJsonAsync().GetAwaiter().GetResult();
+            _ = new MTGA.Core.Request().PostJsonAsync("/client/raid/person/lootingContainer", JsonConvert.SerializeObject(args));
         }
     }
 }
