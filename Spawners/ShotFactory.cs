@@ -24,12 +24,12 @@ namespace MTGA.Core.Spawners
 
 		private static MethodBase methodCreateShot;
 
-		public static object MakeShot(object ammo, Vector3 shotposition, Vector3 shotDirection, float speedFactor)
+		public static object MakeShot(object ammo, Vector3 shotPosition, Vector3 shotDirection, float speedFactor)
 		{
 			object obj = ShotFactory.methodCreateShot.Invoke(ShotFactory.ballisticsCalculator, new object[8]
 			{
 			ammo,
-			shotposition,
+			shotPosition,
 			shotDirection,
 			0,
 			ShotFactory.player,

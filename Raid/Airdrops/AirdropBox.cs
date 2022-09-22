@@ -23,13 +23,13 @@ namespace Aki.Custom.Airdrops
 
         public async void Init(AirdropPoint airdropPoint, int dropHeight)
         {
-            boxObject = Instantiate(await BundlesUtil.LoadAssetAsync<GameObject>(cratePath), new Vector3(airdropPoint.transform.position.x, dropHeight, airdropPoint.transform.position.z), airdropPoint.transform.rotation);
+            boxObject = Instantiate(await BundlesUtil.LoadAssetAsync<GameObject>(cratePath), new Vector3(airdropPoint.transform.Position.x, dropHeight, airdropPoint.transform.Position.z), airdropPoint.transform.rotation);
 
             boxLogic = boxObject.GetComponent<AirdropSynchronizableObject>();
             container = boxLogic.GetComponentInChildren<LootableContainer>().gameObject.GetComponentInChildren<LootableContainer>();
 
             boxLogic.SetLogic(new AirdropLogicClass());
-            boxLogic.Init(1, new Vector3(airdropPoint.transform.position.x, dropHeight, airdropPoint.transform.position.z), Vector3.zero);
+            boxLogic.Init(1, new Vector3(airdropPoint.transform.Position.x, dropHeight, airdropPoint.transform.Position.z), Vector3.zero);
 
             parachute = boxObject.transform.Find("parachute").gameObject;
             paraAnimation = parachute.GetComponent<Animator>();

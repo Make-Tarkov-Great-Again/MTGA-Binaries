@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using BepInEx.Logging;
 using Comfort.Common;
@@ -12,7 +11,6 @@ using FilesChecker;
 using Newtonsoft.Json;
 using MTGA.Core.Web;
 using MTGA.Core.AI;
-using UnityEngine;
 
 namespace MTGA.Core
 {

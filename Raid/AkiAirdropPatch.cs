@@ -133,12 +133,12 @@
 //        private List<AirdropPoint> airdropPoints;
 //        private AirdropPoint randomAirdropPoint;
 //        private int boxObjId;
-//        private Vector3 boxposition;
-//        private Vector3 planeStartposition;
+//        private Vector3 boxPosition;
+//        private Vector3 planeStartPosition;
 //        private Vector3 planeStartRotation;
 //        private int planeObjId;
-//        private float planePoMTGAiveposition;
-//        private float planeNegativeposition;
+//        private float planePositivePosition;
+//        private float planeNegativePosition;
 //        private float dropHeight;
 //        private float timer;
 //        private float timeToDrop;
@@ -158,8 +158,8 @@
 //            doNotRun = false;
 //            isRunning = false;
 //            boxObjId = 10;
-//            planePoMTGAiveposition = 3000f;
-//            planeNegativeposition = -3000f;
+//            planePositivePosition = 3000f;
+//            planeNegativePosition = -3000f;
 
 //            var asoTest = LocationScene.GetAll<AirplaneSynchronizableObject>();
 //            PatchConstants.Logger.LogInfo($"AirdropComponent:Start:asoTest:{asoTest.Count()}");
@@ -220,43 +220,43 @@
 //                switch (planeObjId)
 //                {
 //                    case 1:
-//                        if (plane.transform.position.z >= planePoMTGAiveposition && planeEnabled)
+//                        if (plane.transform.Position.z >= planePositivePosition && planeEnabled)
 //                        {
 //                            DisablePlane();
 //                        }
 
-//                        if (plane.transform.position.z >= randomAirdropPoint.transform.position.z && !boxEnabled)
+//                        if (plane.transform.Position.z >= randomAirdropPoint.transform.Position.z && !boxEnabled)
 //                        {
 //                            InitDrop();
 //                        }
 //                        break;
 //                    case 2:
-//                        if (plane.transform.position.x >= planePoMTGAiveposition && planeEnabled)
+//                        if (plane.transform.Position.x >= planePositivePosition && planeEnabled)
 //                        {
 //                            DisablePlane();
 //                        }
 
-//                        if (plane.transform.position.x >= randomAirdropPoint.transform.position.x && !boxEnabled)
+//                        if (plane.transform.Position.x >= randomAirdropPoint.transform.Position.x && !boxEnabled)
 //                        {
 //                            InitDrop();
 //                        }
 //                        break;
 //                    case 3:
-//                        if (plane.transform.position.z <= planeNegativeposition && planeEnabled)
+//                        if (plane.transform.Position.z <= planeNegativePosition && planeEnabled)
 //                        {
 //                            DisablePlane();
 //                        }
-//                        if (plane.transform.position.z <= randomAirdropPoint.transform.position.z && !boxEnabled)
+//                        if (plane.transform.Position.z <= randomAirdropPoint.transform.Position.z && !boxEnabled)
 //                        {
 //                            InitDrop();
 //                        }
 //                        break;
 //                    case 4:
-//                        if (plane.transform.position.x <= planeNegativeposition && planeEnabled)
+//                        if (plane.transform.Position.x <= planeNegativePosition && planeEnabled)
 //                        {
 //                            DisablePlane();
 //                        }
-//                        if (plane.transform.position.x <= randomAirdropPoint.transform.position.x && !boxEnabled)
+//                        if (plane.transform.Position.x <= randomAirdropPoint.transform.Position.x && !boxEnabled)
 //                        {
 //                            InitDrop();
 //                        }
@@ -342,13 +342,13 @@
 
 //            if (box != null)
 //            {
-//                boxposition = randomAirdropPoint.transform.position;
-//                boxposition.y = dropHeight;
+//                boxPosition = randomAirdropPoint.transform.Position;
+//                boxPosition.y = dropHeight;
 //            }
 
 //            if (plane != null)
 //            {
-//                PlanepositionGen();
+//                PlanePositionGen();
 //            }
 //        }
 
@@ -358,8 +358,8 @@
 
 //            planeEnabled = true;
 //            plane.TakeFromPool();
-//            plane.Init(planeObjId, planeStartposition, planeStartRotation);
-//            plane.transform.LookAt(boxposition);
+//            plane.Init(planeObjId, planeStartPosition, planeStartRotation);
+//            plane.transform.LookAt(boxPosition);
 //            plane.ManualUpdate(0);
 
 //            var sound = plane.GetComponentInChildren<AudioSource>();
@@ -389,28 +389,28 @@
 //            box.GetType().GetMethod("SetLogic").Invoke(box, new object[] { airdropLogic });
 //            box.ReturnToPool();
 //            box.TakeFromPool();
-//            box.Init(boxObjId, boxposition, Vector3.zero);
+//            box.Init(boxObjId, boxPosition, Vector3.zero);
 //            //var sgp = gameWorld.GetOrAddComponent<MultipleSmokeGrenadeSpawner>();
 //        }
 
-//        public void PlanepositionGen()
+//        public void PlanePositionGen()
 //        {
 //            switch (planeObjId)
 //            {
 //                case 1:
-//                    planeStartposition = new Vector3(0, dropHeight, planeNegativeposition);
+//                    planeStartPosition = new Vector3(0, dropHeight, planeNegativePosition);
 //                    planeStartRotation = new Vector3(0, 0, 0);
 //                    break;
 //                case 2:
-//                    planeStartposition = new Vector3(planeNegativeposition, dropHeight, 0);
+//                    planeStartPosition = new Vector3(planeNegativePosition, dropHeight, 0);
 //                    planeStartRotation = new Vector3(0, 90, 0);
 //                    break;
 //                case 3:
-//                    planeStartposition = new Vector3(0, dropHeight, planePoMTGAiveposition);
+//                    planeStartPosition = new Vector3(0, dropHeight, planePositivePosition);
 //                    planeStartRotation = new Vector3(0, 180, 0);
 //                    break;
 //                case 4:
-//                    planeStartposition = new Vector3(planePoMTGAiveposition, dropHeight, 0);
+//                    planeStartPosition = new Vector3(planePositivePosition, dropHeight, 0);
 //                    planeStartRotation = new Vector3(0, 270, 0);
 //                    break;
 //            }

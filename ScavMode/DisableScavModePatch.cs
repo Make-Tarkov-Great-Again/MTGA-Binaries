@@ -18,7 +18,7 @@ namespace MTGA.Core.SP.ScavMode
     /// </summary>
     public class DisableScavModePatch : ModulePatch
     {
-        //static Vector3 PMCs_Newposition = new Vector3(732.3394f, 540f, 0f); // position of PMC box inside UI (global position)
+        //static Vector3 PMCs_NewPosition = new Vector3(732.3394f, 540f, 0f); // Position of PMC box inside UI (global Position)
 
         static DisableScavModePatch() { }
 

@@ -71,7 +71,7 @@ namespace MTGA.Core.AI
             //                //PatchConstants.GetMethodForType(botsGroup.GetType(), "AddNeutral").Invoke(botsGroup, new object[] { MyPlayer });
             //                //__instance.BotsGroup.RemoveInfo(MyPlayer);
             //                //__instance.BotsGroup.AddNeutral(MyPlayer);
-            //                //__instance.Teleport(MyPlayer.position, true);
+            //                //__instance.Teleport(MyPlayer.Position, true);
             //                NumberOfFriendlies++;
             //            }
             //        }

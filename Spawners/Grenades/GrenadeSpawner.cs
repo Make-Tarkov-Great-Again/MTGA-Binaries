@@ -37,11 +37,11 @@ namespace MTGA.Core.Spawners.Grenades
 
 		private void Tick()
 		{
-			Vector3 position = ((Component)this).transform.position;
-			position.x += UnityEngine.Random.Range(0f - ExplosiveGrenadeSpawner.range, ExplosiveGrenadeSpawner.range);
-			position.z += UnityEngine.Random.Range(0f - ExplosiveGrenadeSpawner.range, ExplosiveGrenadeSpawner.range);
-			position.y += 300f;
-			ShotFactory.MakeShot(this.bullet, position, Vector3.down, 1f);
+			Vector3 Position = ((Component)this).transform.Position;
+			Position.x += UnityEngine.Random.Range(0f - ExplosiveGrenadeSpawner.range, ExplosiveGrenadeSpawner.range);
+			Position.z += UnityEngine.Random.Range(0f - ExplosiveGrenadeSpawner.range, ExplosiveGrenadeSpawner.range);
+			Position.y += 300f;
+			ShotFactory.MakeShot(this.bullet, Position, Vector3.down, 1f);
 			if (--this.Count <= 0)
 			{
 				UnityEngine.Object.Destroy(this);
