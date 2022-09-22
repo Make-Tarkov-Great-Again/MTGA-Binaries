@@ -45,41 +45,41 @@ namespace MTGA.SP
                 Logger.LogInfo("ReplaceInPlayer:PatchPostfix: Couldn't find Profile");
                 return;
             }
-                //Logger.LogInfo($"ReplaceInPlayer:PatchPostfix: found instanceProfile {instanceProfile.GetType()}");
-                var instanceAccountProp = instanceProfile.GetType().GetField("AccountId"
-                , BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
-                //Logger.LogInfo($">>>>>>>>>>>>>>>>>>>>>>>> Properties");
-                //foreach (var p in PatchConstants.GetAllPropertiesForObject(instanceProfile))
-                //{
-                //    Logger.LogInfo(p.Name);
-                //}
-                //Logger.LogInfo($">>>>>>>>>>>>>>>>>>>>>>>> Fields");
-                //foreach (var p in PatchConstants.GetAllFieldsForObject(instanceProfile))
-                //{
-                //    Logger.LogInfo(p.Name);
-                //}
-                if (instanceAccountProp == null)
-                {
-                    Logger.LogInfo($"ReplaceInPlayer:PatchPostfix: instanceAccountProp not found");
-                    return;
-                }
-                var instanceAccountId = instanceAccountProp.GetValue(instanceProfile).ToString();
+            //Logger.LogInfo($"ReplaceInPlayer:PatchPostfix: found instanceProfile {instanceProfile.GetType()}");
+            var instanceAccountProp = instanceProfile.GetType().GetField("AccountId"
+            , BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+            //Logger.LogInfo($">>>>>>>>>>>>>>>>>>>>>>>> Properties");
+            //foreach (var p in PatchConstants.GetAllPropertiesForObject(instanceProfile))
+            //{
+            //    Logger.LogInfo(p.Name);
+            //}
+            //Logger.LogInfo($">>>>>>>>>>>>>>>>>>>>>>>> Fields");
+            //foreach (var p in PatchConstants.GetAllFieldsForObject(instanceProfile))
+            //{
+            //    Logger.LogInfo(p.Name);
+            //}
+            if (instanceAccountProp == null)
+            {
+                Logger.LogInfo($"ReplaceInPlayer:PatchPostfix: instanceAccountProp not found");
+                return;
+            }
+            var instanceAccountId = instanceAccountProp.GetValue(instanceProfile).ToString();
 
-                // If is Bot Guid, then ignore it
-                if (Guid.TryParse(instanceAccountId, out _))
-                    return;
+            // If is Bot Guid, then ignore it
+            if (Guid.TryParse(instanceAccountId, out _))
+                return;
 
             if (string.IsNullOrEmpty(instanceAccountId))
                 return;
 
-                //Logger.LogInfo($"ReplaceInPlayer:PatchPostfix: instanceAccountId {instanceAccountId}");
+            //Logger.LogInfo($"ReplaceInPlayer:PatchPostfix: instanceAccountId {instanceAccountId}");
 
-                if (instanceAccountId != PatchConstants.GetPHPSESSID())
-                {
-                    //Logger.LogInfo($"ReplaceInPlayer: {instanceAccountId}!={PatchConstants.GetPHPSESSID()}");
+            if (instanceAccountId != PatchConstants.GetPHPSESSID())
+            {
+                //Logger.LogInfo($"ReplaceInPlayer: {instanceAccountId}!={PatchConstants.GetPHPSESSID()}");
 
-                    return;
-                }
+                return;
+            }
 
             //Logger.LogInfo($">>>>>>>>>>>>>>>>>>>>>>>> Properties");
             //foreach (var p in PatchConstants.GetAllPropertiesForObject(__instance))
@@ -94,10 +94,10 @@ namespace MTGA.SP
 
             //await __result;
 
-                //var listener = HealthListener.Instance;
-                //listener.Init(__instance.HealthController, true);
+            //var listener = HealthListener.Instance;
+            //listener.Init(__instance.HealthController, true);
 
-                var listener = HealthListener.Instance;
+            var listener = HealthListener.Instance;
             var insthealthController = PatchConstants.GetFieldOrPropertyFromInstance<object>(__instance, "HealthController", false);
             //var healthController = ____healthController;
 

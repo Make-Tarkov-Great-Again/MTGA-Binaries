@@ -1,9 +1,7 @@
-﻿using UnityEngine;
-using Comfort.Common;
+﻿using Comfort.Common;
 using EFT;
 using System.Linq;
 using System.Reflection;
-using System;
 
 namespace MTGA.Core
 {
@@ -58,9 +56,9 @@ namespace MTGA.Core
         /// <summary>
         /// Property to get access to PreloaderUI Instance
         /// </summary>
-        public static EFT.UI.PreloaderUI PreloaderUI 
+        public static EFT.UI.PreloaderUI PreloaderUI
         {
-            get 
+            get
             {
                 return Singleton<EFT.UI.PreloaderUI>.Instance;
             }
@@ -73,7 +71,8 @@ namespace MTGA.Core
         /// <summary>
         /// Access to UI LocalixedText of Betaversion text label
         /// </summary>
-        internal static EFT.UI.LocalizedText BetaVersionLabel {
+        internal static EFT.UI.LocalizedText BetaVersionLabel
+        {
             get
             {
                 if (localizedText == null && PreloaderUI != null)

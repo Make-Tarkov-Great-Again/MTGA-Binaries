@@ -1,10 +1,5 @@
 ﻿using Newtonsoft.Json;
-using MTGA.Core;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MTGA.Core.Web
 {
@@ -25,7 +20,7 @@ namespace MTGA.Core.Web
 
         private static BackendConnection CreateBackendConnectionFromEnvVars()
         {
-            if(Instance != null)
+            if (Instance != null)
                 return Instance;
 
             string[] args = Environment.GetCommandLineArgs();

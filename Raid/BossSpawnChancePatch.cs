@@ -1,14 +1,9 @@
-﻿using MTGA.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MTGA.Core.SP.Raid
 {
-    internal class BossSpawnChancePatch :ModulePatch
+    internal class BossSpawnChancePatch : ModulePatch
     {
         private static float[] bossSpawnPercent;
 

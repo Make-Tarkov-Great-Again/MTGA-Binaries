@@ -1,11 +1,5 @@
-﻿using MTGA.Core;
-using MTGA.Core.AI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MTGA.Core.PlayerPatches
 {
@@ -19,12 +13,12 @@ namespace MTGA.Core.PlayerPatches
         }
 
         [PatchPostfix]
-        public static 
+        public static
             async
-            void 
+            void
             PatchPostfix(EFT.LocalPlayer __instance)
         {
-            if(OnPlayerInit != null)
+            if (OnPlayerInit != null)
                 OnPlayerInit(__instance);
 
             //if (__instance.IsAI)

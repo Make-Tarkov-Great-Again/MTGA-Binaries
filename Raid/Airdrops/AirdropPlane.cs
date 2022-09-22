@@ -14,7 +14,7 @@ namespace Aki.Custom.Airdrops
 
         public GameObject planeObject;
 
-        private float planePoMTGAiveposition = 3000f;
+        private float planePositivePosition = 3000f;
         private float planeNegativeposition = -3000f;
         private Vector3 planeStartposition;
         private Vector3 planeStartRotation;
@@ -79,11 +79,11 @@ namespace Aki.Custom.Airdrops
                     planeStartRotation = new Vector3(0, 90, 0);
                     break;
                 case 3:
-                    planeStartposition = new Vector3(0, dropHeight, planePoMTGAiveposition);
+                    planeStartposition = new Vector3(0, dropHeight, planePositivePosition);
                     planeStartRotation = new Vector3(0, 180, 0);
                     break;
                 case 4:
-                    planeStartposition = new Vector3(planePoMTGAiveposition, dropHeight, 0);
+                    planeStartposition = new Vector3(planePositivePosition, dropHeight, 0);
                     planeStartRotation = new Vector3(0, 270, 0);
                     break;
             }

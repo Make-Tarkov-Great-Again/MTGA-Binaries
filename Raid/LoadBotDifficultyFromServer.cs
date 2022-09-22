@@ -1,9 +1,9 @@
 ﻿using EFT;
 using MTGA.Core;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
-using System.Collections.Generic;
 
 namespace MTGA.SP
 {
@@ -33,7 +33,7 @@ namespace MTGA.SP
         private static string Request(WildSpawnType role, BotDifficulty botDifficulty)
         {
             var url = "/singleplayer/settings/bot/difficulty/" + role.ToString() + "/" + botDifficulty.ToString();
-            if(JsonToUrlCache.ContainsKey(url))
+            if (JsonToUrlCache.ContainsKey(url))
                 return JsonToUrlCache[url];
 
             var json = new MTGA.Core.Request(PatchConstants.GetPHPSESSID(), PatchConstants.GetBackendUrl()).GetJson(url);

@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net.WebSockets;
 using System.Reflection;
 
 namespace MTGA.Core
@@ -37,7 +35,7 @@ namespace MTGA.Core
         {
             var targetInterface = PatchConstants.TypesDictionary["EftTypes"]// PatchConstants.EftTypes
                 .Single(
-                x => 
+                x =>
                 //x == typeof(GInterface143)
                 x.GetMethod("SetUri", BindingFlags.Public | BindingFlags.Instance) != null
                 && x.GetProperty("TransportType", BindingFlags.Public | BindingFlags.Instance) != null

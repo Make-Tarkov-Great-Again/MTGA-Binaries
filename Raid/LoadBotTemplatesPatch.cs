@@ -1,19 +1,13 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using System.Reflection;
-using EFT;
-using UnityEngine;
-using Comfort.Common;
-using System.Threading;
-
+﻿using EFT;
 //using WaveInfo = GClass984; // not used // search for: Difficulty and chppse gclass with lower number whic hcontains Role and Limit variables
 //using BotsPresets = GClass552; // Search for GetNewProfile
 //using BotData = GInterface15; // Search for PrepareToLoadBackend
 //using JobPriority = GClass2633; // Search for General
-using MTGA.Core;
 using System;
 using System.Collections.Generic;
-using MTGA.Core;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace MTGA.Core.SP
 {
@@ -97,7 +91,8 @@ namespace MTGA.Core.SP
             var taskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
 
             Task<Profile> res = null;
-            var task = Task.Run(() => {
+            var task = Task.Run(() =>
+            {
 
                 Task<Profile> taskAwaiter = null;
                 var profile = (EFT.Profile)_getNewProfileMethod.Invoke(__instance, parameters: new object[] { data });

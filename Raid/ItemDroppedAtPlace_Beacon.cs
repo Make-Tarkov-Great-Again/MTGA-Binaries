@@ -9,7 +9,7 @@ namespace MTGA.SP
     /// </summary>
     public class ItemDroppedAtPlace_Beacon : ModulePatch
     {
-        public ItemDroppedAtPlace_Beacon()  { }
+        public ItemDroppedAtPlace_Beacon() { }
 
         protected override MethodBase GetTargetMethod() => PatchConstants.GetAllMethodsForType(typeof(EFT.Player))
             .Single(IsTargetMethod);

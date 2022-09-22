@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MTGA.Core.Bundles
 {
@@ -13,15 +10,15 @@ namespace MTGA.Core.Bundles
         public static Type BundleLockType { get; set; }
         public static Type DependancyGraphType { get; set; }
         public static Type BindableStateType { get; set; }
-        
+
 
         public static void Init()
         {
             IEasyBundleType = PatchConstants.EftTypes.Single(x => x.IsInterface
-                && 
-                 ( PatchConstants.GetFieldFromType(x, "SameNameAsset") != null
-                 || PatchConstants.GetPropertyFromType(x, "SameNameAsset") != null )
-                
+                &&
+                 (PatchConstants.GetFieldFromType(x, "SameNameAsset") != null
+                 || PatchConstants.GetPropertyFromType(x, "SameNameAsset") != null)
+
                 );
 
             PatchConstants.Logger.LogInfo("BundleSetup.Init.IEasyBundleType:" + IEasyBundleType.Name);
@@ -63,7 +60,7 @@ namespace MTGA.Core.Bundles
                x.IsSealed
               &&
                x.GetConstructors().Length >= 2
-              && 
+              &&
               x.IsGenericTypeDefinition
               && (PatchConstants.GetFieldFromType(x, "Value") != null
                  || PatchConstants.GetPropertyFromType(x, "Value") != null)

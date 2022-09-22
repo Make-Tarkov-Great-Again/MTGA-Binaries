@@ -1,13 +1,9 @@
 ﻿using EFT;
 using EFT.Game.Spawning;
-using HarmonyLib;
-using MTGA.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 /***
  * Full Credit for this patch goes to SPT-AKI team.

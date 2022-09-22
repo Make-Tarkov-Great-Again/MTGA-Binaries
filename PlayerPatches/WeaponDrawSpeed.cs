@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using EFT;
 using System.Linq;
 using System.Reflection;
-using Comfort.Common;
-using EFT;
-using MTGA.Core;
-using HarmonyLib;
 
 namespace MTGA.Core.PlayerPatches
 {

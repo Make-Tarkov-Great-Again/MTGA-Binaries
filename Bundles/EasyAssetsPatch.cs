@@ -1,16 +1,15 @@
 ﻿using Diz.Jobs;
-using Diz.Resources;
+using JetBrains.Annotations;
+using MTGA.Core.Bundles;
 using Newtonsoft.Json;
-using UnityEngine;
-using UnityEngine.Build.Pipeline;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
-using MTGA.Core.Bundles;
+using UnityEngine;
+using UnityEngine.Build.Pipeline;
 
 /***
  * Full Credit for this patch goes to SPT-AKI team
@@ -31,9 +30,10 @@ namespace MTGA.Core
 
         public static Type EasyAssetsType
         {
-            get { 
-                
-                if(easyAssetsType == null)
+            get
+            {
+
+                if (easyAssetsType == null)
                 {
                     easyAssetsType = PatchConstants.EftTypes.Single(
                         x => x.Name.Contains("EasyAssets")
@@ -43,7 +43,7 @@ namespace MTGA.Core
                     );
                 }
 
-                return easyAssetsType; 
+                return easyAssetsType;
             }
             set { easyAssetsType = value; }
         }
@@ -66,7 +66,7 @@ namespace MTGA.Core
         }
 
         public EasyAssetsPatch()
-{
+        {
             //_ = nameof(IEasyBundle.SameNameAsset);
             //_ = nameof(IBundleLock.IsLocked);
             //_ = nameof(BundleLock.MaxConcurrentOperations);
@@ -164,7 +164,7 @@ namespace MTGA.Core
             }
 
             var text = string.Empty;
-           
+
 
             using (var reader = File.OpenText($"{filepath}"))
             {
@@ -198,7 +198,7 @@ namespace MTGA.Core
         }
 
         //private static async Task Init(EasyAssets instance, [CanBeNull] object bundleLock, string defaultKey, string rootPath,
-                                      //string platformName, [CanBeNull] Func<string, bool> shouldExclude, Func<string, Task> bundleCheck)
+        //string platformName, [CanBeNull] Func<string, bool> shouldExclude, Func<string, Task> bundleCheck)
         /// <summary>
         /// 
         /// </summary>
@@ -219,7 +219,7 @@ namespace MTGA.Core
             var path = $"{rootPath.Replace("file:///", string.Empty).Replace("file://", string.Empty)}/{platformName}/";
             var filepath = path + platformName;
             var manifest = (File.Exists(filepath)) ? await GetManifestBundle(filepath) : await GetManifestJson(filepath);
-            
+
             // load bundles
             Logger.LogInfo($"EasyAssetsPatch.Init.1.path={path}");
             Logger.LogInfo($"EasyAssetsPatch.Init.1.filepath={filepath}");

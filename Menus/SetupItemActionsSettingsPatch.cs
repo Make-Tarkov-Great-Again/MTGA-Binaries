@@ -1,12 +1,8 @@
 ﻿using HarmonyLib;
-using MTGA.Core;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MTGA.Core.Menus
 {
@@ -28,11 +24,11 @@ namespace MTGA.Core.Menus
             for (var i = 0; i < codes.Count; i++)
             {
                 // We are looking for the List Count that TrySendCommands checks before sending the next command
-                if(listCountIndex == -1 && codes[i].opcode == OpCodes.Ldc_I4_S)
+                if (listCountIndex == -1 && codes[i].opcode == OpCodes.Ldc_I4_S)
                 {
                     listCountIndex = i;
                 }
-                if(timeIndex == -1 && codes[i].opcode == OpCodes.Ldc_R4)
+                if (timeIndex == -1 && codes[i].opcode == OpCodes.Ldc_R4)
                 {
                     timeIndex = i;
                 }

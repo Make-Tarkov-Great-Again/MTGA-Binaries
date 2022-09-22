@@ -1,11 +1,5 @@
 ﻿using EFT.Interactive;
-using MTGA.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MTGA.Core.Misc
 {
@@ -21,7 +15,7 @@ namespace MTGA.Core.Misc
         [PatchPostfix]
         public static void PatchPostfix(
             EFT.Interactive.Location __instance
-            
+
             )
         {
             LootPoint[] ___ValidLootPoints = PatchConstants.GetFieldOrPropertyFromInstance<LootPoint[]>(__instance, "ValidLootPoints", false);
@@ -32,7 +26,7 @@ namespace MTGA.Core.Misc
             LootableContainer[] ___EmptyLootableContainers = PatchConstants.GetFieldOrPropertyFromInstance<LootableContainer[]>(__instance, "EmptyLootableContainers", false);
             LootableContainer[] ___DisabledLootableContainers = PatchConstants.GetFieldOrPropertyFromInstance<LootableContainer[]>(__instance, "DisabledLootableContainers", false);
             LootableContainer[] ___LootableContainers = PatchConstants.GetFieldOrPropertyFromInstance<LootableContainer[]>(__instance, "LootableContainers", false);
-           // object DailyQuestZones // this is a GClass =(
+            // object DailyQuestZones // this is a GClass =(
 
 
             Logger.LogInfo($"Empty Containers : {___EmptyLootableContainers.Length}");

@@ -1,7 +1,7 @@
-﻿using System.Linq;
+﻿using FilesChecker;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using FilesChecker;
 
 namespace MTGA.Core
 {

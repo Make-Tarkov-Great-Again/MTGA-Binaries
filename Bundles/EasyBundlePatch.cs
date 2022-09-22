@@ -1,11 +1,10 @@
 ﻿using Diz.DependencyManager;
-using UnityEngine.Build.Pipeline;
+using MTGA.Core.Bundles;
+using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System;
-using MTGA.Core.Bundles;
-using UnityEngine;
+using UnityEngine.Build.Pipeline;
 
 /***
  * Full Credit for this patch goes to SPT-AKI team

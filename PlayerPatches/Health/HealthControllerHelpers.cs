@@ -1,11 +1,8 @@
 ﻿using EFT;
-using MTGA.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MTGA.Core.PlayerPatches.Health
 {
@@ -14,7 +11,7 @@ namespace MTGA.Core.PlayerPatches.Health
         public static Type GetDamageInfoType()
         {
             return PatchConstants.EftTypes.Single(
-                x => 
+                x =>
                 PatchConstants.GetAllMethodsForType(x).Any(y => y.Name == "GetOverDamage")
                 );
         }

@@ -2,7 +2,6 @@
 using EFT.Bots;
 using EFT.UI;
 using Newtonsoft.Json;
-using MTGA.Core;
 using System;
 using System.Reflection;
 using UnityEngine;
@@ -64,7 +63,7 @@ namespace MTGA.Core.Menus
                 Logger.LogInfo("AutoSetOfflineMatch.PatchPostfix : Raid Settings are Null!");
             }
 
-          
+
         }
 
         protected override MethodBase GetTargetMethod()

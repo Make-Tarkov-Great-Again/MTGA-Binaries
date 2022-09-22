@@ -22,7 +22,7 @@
 
 //namespace MTGA.Core.Raid.Aki
 //{
- 
+
 //    public class AirdropBoxPatch : ModulePatch
 //    {
 //        public static Type AirDropLogicClassType;
@@ -111,7 +111,7 @@
 //                Logger.LogInfo("AirdropPatch:PatchPostFix: No Airdrop Points were found!");
 //            }
 
-            
+
 
 //            if (gameWorld != null && points)
 //            {
@@ -179,7 +179,7 @@
 //            dropChance = ChanceToSpawn();
 //            dropHeight = UnityEngine.Random.Range(config.planeMinFlyHeight, config.planeMaxFlyHeight);
 //            timeToDrop = UnityEngine.Random.Range(config.airdropMinStartTimeSeconds, config.airdropMaxStartTimeSeconds);
-            
+
 //            GetNextAirdropSetup();
 //        }
 

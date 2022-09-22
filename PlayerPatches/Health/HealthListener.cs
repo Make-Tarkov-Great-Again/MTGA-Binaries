@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace MTGA.Core.PlayerPatches.Health
@@ -96,7 +95,7 @@ namespace MTGA.Core.PlayerPatches.Health
         {
             //PatchConstants.Logger.LogInfo("HealthListener:SetCurrent:" + v);
 
-            if (PatchConstants.GetAllPropertiesForObject(MyHealthController).Any(x => x.Name == v)) 
+            if (PatchConstants.GetAllPropertiesForObject(MyHealthController).Any(x => x.Name == v))
             {
                 var valuestruct = PatchConstants.GetAllPropertiesForObject(MyHealthController).FirstOrDefault(x => x.Name == v).GetValue(MyHealthController);
                 if (valuestruct == null)

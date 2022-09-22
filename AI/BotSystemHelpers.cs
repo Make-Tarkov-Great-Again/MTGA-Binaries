@@ -1,10 +1,7 @@
-﻿using MTGA.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MTGA.Core.AI
 {
@@ -41,7 +38,7 @@ namespace MTGA.Core.AI
 
             if (BotControllerType == null)
                 //BotControllerType = PatchConstants.EftTypes.Single(x => PatchConstants.GetMethodForType(x, "AddActivePLayer") != null);
-                BotControllerType = PatchConstants.EftTypes.Single(x => 
+                BotControllerType = PatchConstants.EftTypes.Single(x =>
                     x.GetMethod("SetSettings", BindingFlags.Public | BindingFlags.Instance) != null
                     && x.GetMethod("AddActivePLayer", BindingFlags.Public | BindingFlags.Instance) != null
                 );
@@ -68,7 +65,7 @@ namespace MTGA.Core.AI
 
             //Logger.LogInfo($"BotScatteringType:{BotScatteringType.Name}");
 
-            if(BossSpawnRunnerType == null)
+            if (BossSpawnRunnerType == null)
                 BossSpawnRunnerType = PatchConstants.EftTypes.Single(x => x.IsClass
                     && PatchConstants.GetPropertyFromType(x, "HaveSectants") != null
                     && PatchConstants.GetPropertyFromType(x, "BossSpawnWaves") != null
@@ -79,10 +76,10 @@ namespace MTGA.Core.AI
 
             if (ProfileCreatorType == null)
                 ProfileCreatorType = typeof(BotPresetClass);
-                //ProfileCreatorType = PatchConstants.EftTypes.Last(x => x.IsClass
-                //    && x.GetMethod("GetNewProfile", BindingFlags.NonPublic | BindingFlags.Instance) != null
-                //    && x.GetMethod("GetNewProfile", BindingFlags.NonPublic | BindingFlags.Instance) != null
-                //    );
+            //ProfileCreatorType = PatchConstants.EftTypes.Last(x => x.IsClass
+            //    && x.GetMethod("GetNewProfile", BindingFlags.NonPublic | BindingFlags.Instance) != null
+            //    && x.GetMethod("GetNewProfile", BindingFlags.NonPublic | BindingFlags.Instance) != null
+            //    );
 
             Logger.LogInfo($"ProfileCreatorType:{ProfileCreatorType.Name}");
 
@@ -97,7 +94,7 @@ namespace MTGA.Core.AI
 
             //Logger.LogInfo($"BotCreatorType:{BotCreatorType.Name}");
 
-            if(RoleLimitDifficultyType == null)
+            if (RoleLimitDifficultyType == null)
                 RoleLimitDifficultyType = PatchConstants.EftTypes.First(x => x.IsClass
                     && PatchConstants.GetFieldFromType(x, "Role") != null
                     && PatchConstants.GetFieldFromType(x, "Limit") != null
@@ -232,7 +229,7 @@ namespace MTGA.Core.AI
             }
 
             StopMethod?.Invoke(BotControllerInstance
-                , new object[] {  });
+                , new object[] { });
         }
 
         public static void SetBotBrain(EFT.Player player, object brain)

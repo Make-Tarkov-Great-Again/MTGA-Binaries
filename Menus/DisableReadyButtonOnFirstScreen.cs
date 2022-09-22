@@ -1,5 +1,4 @@
-﻿using MTGA.Core;
-using System.Reflection;
+﻿using System.Reflection;
 
 namespace MTGA.Core.Menus
 {

@@ -1,10 +1,10 @@
-﻿using System;
+﻿using ComponentAce.Compression.Libs.zlib;
+using System;
 using System.IO;
 using System.Net;
 using System.Text;
-using UnityEngine;
-using ComponentAce.Compression.Libs.zlib;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace MTGA.Core
 {
@@ -16,9 +16,9 @@ namespace MTGA.Core
 
         public Request()
         {
-            if(string.IsNullOrEmpty(Session))
+            if (string.IsNullOrEmpty(Session))
                 Session = PatchConstants.GetPHPSESSID();
-            if(string.IsNullOrEmpty(RemoteEndPoint))
+            if (string.IsNullOrEmpty(RemoteEndPoint))
                 RemoteEndPoint = PatchConstants.GetBackendUrl();
         }
 

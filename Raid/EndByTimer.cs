@@ -1,9 +1,7 @@
 ﻿using EFT;
-using MTGA.Core;
 using System;
 using System.Linq;
 using System.Reflection;
-using UnityEngine;
 
 namespace MTGA.Core.Raid
 {
@@ -47,7 +45,7 @@ namespace MTGA.Core.Raid
             return true;
         }
 
-        public EndByTimer()  { }
+        public EndByTimer() { }
 
         protected override MethodBase GetTargetMethod()
         {

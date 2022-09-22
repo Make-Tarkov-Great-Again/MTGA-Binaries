@@ -1,8 +1,5 @@
 ﻿using Comfort.Common;
 using EFT;
-using HarmonyLib;
-using Newtonsoft.Json;
-using MTGA.Core;
 using MTGA.Core.PlayerPatches.Health;
 using System;
 using System.Linq;
@@ -25,7 +22,7 @@ namespace MTGA.Core
 
         protected override MethodBase GetTargetMethod()
         {
-            foreach (var method in PatchConstants.GetAllMethodsForType(PatchConstants.EftTypes.Single(x=>x.Name == "MainApplication")))
+            foreach (var method in PatchConstants.GetAllMethodsForType(PatchConstants.EftTypes.Single(x => x.Name == "MainApplication")))
             {
                 if (method.Name.StartsWith("method") &&
                     method.GetParameters().Length >= 3 &&
@@ -33,7 +30,7 @@ namespace MTGA.Core
                     method.GetParameters()[1].Name == "savageProfile" &&
                     method.GetParameters()[2].Name == "location" &&
                     method.GetParameters().Any(x => x.Name == "result") &&
-                    method.GetParameters()[method.GetParameters().Length-1].Name == "timeHasComeScreenController"
+                    method.GetParameters()[method.GetParameters().Length - 1].Name == "timeHasComeScreenController"
                     )
                 {
                     Logger.Log(BepInEx.Logging.LogLevel.Info, method.Name);
@@ -68,7 +65,7 @@ namespace MTGA.Core
             }
 
             var currentHealth = HealthListener.Instance.CurrentHealth;
-            
+
             var beUrl = MTGA.Core.PatchConstants.GetBackendUrl();
             var sessionId = MTGA.Core.PatchConstants.GetPHPSESSID();
 
@@ -95,9 +92,9 @@ namespace MTGA.Core
                 isPlayerScav = isPlayerScav
             };
 
-            var convertedJson = request.MTGAToJson();
+            var convertedJson = request.SerializeToJson();
             new Request(session, backendUrl).PostJson("/raid/profile/save", convertedJson);
-           
+
         }
 
         public class SaveProfileRequest

@@ -2,14 +2,14 @@
 using BepInEx;
 using Comfort.Common;
 using EFT;
+using MTGA.Core.AI;
+using MTGA.Core.Bundles;
 using MTGA.Core.Hideout;
 using MTGA.Core.Menus;
 using MTGA.Core.Misc;
 using MTGA.Core.PlayerPatches;
-using MTGA.Core.SP;
-using MTGA.Core.AI;
-using MTGA.Core.Bundles;
 using MTGA.Core.PlayerPatches.Health;
+using MTGA.Core.SP;
 using MTGA.Core.SP.ScavMode;
 using MTGA.SP;
 using System;

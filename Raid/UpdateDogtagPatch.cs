@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Reflection;
-using EFT;
+﻿using EFT;
 using EFT.InventoryLogic;
-using UnityEngine;
+using System;
+using System.Linq;
+using System.Reflection;
 
 //using Equipment = GClass2069; // GetSlot
 //using StDamage = GStruct252; // HittedBallisticCollider

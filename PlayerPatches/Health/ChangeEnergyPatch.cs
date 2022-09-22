@@ -1,10 +1,5 @@
-﻿using MTGA.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MTGA.Core.PlayerPatches.Health
 {
@@ -26,7 +21,7 @@ namespace MTGA.Core.PlayerPatches.Health
             if (__instance == HealthListener.Instance.MyHealthController)
             {
                 //Logger.LogInfo("ChangeEnergyPatch:PatchPostfix:Change on my Health Controller: " + value);
-                if(HealthListener.Instance.CurrentHealth.Energy + value > 0)
+                if (HealthListener.Instance.CurrentHealth.Energy + value > 0)
                     HealthListener.Instance.CurrentHealth.Energy += value;
             }
         }

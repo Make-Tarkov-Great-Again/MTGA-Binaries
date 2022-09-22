@@ -1,18 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using BepInEx.Logging;
 using Comfort.Common;
 using EFT;
 using EFT.Communications;
 using FilesChecker;
-using Newtonsoft.Json;
-using MTGA.Core.Web;
 using MTGA.Core.AI;
-using UnityEngine;
+using MTGA.Core.Web;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
+using UnityEngine.UI;
 
 namespace MTGA.Core
 {
@@ -21,17 +20,17 @@ namespace MTGA.Core
         public static BindingFlags PrivateFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 
         private static Type[] _eftTypes;
-        public static Type[] EftTypes 
-        { 
-            get 
-            { 
-                if( _eftTypes == null)
+        public static Type[] EftTypes
+        {
+            get
+            {
+                if (_eftTypes == null)
                 {
                     _eftTypes = typeof(AbstractGame).Assembly.GetTypes().OrderBy(t => t.Name).ToArray();
                 }
 
-                return _eftTypes; 
-            } 
+                return _eftTypes;
+            }
         }
         public static Type[] FilesCheckerTypes { get; private set; }
         public static Type LocalGameType { get; private set; }
@@ -132,7 +131,7 @@ namespace MTGA.Core
 
             var o = MessageNotificationType.GetMethod("DisplayMessageNotification", BindingFlags.Static | BindingFlags.Public);
             if (o != null)
-            { 
+            {
                 o.Invoke("DisplayMessageNotification", new object[] { message, ENotificationDurationType.Default, ENotificationIconType.Default, null });
             }
 
@@ -161,16 +160,16 @@ namespace MTGA.Core
 
         public static T DoSafeConversion<T>(object o)
         {
-            var json = o.MTGAToJson();
-            return json.MTGAParseJson<T>();
+            var json = o.SerializeToJson();
+            return json.DeserializeParseJson<T>();
         }
 
         public static object GetSingletonInstance(Type singletonInstanceType)
         {
-            Type generic = typeof(Comfort.Common.Singleton<>);
+            Type generic = typeof(Singleton<>);
             Type[] typeArgs = { singletonInstanceType };
             var genericType = generic.MakeGenericType(typeArgs);
-            return PatchConstants.GetPropertyFromType(genericType, "Instance").GetValue(null, null);
+            return GetPropertyFromType(genericType, "Instance").GetValue(null, null);
         }
 
         public static PropertyInfo GetPropertyFromType(Type t, string name)
@@ -186,8 +185,8 @@ namespace MTGA.Core
         public static FieldInfo GetFieldFromType(Type t, string name)
         {
             var fields = t.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
-            return fields.FirstOrDefault(x => x.Name.ToLower() == name.ToLower());    
-          
+            return fields.FirstOrDefault(x => x.Name.ToLower() == name.ToLower());
+
         }
 
         public static FieldInfo GetFieldFromTypeByFieldType(Type objectType, Type fieldType)
@@ -214,7 +213,7 @@ namespace MTGA.Core
 
         public static MethodInfo GetMethodForType(Type t, string methodName, bool debug = false)
         {
-            return GetAllMethodsForType(t, debug).LastOrDefault(x => x.Name.ToLower() == methodName.ToLower()); 
+            return GetAllMethodsForType(t, debug).LastOrDefault(x => x.Name.ToLower() == methodName.ToLower());
         }
 
         public static async Task<MethodInfo> GetMethodForTypeAsync(Type t, string methodName, bool debug = false)
@@ -240,7 +239,7 @@ namespace MTGA.Core
                 yield return m;
             }
 
-            if(t.BaseType != null)
+            if (t.BaseType != null)
             {
                 foreach (var m in t.BaseType.GetMethods(
                 BindingFlags.NonPublic
@@ -261,7 +260,7 @@ namespace MTGA.Core
 
         public static IEnumerable<MethodInfo> GetAllMethodsForObject(object ob)
         {
-            return GetAllMethodsForType(ob.GetType());  
+            return GetAllMethodsForType(ob.GetType());
         }
 
         public static IEnumerable<PropertyInfo> GetAllPropertiesForObject(object o)
@@ -310,22 +309,22 @@ namespace MTGA.Core
         public static T GetFieldOrPropertyFromInstance<T>(object o, string name, bool safeConvert = true)
         {
             PropertyInfo property = GetAllPropertiesForObject(o).FirstOrDefault(x => x.Name.ToLower() == name.ToLower());
-            if(property != null)
+            if (property != null)
             {
                 if (safeConvert)
-                    return MTGA.Core.PatchConstants.DoSafeConversion<T>(property.GetValue(o));
-                else 
+                    return DoSafeConversion<T>(property.GetValue(o));
+                else
                     return (T)property.GetValue(o);
             }
             FieldInfo field = GetAllFieldsForObject(o).FirstOrDefault(x => x.Name.ToLower() == name.ToLower());
-            if(field != null)
+            if (field != null)
             {
                 if (safeConvert)
-                    return MTGA.Core.PatchConstants.DoSafeConversion<T>(field.GetValue(o));
+                    return DoSafeConversion<T>(field.GetValue(o));
                 else
                     return (T)field.GetValue(o);
             }
-            
+
             return default(T);
         }
 
@@ -350,7 +349,7 @@ namespace MTGA.Core
 
         public static void SetFieldOrPropertyFromInstance<T>(object o, string name, T v)
         {
-            var field = GetAllFieldsForObject(o).FirstOrDefault(x=>x.Name.ToLower() == (name.ToLower()));
+            var field = GetAllFieldsForObject(o).FirstOrDefault(x => x.Name.ToLower() == (name.ToLower()));
             if (field != null)
                 field.SetValue(o, v);
 
@@ -363,12 +362,12 @@ namespace MTGA.Core
         {
             foreach (var key in dict)
             {
-                var prop = PatchConstants.GetPropertyFromType(o.GetType(), key.Key);
+                var prop = GetPropertyFromType(o.GetType(), key.Key);
                 if (prop != null)
                 {
                     prop.SetValue(o, key.Value);
                 }
-                var field = PatchConstants.GetFieldFromType(o.GetType(), key.Key);
+                var field = GetFieldFromType(o.GetType(), key.Key);
                 if (field != null)
                 {
                     field.SetValue(o, key.Value);
@@ -376,32 +375,32 @@ namespace MTGA.Core
             }
         }
 
-        public static string MTGAToJson(this object o)
+        public static string SerializeToJson(this object o)
         {
             return JsonConvert.SerializeObject(o
                     , new JsonSerializerSettings()
                     {
-                        Converters = PatchConstants.JsonConverterDefault
+                        Converters = JsonConverterDefault
                     }
                     );
         }
 
-        public static async Task<string> MTGAToJsonAsync(this object o)
+        public static async Task<string> SerializeToJsonAsync(this object o)
         {
             return await Task.Run(() =>
             {
-                return MTGAToJson(o);
+                return SerializeToJson(o);
             });
         }
 
-        public static T MTGAParseJson<T>(this string str)
+        public static T DeserializeParseJson<T>(this string str)
         {
             return (T)JsonConvert.DeserializeObject<T>(str
                     , new JsonSerializerSettings()
                     {
-                        Converters = PatchConstants.JsonConverterDefault
+                        Converters = JsonConverterDefault
                     }
-                    ) ;
+            );
         }
 
         public static object GetPlayerProfile(object __instance)
@@ -420,7 +419,7 @@ namespace MTGA.Core
         {
             var instanceAccountProp = instanceProfile.GetType().GetField("AccountId"
                 , BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
-          
+
             if (instanceAccountProp == null)
             {
                 Logger.LogInfo($"ReplaceInPlayer:PatchPostfix: instanceAccountProp not found");
@@ -432,7 +431,7 @@ namespace MTGA.Core
 
         public static IDisposable StartWithToken(string name)
         {
-            return GetAllMethodsForType(StartWithTokenType).Single(x=>x.Name == "StartWithToken").Invoke(null, new object[] { name }) as IDisposable;
+            return GetAllMethodsForType(StartWithTokenType).Single(x => x.Name == "StartWithToken").Invoke(null, new object[] { name }) as IDisposable;
         }
 
         public static async Task InvokeAsyncStaticByReflection(MethodInfo methodInfo, object rModel, params object[] p)
@@ -502,14 +501,14 @@ namespace MTGA.Core
                .First(t => t.GetField("Converters", BindingFlags.Static | BindingFlags.Public) != null);
             JsonConverterDefault = JsonConverterType.GetField("Converters", BindingFlags.Static | BindingFlags.Public).GetValue(null) as JsonConverter[];
 
-            StartWithTokenType = PatchConstants.EftTypes.Single(x => GetAllMethodsForType(x).Count(y => y.Name == "StartWithToken") == 1);
+            StartWithTokenType = EftTypes.Single(x => GetAllMethodsForType(x).Count(y => y.Name == "StartWithToken") == 1);
 
             BotSystemHelpers.Setup();
 
             if (JobPriorityType == null)
             {
-                JobPriorityType = PatchConstants.EftTypes.Single(x =>
-                    PatchConstants.GetAllMethodsForType(x).Any(x => x.Name == "Priority")
+                JobPriorityType = EftTypes.Single(x =>
+                    GetAllMethodsForType(x).Any(x => x.Name == "Priority")
                     //&& 
                     //(PatchConstants.GetFieldFromType(x, "General") != null
                     //|| PatchConstants.GetPropertyFromType(x, "General") != null)
@@ -519,17 +518,17 @@ namespace MTGA.Core
 
             if (PlayerInfoType == null)
             {
-                PlayerInfoType = PatchConstants.EftTypes.Single(x =>
-                    PatchConstants.GetAllMethodsForType(x).Any(x => x.Name == "AddBan")
-                    && PatchConstants.GetAllMethodsForType(x).Any(x => x.Name == "RemoveBan")
+                PlayerInfoType = EftTypes.Single(x =>
+                    GetAllMethodsForType(x).Any(x => x.Name == "AddBan")
+                    && GetAllMethodsForType(x).Any(x => x.Name == "RemoveBan")
                     );
                 //Logger.LogInfo($"Loading PlayerInfoType:{PlayerInfoType.FullName}");
             }
 
             if (PlayerCustomizationType == null)
             {
-                var profileType = typeof(EFT.Profile);
-                PlayerCustomizationType = PatchConstants.GetFieldFromType(typeof(EFT.Profile), "Customization").FieldType;
+                var profileType = typeof(Profile);
+                PlayerCustomizationType = GetFieldFromType(typeof(Profile), "Customization").FieldType;
                 //Logger.LogInfo($"Loading PlayerCustomizationType:{PlayerCustomizationType.FullName}");
             }
 
@@ -547,15 +546,15 @@ namespace MTGA.Core
             //Logger.LogInfo($"Loading SpawnPointSystemClassType:{SpawnPointSystemClassType.FullName}");
 
 
-            SpawnPointArrayInterfaceType = PatchConstants.EftTypes.Single(x =>
-                        PatchConstants.GetAllMethodsForType(x).Any(x => x.Name == "CreateSpawnPoint")
-                        && PatchConstants.GetAllMethodsForType(x).Any(x => x.Name == "DestroySpawnPoint")
+            SpawnPointArrayInterfaceType = EftTypes.Single(x =>
+                        GetAllMethodsForType(x).Any(x => x.Name == "CreateSpawnPoint")
+                        && GetAllMethodsForType(x).Any(x => x.Name == "DestroySpawnPoint")
                         && x.IsInterface
                     );
             //Logger.LogInfo($"Loading SpawnPointArrayInterfaceType:{SpawnPointArrayInterfaceType.FullName}");
 
-            BackendStaticConfigurationType = PatchConstants.EftTypes.Single(x =>
-                    PatchConstants.GetAllMethodsForType(x).Any(x => x.Name == "LoadApplicationConfig")
+            BackendStaticConfigurationType = EftTypes.Single(x =>
+                    GetAllMethodsForType(x).Any(x => x.Name == "LoadApplicationConfig")
             //&& PatchConstants.GetFieldFromType(x, "BackendUrl") != null
             //&& PatchConstants.GetFieldFromType(x, "Config") != null
             );
@@ -564,10 +563,10 @@ namespace MTGA.Core
 
             if (!TypeDictionary.ContainsKey("StatisticsSession"))
             {
-                TypeDictionary.Add("StatisticsSession", PatchConstants.EftTypes.OrderBy(x => x.Name).First(x =>
+                TypeDictionary.Add("StatisticsSession", EftTypes.OrderBy(x => x.Name).First(x =>
                     x.IsClass
-                    && PatchConstants.GetAllMethodsForType(x).Any(x => x.Name == "BeginStatisticsSession")
-                    && PatchConstants.GetAllMethodsForType(x).Any(x => x.Name == "EndStatisticsSession")
+                    && GetAllMethodsForType(x).Any(x => x.Name == "BeginStatisticsSession")
+                    && GetAllMethodsForType(x).Any(x => x.Name == "EndStatisticsSession")
                 ));
                 //Logger.LogInfo($"StatisticsSession:{TypeDictionary["StatisticsSession"].FullName}");
             }
@@ -575,9 +574,9 @@ namespace MTGA.Core
             if (!TypeDictionary.ContainsKey("FilterCustomization"))
             {
                 // Gather FilterCustomization
-                TypeDictionary.Add("FilterCustomization", PatchConstants.EftTypes.OrderBy(x => x.Name).Last(x =>
+                TypeDictionary.Add("FilterCustomization", EftTypes.OrderBy(x => x.Name).Last(x =>
                     x.IsClass
-                    && PatchConstants.GetAllMethodsForType(x).Any(x => x.Name == "FilterCustomization")
+                    && GetAllMethodsForType(x).Any(x => x.Name == "FilterCustomization")
                 ));
                 Logger.LogInfo($"FilterCustomization:{TypeDictionary["FilterCustomization"].FullName}");
                 // Test Default
@@ -588,20 +587,20 @@ namespace MTGA.Core
                 //Logger.LogInfo($"FilterCustomization:{filterCustomizationDefaultField.GetValue(null)}");
             }
 
-            TypeDictionary.Add("Profile", PatchConstants.EftTypes.First(x =>
+            TypeDictionary.Add("Profile", EftTypes.First(x =>
                x.IsClass && x.FullName == "EFT.Profile"
            ));
 
-            TypeDictionary.Add("Profile.Customization", PatchConstants.EftTypes.First(x =>
+            TypeDictionary.Add("Profile.Customization", EftTypes.First(x =>
                 x.IsClass
                 && x.BaseType == typeof(Dictionary<EBodyModelPart, string>)
             ));
 
-            TypeDictionary.Add("Profile.Inventory", PatchConstants.EftTypes.First(x =>
+            TypeDictionary.Add("Profile.Inventory", EftTypes.First(x =>
                 x.IsClass
-                && PatchConstants.GetAllMethodsForType(x).Any(x => x.Name == "UpdateTotalWeight")
-                && PatchConstants.GetAllMethodsForType(x).Any(x => x.Name == "GetAllItemByTemplate")
-                && PatchConstants.GetAllMethodsForType(x).Any(x => x.Name == "GetItemsInSlots")
+                && GetAllMethodsForType(x).Any(x => x.Name == "UpdateTotalWeight")
+                && GetAllMethodsForType(x).Any(x => x.Name == "GetAllItemByTemplate")
+                && GetAllMethodsForType(x).Any(x => x.Name == "GetItemsInSlots")
             ));
 
             //TypeDictionary.Add("Profile.Inventory.Equipment", PatchConstants.EftTypes.First(x =>

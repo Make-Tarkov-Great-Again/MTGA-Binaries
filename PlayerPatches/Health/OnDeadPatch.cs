@@ -1,12 +1,8 @@
 ﻿using EFT;
 using Newtonsoft.Json;
-using MTGA.Core;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MTGA.Core.PlayerPatches.Health
 {
@@ -21,11 +17,11 @@ namespace MTGA.Core.PlayerPatches.Health
             if (enableDeathMessage != null && enableDeathMessage.Value == true)
             {
                 DisplayDeathMessage = enableDeathMessage.Value;
-                
+
                 //DisplayDeathMessage = JsonConvert.DeserializeObject<bool>();
             }
 
-            if(bool.TryParse(new Request().PostJson("/client/raid/person/killed/showMessage", null, true), out bool serverDecision))
+            if (bool.TryParse(new Request().PostJson("/client/raid/person/killed/showMessage", null, true), out bool serverDecision))
             {
                 Logger.LogInfo("OnDeadPatch:Server Decision:" + serverDecision);
                 DisplayDeathMessage = serverDecision;
@@ -41,7 +37,7 @@ namespace MTGA.Core.PlayerPatches.Health
             if (deadPlayer == null)
                 return;
 
-            if(OnPersonKilled != null)
+            if (OnPersonKilled != null)
             {
                 OnPersonKilled(__instance, damageType);
             }
@@ -67,15 +63,15 @@ namespace MTGA.Core.PlayerPatches.Health
             if (__instance.Profile.Info != null)
             {
                 map.Add("diedFaction", __instance.Side);
-                if(__instance.Profile.Info.Settings != null)
+                if (__instance.Profile.Info.Settings != null)
                     map.Add("diedWST", __instance.Profile.Info.Settings.Role);
             }
-            if (killedBy != null) 
+            if (killedBy != null)
             {
                 map.Add("killedByAID", killedBy.Profile.AccountId);
                 map.Add("killerFaction", killedBy.Side);
             }
-            if(killedByLastAggressor != null)
+            if (killedByLastAggressor != null)
             {
                 map.Add("killedByLastAggressorAID", killedByLastAggressor.Profile.AccountId);
             }

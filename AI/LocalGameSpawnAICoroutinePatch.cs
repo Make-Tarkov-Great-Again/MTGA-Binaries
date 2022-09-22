@@ -1,11 +1,6 @@
-﻿using MTGA.Core;
-using MTGA.Core.LocalGame;
-using System;
-using System.Collections.Generic;
+﻿using MTGA.Core.LocalGame;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MTGA.Core.AI
 {
@@ -27,7 +22,7 @@ namespace MTGA.Core.AI
                 && m.GetParameters()[1].Name == "controllerSettings"
                 );
         }
-        
+
         [PatchPrefix]
         public static bool PatchPrefix(
         float startDelay, object controllerSettings, object spawnSystem, object runCallback,
@@ -38,5 +33,5 @@ namespace MTGA.Core.AI
         }
     }
 
-    
+
 }

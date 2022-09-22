@@ -1,11 +1,7 @@
 ﻿using EFT;
-using MTGA.Core;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MTGA.Core.Misc
 {
@@ -24,7 +20,7 @@ namespace MTGA.Core.Misc
         [PatchPrefix]
         public static bool PatchPrefix(ref string id)
         {
-            if(id.StartsWith("I-") || id.Length > 24)
+            if (id.StartsWith("I-") || id.Length > 24)
             {
                 Logger.LogInfo("MongoIDPatch: Id to Parse: " + id);
                 id = new MongoID(true);

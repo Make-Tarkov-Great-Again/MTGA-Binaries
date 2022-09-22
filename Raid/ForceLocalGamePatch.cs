@@ -1,10 +1,7 @@
 ﻿using EFT;
-using MTGA.Core;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace MTGA.Core.SP
@@ -20,10 +17,10 @@ namespace MTGA.Core.SP
         /// This should be "method_28"
         /// </summary>
         /// <returns></returns>
-         protected override MethodBase GetTargetMethod() => PatchConstants.GetAllMethodsForType(typeof(MainApplication))
-            .Single(x => x.GetParameters().Length >= 1
-                && x.GetParameters()[0].Name == "reconnectAction"
-                && x.GetParameters()[0].ParameterType == typeof(Action));
+        protected override MethodBase GetTargetMethod() => PatchConstants.GetAllMethodsForType(typeof(MainApplication))
+           .Single(x => x.GetParameters().Length >= 1
+               && x.GetParameters()[0].Name == "reconnectAction"
+               && x.GetParameters()[0].ParameterType == typeof(Action));
 
         [PatchPrefix]
         public static bool PatchPrefix(

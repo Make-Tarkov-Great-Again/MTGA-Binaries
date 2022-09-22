@@ -9,43 +9,44 @@ namespace MTGA.Core
     {
         public static Constants _instance;
 
-        public static Constants Instance { get { if(_instance == null) _instance = new Constants(); return _instance;} }
-        public Constants() {
-                DefaultBindingFlags = BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly;
-                PublicInstanceFlag = BindingFlags.Public | BindingFlags.Instance;
-                NonPublicInstanceFlag = BindingFlags.NonPublic | BindingFlags.Instance;
-                NonPublicInstanceDeclaredOnlyFlag = BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly;
-                NonPublicFlag = BindingFlags.NonPublic;
+        public static Constants Instance { get { if (_instance == null) _instance = new Constants(); return _instance; } }
+        public Constants()
+        {
+            DefaultBindingFlags = BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly;
+            PublicInstanceFlag = BindingFlags.Public | BindingFlags.Instance;
+            NonPublicInstanceFlag = BindingFlags.NonPublic | BindingFlags.Instance;
+            NonPublicInstanceDeclaredOnlyFlag = BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly;
+            NonPublicFlag = BindingFlags.NonPublic;
 
-                TargetAssembly = typeof(ActionTrigger).Assembly;
-                FileCheckerAssembly = typeof(ICheckResult).Assembly;
-                MainApplicationType = typeof(EFT.MainApplication);// TargetAssemblyTypes.Single(x => x.Name == "MainApplication");
-                UnityCertificateHandlerType = typeof(UnityEngine.Networking.CertificateHandler);
-                UnityUnityWebRequestType = typeof(UnityEngine.Networking.UnityWebRequestTexture);
+            TargetAssembly = typeof(ActionTrigger).Assembly;
+            FileCheckerAssembly = typeof(ICheckResult).Assembly;
+            MainApplicationType = typeof(EFT.MainApplication);// TargetAssemblyTypes.Single(x => x.Name == "MainApplication");
+            UnityCertificateHandlerType = typeof(UnityEngine.Networking.CertificateHandler);
+            UnityUnityWebRequestType = typeof(UnityEngine.Networking.UnityWebRequestTexture);
 
-                TargetAssemblyTypes = TargetAssembly.GetTypes();
-                FileCheckerAssemblyTypes = FileCheckerAssembly.GetTypes();
-
-           
-                LocalGameType = TargetAssemblyTypes.Single(x => x.Name == "LocalGame");
-                ExfilPointManagerType = TargetAssemblyTypes.Single(x => x.GetMethod("InitAllExfiltrationPoints") != null);
-                MenuControllerType = TargetAssemblyTypes.Single(x =>  x.Name.StartsWith("GClass") && x.GetField("menuUI_0", BindingFlags.NonPublic | BindingFlags.Instance) != null);
-                BackendInterfaceType = TargetAssemblyTypes.Single(
-                    x => x.GetMethods().Select(y => y.Name).Contains("CreateClientSession") && x.IsInterface);
-                SessionInterfaceType = TargetAssemblyTypes.Single(
-                    x => x.GetMethods().Select(y => y.Name).Contains("GetPhpSessionId") && x.IsInterface);
-                ProfileInfoType = TargetAssemblyTypes.Single(x => x.GetMethod("GetExperience") != null);
-                ProfileType = TargetAssemblyTypes.Single(x => x.GetMethod("AddToCarriedQuestItems") != null);
-                FenceTraderInfoType = TargetAssemblyTypes.Single(x => x.GetMethod("NewExfiltrationPrice") != null);
-                FirearmControllerType = typeof(EFT.Player.FirearmController)
-                    .GetNestedTypes()
-                    .Single(x => x.GetFields(DefaultBindingFlags).Count(y => y.Name.Contains("gclass")) > 0 && x.GetFields(DefaultBindingFlags).Count(y => y.Name.Contains("callback")) > 0 && x.GetMethod("UseSecondMagForReload", DefaultBindingFlags) != null);
-                WeaponControllerFieldName = FirearmControllerType
-                    .GetFields(DefaultBindingFlags)
-                    .Single(x => x.Name.Contains("gclass")).Name;
+            TargetAssemblyTypes = TargetAssembly.GetTypes();
+            FileCheckerAssemblyTypes = FileCheckerAssembly.GetTypes();
 
 
-}
+            LocalGameType = TargetAssemblyTypes.Single(x => x.Name == "LocalGame");
+            ExfilPointManagerType = TargetAssemblyTypes.Single(x => x.GetMethod("InitAllExfiltrationPoints") != null);
+            MenuControllerType = TargetAssemblyTypes.Single(x => x.Name.StartsWith("GClass") && x.GetField("menuUI_0", BindingFlags.NonPublic | BindingFlags.Instance) != null);
+            BackendInterfaceType = TargetAssemblyTypes.Single(
+                x => x.GetMethods().Select(y => y.Name).Contains("CreateClientSession") && x.IsInterface);
+            SessionInterfaceType = TargetAssemblyTypes.Single(
+                x => x.GetMethods().Select(y => y.Name).Contains("GetPhpSessionId") && x.IsInterface);
+            ProfileInfoType = TargetAssemblyTypes.Single(x => x.GetMethod("GetExperience") != null);
+            ProfileType = TargetAssemblyTypes.Single(x => x.GetMethod("AddToCarriedQuestItems") != null);
+            FenceTraderInfoType = TargetAssemblyTypes.Single(x => x.GetMethod("NewExfiltrationPrice") != null);
+            FirearmControllerType = typeof(EFT.Player.FirearmController)
+                .GetNestedTypes()
+                .Single(x => x.GetFields(DefaultBindingFlags).Count(y => y.Name.Contains("gclass")) > 0 && x.GetFields(DefaultBindingFlags).Count(y => y.Name.Contains("callback")) > 0 && x.GetMethod("UseSecondMagForReload", DefaultBindingFlags) != null);
+            WeaponControllerFieldName = FirearmControllerType
+                .GetFields(DefaultBindingFlags)
+                .Single(x => x.Name.Contains("gclass")).Name;
+
+
+        }
 
         #region Binding flags
         // if you find any better naming for those variables jsut rename it using VS
@@ -79,8 +80,9 @@ namespace MTGA.Core
         //public static Type MatchmakerOfflineRaidType = TargetAssembly.GetTypes().Single(x => x.Name == "MatchmakerOfflineRaid");
         //public static Type MenuControllerType = TargetAssembly.GetTypes().Single(x => x.GetProperty("QuestController") != null);
 
-        public ConstructorInfo[] MainApplicationConstructorInfo {
-            get 
+        public ConstructorInfo[] MainApplicationConstructorInfo
+        {
+            get
             {
                 return MainApplicationType.GetConstructors();
             }
