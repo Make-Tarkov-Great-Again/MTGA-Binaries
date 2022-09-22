@@ -173,15 +173,15 @@ namespace Aki.Custom.Airdrops
         private void GetDistanceToDrop()
         {
             airdropParameters.distanceToDrop = Vector3.Distance(
-                new Vector3(airdropParameters.randomAirdropPoint.transform.Position.x, 
+                new Vector3(airdropParameters.randomAirdropPoint.transform.position.x, 
                 airdropParameters.dropHeight, 
-                airdropParameters.randomAirdropPoint.transform.Position.z), 
-                airdropPlane.planeObject.transform.Position);
+                airdropParameters.randomAirdropPoint.transform.position.z), 
+                airdropPlane.planeObject.transform.position);
         }
 
         private void RaycastBoxDistance()
         {
-            Ray ray = new Ray(airdropBox.boxObject.transform.Position, Vector3.down);
+            Ray ray = new Ray(airdropBox.boxObject.transform.position, Vector3.down);
 
             var raycast = Physics.Raycast(ray, out RaycastHit hitinfo, 600, GClass703.TerrainLowPoly);
 

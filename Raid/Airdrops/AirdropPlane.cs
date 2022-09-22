@@ -39,7 +39,7 @@ namespace Aki.Custom.Airdrops
 
         private void SetLookTowardsDrop(AirdropPoint airdropPoint, int dropHeight)
         {
-            planeObject.transform.LookAt(new Vector3(airdropPoint.transform.Position.x, dropHeight, airdropPoint.transform.Position.z));
+            planeObject.transform.LookAt(new Vector3(airdropPoint.transform.position.x, dropHeight, airdropPoint.transform.position.z));
         }
 
         private void SetAudio(float planeVolume, AirplaneSynchronizableObject airplaneSync)

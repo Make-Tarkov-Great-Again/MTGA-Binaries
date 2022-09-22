@@ -19,9 +19,7 @@ namespace MTGA.Core.PlayerPatches
         }
 
         [PatchPostfix]
-        public static 
-            async
-            void 
+        public static async void 
             PatchPostfix(EFT.LocalPlayer __instance)
         {
             if(OnPlayerInit != null)

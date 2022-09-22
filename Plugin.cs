@@ -29,10 +29,8 @@ namespace MTGA.Core
         {
             PatchConstants.GetBackendUrl();
 
-            // - Check to ensure an up to date Server is running this library
-            //new Request().PostJson("/client/MTGA-validator", null);
 
-            // - TURN OFF BS Checkers, FileChecker and BattlEye doesn't work BSG, I see cheaters ALL the time -----
+            // - TURN OFF FileChecker and BattlEye -----
             new ConsistencySinglePatch().Enable();
             new ConsistencyMultiPatch().Enable();
             new BattlEyePatch().Enable();

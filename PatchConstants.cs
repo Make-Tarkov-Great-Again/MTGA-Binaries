@@ -88,30 +88,6 @@ namespace MTGA.Core
                 backendUrl = BackendConnection.GetBackendConnection().BackendUrl;
             }
             return backendUrl;
-
-            //return GClassXXX.Config.BackendUrl;
-            //if (_backendUrl == null)
-            //{
-            //    try
-            //    {
-            //        var ConfigInstance = Constants.Instance.TargetAssemblyTypes
-            //            .Where(type => type.GetField("DEFAULT_BACKEND_URL", BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy) != null)
-            //            .FirstOrDefault().GetProperty("Config", BindingFlags.Static | BindingFlags.Public).GetValue(null);
-            //        _backendUrl = HarmonyLib.Traverse.Create(ConfigInstance).Field("BackendUrl").GetValue() as string;
-            //    }
-            //    catch (Exception e)
-            //    {
-            //        Logger.LogError("GetBackendUrl():" + e);
-            //    }
-            //    Logger.LogInfo(_backendUrl);
-            //}
-            //if (_backendUrl == null)
-            //{
-            //    _backendUrl = "https://127.0.0.1";
-            //    Logger.LogInfo("GetBackendUrl is defaulting to " + _backendUrl);
-
-            //}
-            //return _backendUrl;
         }
 
         public static string GetPHPSESSID()
@@ -191,10 +167,6 @@ namespace MTGA.Core
         public static FieldInfo GetFieldFromTypeByFieldType(Type objectType, Type fieldType)
         {
             var fields = objectType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
-            //foreach(var f in fields)
-            //{
-            //    Logger.LogInfo("Field:" + f.Name);
-            //}
             return fields.FirstOrDefault(x => x.FieldType == fieldType);
 
         }
@@ -202,10 +174,6 @@ namespace MTGA.Core
         public static PropertyInfo GetPropertyFromTypeByPropertyType(Type objectType, Type propertyType)
         {
             var fields = objectType.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
-            //foreach (var f in fields)
-            //{
-            //    Logger.LogInfo("Prop:" + f.Name);
-            //}
             return fields.FirstOrDefault(x => x.PropertyType == propertyType);
 
         }
@@ -447,31 +415,6 @@ namespace MTGA.Core
                     .Invoke(null, p);
             }
         }
-
-        /// <summary>
-        /// Invoke an async Task<object> method
-        /// </summary>
-        /// <param name="type"></param>
-        /// <param name="outputType"></param>
-        /// <param name="method"></param>
-        /// <param name="param"></param>
-        /// <returns></returns>
-        //public static async Task<object> InvokeAsyncMethod(Type type, Type outputType, string method, object[] param)
-        //{
-        //    var m = PatchConstants.GetAllMethodsForType(type).First(x => x.Name == method);// foo.GetType().GetMethod(nameof(IFoo.Get));
-        //    Logger.LogInfo("InvokeAsyncMethod." + m.Name);
-
-        //    //var builder = AsyncTaskMethodBuilder.Create();
-
-        //    var generic = m.MakeGenericMethod(outputType);
-        //    var task = (Task)generic.Invoke(type, param);
-
-        //    await task.ConfigureAwait(false);
-
-        //    var resultProperty = task.GetType().GetProperty("Result");
-        //    return resultProperty.GetValue(task);
-
-        //}
 
         static PatchConstants()
         {
