@@ -96,7 +96,7 @@ namespace MTGA.Core
             };
 
             var convertedJson = request.MTGAToJson();
-            new Request(session, backendUrl).PostJson("/raid/profile/save", convertedJson);
+            new Request(session, backendUrl).PostJson("/client/raid/profile/save", convertedJson);
            
         }
 
