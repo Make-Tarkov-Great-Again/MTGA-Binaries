@@ -2,7 +2,6 @@
 using EFT.Bots;
 using EFT.UI;
 using Newtonsoft.Json;
-using MTGA.Core;
 using System;
 using System.Reflection;
 using UnityEngine;
@@ -42,8 +41,8 @@ namespace MTGA.Core.Menus
             ____botsEnabledToggle.isOn = true;
             ____enableBosses.isOn = true;
 
-            ____aiAmountDropdown.UpdateValue((int)EBotAmount.Medium, false);
-            ____aiDifficultyDropdown.UpdateValue((int)EBotDifficulty.Medium, false);
+            ____aiAmountDropdown.UpdateValue((int)EBotAmount.AsOnline, false);
+            ____aiDifficultyDropdown.UpdateValue((int)EBotDifficulty.AsOnline, false);
 
             Request();
 
@@ -64,7 +63,7 @@ namespace MTGA.Core.Menus
                 Logger.LogInfo("AutoSetOfflineMatch.PatchPostfix : Raid Settings are Null!");
             }
 
-          
+
         }
 
         protected override MethodBase GetTargetMethod()
