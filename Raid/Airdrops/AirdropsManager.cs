@@ -18,6 +18,7 @@ namespace Aki.Custom.Airdrops
         AirdropBox airdropBox;
         ItemFactoryUtil factory;
 
+        public bool isFlareDrop = false;
         private AirdropParametersModel airdropParameters;
 
         public void Start()
@@ -32,7 +33,7 @@ namespace Aki.Custom.Airdrops
             if (airdropParameters == null)
             {
                 PatchConstants.Logger.LogInfo("AirdropsManager.Start.Get Airdrop Params");
-                airdropParameters = AirdropUtil.InitAirdropParams(gameWorld);
+                airdropParameters = AirdropUtil.InitAirdropParams(gameWorld, isFlareDrop);
             }
 
             if (!AirdropUtil.ShouldAirdropOccur(airdropParameters.dropChance.Value)
@@ -44,7 +45,7 @@ namespace Aki.Custom.Airdrops
                 return;
 
             }
-            
+
             //airdropPlane = new AirdropPlane();
             airdropPlane = this.GetOrAddComponent<AirdropPlane>();
             DontDestroyOnLoad(airdropPlane);
@@ -97,7 +98,7 @@ namespace Aki.Custom.Airdrops
                 }
             }
 
-            if (airdropParameters.distanceTraveled > 40 && airdropParameters.planeSpawned 
+            if (airdropParameters.distanceTraveled > 40 && airdropParameters.planeSpawned
                 && airdropPlane.planeEnabled && airdropParameters.distanceToDrop == 10000f)
             {
                 GetDistanceToDrop();
@@ -120,14 +121,14 @@ namespace Aki.Custom.Airdrops
                 airdropParameters.parachuteStartedTimer = airdropParameters.timer;
             }
 
-            if (airdropParameters.timer > airdropParameters.parachuteStartedTimer + 0.5f && airdropParameters.boxSpawned && !airdropParameters.parachutePaused 
+            if (airdropParameters.timer > airdropParameters.parachuteStartedTimer + 0.5f && airdropParameters.boxSpawned && !airdropParameters.parachutePaused
                 && airdropBox.boxEnabled && !airdropParameters.airdropComplete && !airdropParameters.parachuteComplete)
             {
                 airdropBox.paraAnimation.enabled = false;
                 airdropParameters.parachutePaused = true;
             }
 
-            if (airdropParameters.timer > airdropParameters.parachuteStartedTimer + 2f && airdropParameters.boxSpawned 
+            if (airdropParameters.timer > airdropParameters.parachuteStartedTimer + 2f && airdropParameters.boxSpawned
                 && airdropParameters.parachutePaused && !airdropParameters.containerBuilt)
             {
                 BuildLootContainer();
@@ -173,9 +174,9 @@ namespace Aki.Custom.Airdrops
         private void GetDistanceToDrop()
         {
             airdropParameters.distanceToDrop = Vector3.Distance(
-                new Vector3(airdropParameters.randomAirdropPoint.transform.position.x, 
-                airdropParameters.dropHeight, 
-                airdropParameters.randomAirdropPoint.transform.position.z), 
+                new Vector3(airdropParameters.randomAirdropPoint.transform.position.x,
+                airdropParameters.dropHeight,
+                airdropParameters.randomAirdropPoint.transform.position.z),
                 airdropPlane.planeObject.transform.position);
         }
 

@@ -17,13 +17,13 @@ namespace Aki.Custom.Airdrops.Utils
     {
         public static AirdropConfigModel GetConfigFromServer()
         {
-            var json = new MTGA.Core.Request().GetJson("/singleplayer/airdrop/config");
+            string json = new MTGA.Core.Request().GetJson("/singleplayer/airdrop/config");
             return JsonConvert.DeserializeObject<AirdropConfigModel>(json);
         }
 
         public static int ChanceToSpawn(GameWorld gameWorld, AirdropConfigModel config)
         {
-            var location = gameWorld.RegisteredPlayers[0].Location;
+            string location = gameWorld.RegisteredPlayers[0].Location;
 
             int result = 25;
             switch (location.ToLower())
@@ -68,10 +68,30 @@ namespace Aki.Custom.Airdrops.Utils
             return UnityEngine.Random.Range(1, 99) <= dropChance;
         }
 
-        public static AirdropParametersModel InitAirdropParams(GameWorld gameWorld)
+        public static AirdropParametersModel InitAirdropParams(GameWorld gameWorld, bool isFlare)
         {
-            var serverConfig = GetConfigFromServer();
-            var allAirdropPoints = LocationScene.GetAll<AirdropPoint>().ToList();
+            AirdropConfigModel serverConfig = GetConfigFromServer();
+            List<AirdropPoint> allAirdropPoints = LocationScene.GetAll<AirdropPoint>().ToList();
+            Vector3 playerVector = gameWorld.RegisteredPlayers.Find(p => p.IsYourPlayer).Position;
+            List<AirdropPoint> flareAirdropPoints = new List<AirdropPoint>();
+
+            if (isFlare && allAirdropPoints.Count > 0)
+            {
+                foreach (AirdropPoint point in allAirdropPoints)
+                {
+                    if (Vector3.Distance(playerVector, point.transform.position) <= 100f)
+                    {
+                        flareAirdropPoints.Add(point);
+                    }
+                }
+            }
+
+            if (flareAirdropPoints.Count == 0 && isFlare)
+            {
+                Debug.LogError($"[AIRDROPS]: Airdrop called in by flare, Unable to find an airdropPoint within 100m, defaulting to normal drop");
+                flareAirdropPoints.Add(allAirdropPoints.OrderBy(_ => Guid.NewGuid()).FirstOrDefault());
+            }
+
 
             return new AirdropParametersModel()
             {
@@ -97,7 +117,7 @@ namespace Aki.Custom.Airdrops.Utils
                 timeToStart = UnityEngine.Random.Range(1, 30),
 
                 airdropPoints = allAirdropPoints,
-                randomAirdropPoint = allAirdropPoints.OrderBy(_ => Guid.NewGuid()).FirstOrDefault()
+                randomAirdropPoint = isFlare && allAirdropPoints.Count > 0 ? flareAirdropPoints.OrderBy(_ => Guid.NewGuid()).FirstOrDefault() : allAirdropPoints.OrderBy(_ => Guid.NewGuid()).FirstOrDefault()
             };
         }
 

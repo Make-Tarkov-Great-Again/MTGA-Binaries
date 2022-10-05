@@ -1,12 +1,12 @@
-﻿using Comfort.Common;
+﻿using Aki.Custom.Airdrops.Models;
+using Comfort.Common;
 using EFT;
-using UnityEngine;
 using EFT.Interactive;
 using EFT.InventoryLogic;
 using Newtonsoft.Json;
 using System.Collections.Generic;
-using Aki.Custom.Airdrops.Models;
 using System.Linq;
+using UnityEngine;
 /***
  * Full Credit for this patch goes to SPT-AKI team. Specifically CWX!
  * Original Source is found here - https://dev.sp-tarkov.com/SPT-AKI/Modules. 
@@ -23,7 +23,7 @@ namespace Aki.Custom.Airdrops.Utils
             itemFactory = Singleton<ItemFactory>.Instance;
         }
 
-        public async void BuildContainer(LootableContainer container)
+        public void BuildContainer(LootableContainer container)
         {
             if (itemFactory.ItemTemplates.TryGetValue(DropContainer, out var template))
             {

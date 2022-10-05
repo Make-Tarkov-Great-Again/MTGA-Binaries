@@ -2,14 +2,14 @@
 using BepInEx;
 using Comfort.Common;
 using EFT;
+using MTGA.Core.AI;
+using MTGA.Core.Bundles;
 using MTGA.Core.Hideout;
 using MTGA.Core.Menus;
 using MTGA.Core.Misc;
 using MTGA.Core.PlayerPatches;
-using MTGA.Core.SP;
-using MTGA.Core.AI;
-using MTGA.Core.Bundles;
 using MTGA.Core.PlayerPatches.Health;
+using MTGA.Core.SP;
 using MTGA.Core.SP.ScavMode;
 using MTGA.SP;
 using System;
@@ -53,10 +53,9 @@ namespace MTGA.Core
             // --------- SCAV MODE ---------------------
             new DisableScavModePatch().Enable();
 
-            // --------- Airdrop -----------------------
-            //new AirdropBoxPatch().Enable();
-            //new AirdropPatch(Config).Enable();
+            // --------- Airdrop (THANKS TO AKI) -----------------------
             new AirdropPatch().Enable();
+            new AirdropFlarePatch().Enable();
 
             // --------- AI -----------------------
             var enableMTGAAISystem = Config.Bind("AI", "Enable MTGA AI", true).Value;
