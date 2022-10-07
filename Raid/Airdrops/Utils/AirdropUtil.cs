@@ -21,8 +21,13 @@ namespace Aki.Custom.Airdrops.Utils
             return JsonConvert.DeserializeObject<AirdropConfigModel>(json);
         }
 
-        public static int ChanceToSpawn(GameWorld gameWorld, AirdropConfigModel config)
+        public static int ChanceToSpawn(GameWorld gameWorld, AirdropConfigModel config, bool isFlare)
         {
+            if (isFlare)
+            {
+                return 100;
+            }
+
             string location = gameWorld.RegisteredPlayers[0].Location;
 
             int result = 25;
@@ -96,7 +101,7 @@ namespace Aki.Custom.Airdrops.Utils
             return new AirdropParametersModel()
             {
                 config = serverConfig,
-                dropChance = ChanceToSpawn(gameWorld, serverConfig),
+                dropChance = ChanceToSpawn(gameWorld, serverConfig, isFlare),
                 parachuteStarted = false,
                 parachuteStartedTimer = 0,
                 parachutePaused = false,
