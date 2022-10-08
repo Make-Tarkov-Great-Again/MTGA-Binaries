@@ -14,7 +14,7 @@ namespace Aki.Custom.Airdrops.Patches
 {
     public class AirdropFlarePatch : ModulePatch
     {
-        private const string RedFlare = "624c09cfbc2e27219346d955";
+        private static readonly string[] _usableFlares = { "624c09cfbc2e27219346d955", "62389ba9a63f32501b1b4451" };
 
         protected override MethodBase GetTargetMethod()
         {
@@ -33,10 +33,11 @@ namespace Aki.Custom.Airdrops.Patches
         [PatchPostfix]
         private static void PatchPostfix(ref BulletClass flareCartridge)
         {
+            var flare = flareCartridge;
             var gameWorld = Singleton<GameWorld>.Instance;
             var points = LocationScene.GetAll<AirdropPoint>().Any();
 
-            if (gameWorld != null && points && flareCartridge.Template._id == RedFlare)
+            if (gameWorld != null && points && _usableFlares.Any(x => x == flare.Template._id))
             {
                 gameWorld.gameObject.AddComponent<AirdropsManager>().isFlareDrop = true;
             }
