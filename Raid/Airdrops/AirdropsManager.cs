@@ -184,7 +184,7 @@ namespace Aki.Custom.Airdrops
         {
             Ray ray = new Ray(airdropBox.boxObject.transform.position, Vector3.down);
 
-            var raycast = Physics.Raycast(ray, out RaycastHit hitinfo, 600, GClass708.TerrainLowPoly);
+            var raycast = Physics.Raycast(ray, out RaycastHit hitinfo, 600, LayerMaskController.TerrainLowPoly);
 
             if (raycast)
             {
