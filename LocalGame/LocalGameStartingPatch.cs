@@ -34,7 +34,7 @@ namespace MTGA.Core.LocalGame
         }
 
         [PatchPrefix]
-        public static async void PatchPrefix(
+        public static  void PatchPrefix(
             object __instance
             , Task __result
             )

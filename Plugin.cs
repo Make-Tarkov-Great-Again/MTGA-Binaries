@@ -9,6 +9,7 @@ using MTGA.Core.Menus;
 using MTGA.Core.Misc;
 using MTGA.Core.PlayerPatches;
 using MTGA.Core.PlayerPatches.Health;
+using MTGA.Core.Raid;
 using MTGA.Core.SP;
 using MTGA.Core.SP.ScavMode;
 using MTGA.SP;
@@ -86,6 +87,13 @@ namespace MTGA.Core
             // -------------------------------------
             // Raid
             new LoadBotDifficultyFromServer().Enable();
+
+            var enableCultistsDuringDay = Config.Bind("Raid", "Enabled Cultists Spawning During Day", true).Value;
+            if (enableCultistsDuringDay)
+            { 
+                new CultistsSpawnDuringDay().Enable();
+            }
+            
             //new SpawnPointPatch().Enable();
             //new BossSpawnChancePatch().Enable();
 
@@ -96,6 +104,12 @@ namespace MTGA.Core
             new ChangeHealthPatch().Enable();
             new ChangeEnergyPatch().Enable();
             new ChangeHydrationPatch().Enable();
+            /*
+            var enableAdrenaline = Config.Bind("Extras", "Enable Adrenaline", true).Value;
+            if (enableAdrenaline) { 
+                new Adrenaline().Enable(); 
+            };
+            */
 
             // ----------------------------------------------------------------
             // MongoID. This forces bad JET ids to become what BSG Code expects

@@ -9,7 +9,7 @@ namespace MTGA.SP
 {
     public class ReplaceInPlayer : ModulePatch
     {
-        private static string _playerAccountId;
+        //private static string _playerAccountId;
 
         protected override MethodBase GetTargetMethod()
         {

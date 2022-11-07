@@ -14,10 +14,10 @@ namespace MTGA.Core.PlayerPatches.Health
         //private IHealthController _healthController;
         public object MyHealthController { get; private set; }
         private bool _inRaid;
-        private bool _runCheck;
-        private IDisposable _disposable = null;
+        //private bool _runCheck;
+        //private IDisposable _disposable = null;
         private readonly Request _request;
-        private readonly SimpleTimer _simpleTimer;
+        //private readonly SimpleTimer _simpleTimer;
 
         public PlayerHealth CurrentHealth { get; } = new PlayerHealth();
 
