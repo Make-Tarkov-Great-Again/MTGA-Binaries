@@ -33,7 +33,7 @@ namespace MTGA.Core.PlayerPatches.Health
                     }).Invoke(__instance.ActiveHealthController, new object[]
                     {
                 0
-                    }) as GHealthController.GClass1908).AddWorkTime(new float?(30f), true);
+                    }) as GHealthController.StatusEffect).AddWorkTime(new float?(30f), true);
                 } // GClass1908 IEffect (StatusEffect)
                 else
                 { //private T method_12<T>(EBodyPart bodyPart, Item effectSourceItem, float? strength = null, float? delay = null, float? duration = null, float? residueTime = null, Action<T> initCallback = null)
