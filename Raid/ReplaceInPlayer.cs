@@ -18,10 +18,8 @@ namespace MTGA.SP
         }
 
         [PatchPostfix]
-        public static async void PatchPostfix(
+        public static void PatchPostfix(
             object __instance
-            , Task __result
-            , object ____healthController
             , object healthController)
         //public static void PatchPostfix(Player __instance, Task __result)
         {

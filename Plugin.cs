@@ -104,6 +104,7 @@ namespace MTGA.Core
             new ChangeHealthPatch().Enable();
             new ChangeEnergyPatch().Enable();
             new ChangeHydrationPatch().Enable();
+
             /*
             var enableAdrenaline = Config.Bind("Extras", "Enable Adrenaline", true).Value;
             if (enableAdrenaline) { 
