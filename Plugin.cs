@@ -88,7 +88,7 @@ namespace MTGA.Core
             // Raid
             new LoadBotDifficultyFromServer().Enable();
 
-            var enableCultistsDuringDay = Config.Bind("Raid", "Enabled Cultists Spawning During Day", true).Value;
+            var enableCultistsDuringDay = Config.Bind("Raid", "Enabled Cultists Spawning During Day", false).Value;
             if (enableCultistsDuringDay)
             { 
                 new CultistsSpawnDuringDay().Enable();
