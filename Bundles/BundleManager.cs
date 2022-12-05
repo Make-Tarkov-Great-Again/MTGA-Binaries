@@ -10,7 +10,7 @@ using Newtonsoft.Json.Linq;
  */
 namespace MTGA.Core
 {
-    public class BundleManager
+    public static class BundleManager
     {
         public const string CachePath = "user/cache/bundles/";
         public static Dictionary<string, BundleInfo> Bundles { get; private set; }

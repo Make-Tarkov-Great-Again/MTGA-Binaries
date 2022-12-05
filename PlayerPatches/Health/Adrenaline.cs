@@ -19,7 +19,7 @@ namespace MTGA.Core.PlayerPatches.Health
             return typeof(Player).GetMethod("ReceiveDamage", BindingFlags.Instance | BindingFlags.NonPublic);
         }
         [PatchPostfix]
-        public static void PatchPostfix(ref Player __instance, EDamageType type)
+        public static void Postfix(ref Player __instance, EDamageType type)
         {
             bool flag = type is (EDamageType)512 or (EDamageType)4 or (EDamageType)4096 or (EDamageType)2048 or (EDamageType)32;
             if (flag)
@@ -36,8 +36,8 @@ namespace MTGA.Core.PlayerPatches.Health
                     }) as GHealthController.StatusEffect).AddWorkTime(new float?(30f), true);
                 } // GClass1908 IEffect (StatusEffect)
                 else
-                { //private T method_12<T>(EBodyPart bodyPart, Item effectSourceItem, float? strength = null, float? delay = null, float? duration = null, float? residueTime = null, Action<T> initCallback = null)
-                    MethodInfo method = typeof(GHealthController).GetMethod("method_12", BindingFlags.Instance | BindingFlags.NonPublic);
+                { //protected T method_13<T>(EBodyPart bodyPart, float? delayTime = null, float? workTime = null, float? residueTime = null, float? strength = null, Action<T> initCallback = null)
+                    MethodInfo method = typeof(GHealthController).GetMethod("method_13", BindingFlags.Instance | BindingFlags.NonPublic);
                     MethodBase methodBase = method.MakeGenericMethod(new Type[]
                     {
                 typeof(GHealthController).GetNestedType("PainKiller", BindingFlags.Instance | BindingFlags.NonPublic)

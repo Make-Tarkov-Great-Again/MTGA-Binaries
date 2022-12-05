@@ -17,7 +17,7 @@ namespace MTGA.Core
             // compile-time check
             //_ = nameof(ClientMetrics.Metrics);
 
-            _ = nameof(MainApplication);
+            _ = nameof(TarkovApplication);
             _ = nameof(EFT.RaidSettings);
 
             //_defaultJsonConverters = Traverse.Create(converterClass).Field<JsonConverter[]>("Converters").Value;
@@ -25,7 +25,7 @@ namespace MTGA.Core
 
         protected override MethodBase GetTargetMethod()
         {
-            foreach (var method in PatchConstants.GetAllMethodsForType(PatchConstants.EftTypes.Single(x=>x.Name == "MainApplication")))
+            foreach (var method in PatchConstants.GetAllMethodsForType(PatchConstants.EftTypes.Single(x=>x.Name == "TarkovApplication")))
             {
                 if (method.Name.StartsWith("method") &&
                     method.GetParameters().Length >= 3 &&

@@ -19,7 +19,7 @@ namespace MTGA.Core
 
                 TargetAssembly = typeof(ActionTrigger).Assembly;
                 FileCheckerAssembly = typeof(ICheckResult).Assembly;
-                MainApplicationType = typeof(EFT.MainApplication);// TargetAssemblyTypes.Single(x => x.Name == "MainApplication");
+                TarkovApplicationType = typeof(EFT.TarkovApplication);
                 UnityCertificateHandlerType = typeof(UnityEngine.Networking.CertificateHandler);
                 UnityUnityWebRequestType = typeof(UnityEngine.Networking.UnityWebRequestTexture);
 
@@ -60,7 +60,7 @@ namespace MTGA.Core
         public Assembly FileCheckerAssembly;
         public Type[] TargetAssemblyTypes;
         public Type[] FileCheckerAssemblyTypes;
-        public Type MainApplicationType;// TargetAssemblyTypes.Single(x => x.Name == "MainApplication");
+        public Type TarkovApplicationType;// TargetAssemblyTypes.Single(x => x.Name == "TarkovApplication");
         public Type LocalGameType;
         public Type ExfilPointManagerType;
         public Type UnityCertificateHandlerType;
@@ -79,10 +79,10 @@ namespace MTGA.Core
         //public static Type MatchmakerOfflineRaidType = TargetAssembly.GetTypes().Single(x => x.Name == "MatchmakerOfflineRaid");
         //public static Type MenuControllerType = TargetAssembly.GetTypes().Single(x => x.GetProperty("QuestController") != null);
 
-        public ConstructorInfo[] MainApplicationConstructorInfo {
+        public ConstructorInfo[] TarkovApplicationConstructorInfo {
             get 
             {
-                return MainApplicationType.GetConstructors();
+                return TarkovApplicationType.GetConstructors();
             }
         }
     }

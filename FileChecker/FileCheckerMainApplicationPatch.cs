@@ -11,21 +11,21 @@ using System.Threading.Tasks;
 
 namespace MTGA.Core.FileChecker
 {
-    public class FileCheckerMainApplicationPatch : ModulePatch
+    public class FileCheckerTarkovApplicationPatch : ModulePatch
     {
-        public FileCheckerMainApplicationPatch()
+        public FileCheckerTarkovApplicationPatch()
         {
 
         }
 
-        protected override MethodBase GetTargetMethod() => PatchConstants.GetAllMethodsForType(typeof(MainApplication))
+        protected override MethodBase GetTargetMethod() => PatchConstants.GetAllMethodsForType(typeof(TarkovApplication))
             .Single(x => x.GetParameters().Length >= 2
                 && x.GetParameters()[0].Name == "ordinaryFileEnsuranceMode"
                 && x.GetParameters()[1].Name == "criticalFileEnsuranceMode");
 
         [PatchPrefix]
         public static bool PatchPrefix(
-            MainApplication __instance
+            TarkovApplication __instance
             , ConsistencyEnsuranceMode ordinaryFileEnsuranceMode
             , ConsistencyEnsuranceMode criticalFileEnsuranceMode
             , object timeHasComeScreenController

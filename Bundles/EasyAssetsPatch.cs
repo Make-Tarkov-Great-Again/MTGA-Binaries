@@ -23,9 +23,9 @@ namespace MTGA.Core
 {
     public class EasyAssetsPatch : ModulePatch
     {
-        private static FieldInfo _manifestField;
-        private static FieldInfo _bundlesField;
-        private static PropertyInfo _systemProperty;
+        private static readonly FieldInfo _manifestField;
+        private static readonly FieldInfo _bundlesField;
+        private static readonly PropertyInfo _systemProperty;
 
         private static Type easyAssetsType;
 
@@ -257,7 +257,7 @@ namespace MTGA.Core
                 //bundles[i] = (IEasyBundle)Activator.CreateInstance(EasyBundleHelper.Type, new object[] { bundleNames[i], path, manifest, bundleLock, bundleCheck });
                 //Logger.LogInfo("EasyAssetsPatch.Init.4");
                 bundles[iBundleName] = Activator.CreateInstance(EasyBundleHelper.Type, new object[] { bundleNames[iBundleName], path, manifest, bundleLock, bundleCheck });
-                //await JobScheduler.Yield();
+                //await JobScheduler.Yield(EJobPriority.Immediate);
                 JobScheduler.Yield().GetAwaiter();
 
             }

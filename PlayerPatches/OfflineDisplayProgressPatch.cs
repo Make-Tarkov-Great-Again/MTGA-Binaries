@@ -13,13 +13,13 @@ namespace MTGA.Core.PlayerPatches
     {
         static OfflineDisplayProgressPatch()
         {
-            _ = nameof(MainApplication);
-            _ = nameof(EFT.RaidSettings);
+            _ = nameof(TarkovApplication);
+            _ = nameof(RaidSettings);
         }
 
         protected override MethodBase GetTargetMethod()
         {
-            foreach (var method in PatchConstants.GetAllMethodsForType(PatchConstants.EftTypes.Single(x => x.Name == "MainApplication")))
+            foreach (var method in PatchConstants.GetAllMethodsForType(PatchConstants.EftTypes.Single(x => x.Name == "TarkovApplication")))
             {
                 if (method.Name.StartsWith("method") &&
                     method.GetParameters().Length >= 5 &&

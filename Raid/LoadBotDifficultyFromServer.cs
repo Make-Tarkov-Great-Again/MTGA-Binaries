@@ -15,7 +15,7 @@ namespace MTGA.SP
 
         protected override MethodBase GetTargetMethod()
         {
-            var getBotDifficultyHandler = typeof(EFT.MainApplication).Assembly.GetTypes().Where(type => type.Name.StartsWith("GClass") && type.GetMethod("CheckOnExcude", BindingFlags.Public | BindingFlags.Static) != null).First();
+            var getBotDifficultyHandler = typeof(EFT.TarkovApplication).Assembly.GetTypes().Where(type => type.Name.StartsWith("GClass") && type.GetMethod("CheckOnExcude", BindingFlags.Public | BindingFlags.Static) != null).First();
             if (getBotDifficultyHandler == null)
                 return null;
             return getBotDifficultyHandler.GetMethod("LoadDifficultyStringInternal", BindingFlags.Public | BindingFlags.Static);

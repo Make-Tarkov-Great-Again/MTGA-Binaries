@@ -75,10 +75,8 @@ namespace MTGA.Core
                     request.Headers.Add("content-encoding", "deflate");
                 }
 
-                using (Stream stream = request.GetRequestStream())
-                {
-                    stream.Write(bytes, 0, bytes.Length);
-                }
+                using Stream stream = request.GetRequestStream();
+                stream.Write(bytes, 0, bytes.Length);
             }
 
             // get response stream
@@ -116,30 +114,22 @@ namespace MTGA.Core
 
         public string GetJson(string url, bool compress = true)
         {
-            using (Stream stream = Send(url, "GET", null, compress))
-            {
-                using (MemoryStream ms = new MemoryStream())
-                {
-                    if (stream == null)
-                        return "";
-                    stream.CopyTo(ms);
-                    return SimpleZlib.Decompress(ms.ToArray(), null);
-                }
-            }
+            using Stream stream = Send(url, "GET", null, compress);
+            using MemoryStream ms = new();
+            if (stream == null)
+                return "";
+            stream.CopyTo(ms);
+            return SimpleZlib.Decompress(ms.ToArray(), null);
         }
 
         public string PostJson(string url, string data, bool compress = true)
         {
-            using (Stream stream = Send(url, "POST", data, compress))
-            {
-                using (MemoryStream ms = new MemoryStream())
-                {
-                    if (stream == null)
-                        return "";
-                    stream.CopyTo(ms);
-                    return SimpleZlib.Decompress(ms.ToArray(), null);
-                }
-            }
+            using Stream stream = Send(url, "POST", data, compress);
+            using MemoryStream ms = new();
+            if (stream == null)
+                return "";
+            stream.CopyTo(ms);
+            return SimpleZlib.Decompress(ms.ToArray(), null);
         }
 
         public async Task<string> PostJsonAsync(string url, string data, bool compress = true)
@@ -149,19 +139,15 @@ namespace MTGA.Core
 
         public Texture2D GetImage(string url, bool compress = true)
         {
-            using (Stream stream = Send(url, "GET", null, compress))
-            {
-                using (MemoryStream ms = new MemoryStream())
-                {
-                    if (stream == null)
-                        return null;
-                    Texture2D texture = new Texture2D(8, 8);
+            using Stream stream = Send(url, "GET", null, compress);
+            using MemoryStream ms = new ();
+            if (stream == null)
+                return null;
+            Texture2D texture = new(8, 8);
 
-                    stream.CopyTo(ms);
-                    texture.LoadImage(ms.ToArray());
-                    return texture;
-                }
-            }
+            stream.CopyTo(ms);
+            texture.LoadImage(ms.ToArray());
+            return texture;
         }
 
         public void Dispose()

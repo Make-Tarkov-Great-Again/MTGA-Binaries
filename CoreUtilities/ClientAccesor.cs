@@ -9,22 +9,22 @@ namespace MTGA.Core
 {
     public static class ClientAccesor
     {
-        #region Get MainApplication Variable
+        #region Get TarkovApplication Variable
         /// <summary>
         /// Method toi get access to ClientApplication Instance
         /// </summary>
         /// <returns>ClientApplication</returns>
-        public static ClientApplication GetClientApp()
+        public static ClientApplication<ISession> GetClientApp()
         {
-            return Singleton<ClientApplication>.Instance;
+            return Singleton<ClientApplication<ISession>>.Instance;
         }
         /// <summary>
-        /// Method to get accessto MainApplication instance
+        /// Method to get accessto TarkovApplication instance
         /// </summary>
         /// <returns></returns>
-        public static MainApplication GetMainApp()
+        public static TarkovApplication GetMainApp()
         {
-            return GetClientApp() as MainApplication;
+            return GetClientApp() as TarkovApplication;
         }
         #endregion 
 

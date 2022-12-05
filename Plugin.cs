@@ -39,6 +39,16 @@ namespace MTGA.Core
             new UnityWebRequestPatch().Enable();
             new WebSocketPatch().Enable();
 
+            // - Loading Bundles from Server. Working Aki version with some tweaks by me -----
+            var enableBundles = Config.Bind("Bundles", "Enable", true);
+            if (enableBundles != null && enableBundles.Value == true)
+            {
+                BundleSetup.Init();
+                BundleManager.GetBundles(); // Crash happens here
+                new EasyAssetsPatch().Enable();
+                new EasyBundlePatch().Enable();
+            }
+
             // --------- Container Id Debug ------------
             //new LootableContainerInteractPatch().Enable();
 
@@ -59,7 +69,7 @@ namespace MTGA.Core
             new AirdropFlarePatch().Enable();
 
             // --------- AI -----------------------
-            var enableMTGAAISystem = Config.Bind("AI", "Enable MTGA AI", true).Value;
+            var enableMTGAAISystem = Config.Bind("AI", "Enable", true, "Description: Enable MTGA AI???????").Value;
             if (enableMTGAAISystem)
             {
                 //new IsEnemyPatch().Enable();
@@ -88,7 +98,7 @@ namespace MTGA.Core
             // Raid
             new LoadBotDifficultyFromServer().Enable();
 
-            var enableCultistsDuringDay = Config.Bind("Raid", "Enabled Cultists Spawning During Day", false).Value;
+            var enableCultistsDuringDay = Config.Bind("EXPERIEMENTAL", "Enable", false, "Description: Cultists Spawning During Day").Value;
             if (enableCultistsDuringDay)
             { 
                 new CultistsSpawnDuringDay().Enable();
@@ -105,12 +115,12 @@ namespace MTGA.Core
             new ChangeEnergyPatch().Enable();
             new ChangeHydrationPatch().Enable();
 
-            /*
-            var enableAdrenaline = Config.Bind("Extras", "Enable Adrenaline", true).Value;
+            
+            var enableAdrenaline = Config.Bind("EXPERIEMENTAL", "Enable", false, "Description: Adrenaline effect when Damaged").Value;
             if (enableAdrenaline) { 
                 new Adrenaline().Enable(); 
             };
-            */
+            
 
             // ----------------------------------------------------------------
             // MongoID. This forces bad JET ids to become what BSG Code expects
@@ -120,7 +130,6 @@ namespace MTGA.Core
             }
 
             new HideoutItemViewFactoryShowPatch().Enable();
-            new ItemRequirementPanelShowPatch().Enable();
 
             new LootContainerInitPatch().Enable();
             new CollectLootPointsDataPatch().Enable();
@@ -133,24 +142,7 @@ namespace MTGA.Core
             SceneManager.sceneLoaded += SceneManager_sceneLoaded;
             SceneManager.sceneUnloaded += SceneManager_sceneUnloaded;
 
-            // - Loading Bundles from Server. Working Aki version with some tweaks by me -----
-            var enableBundles = Config.Bind("Bundles", "Enable", true);
-            if (enableBundles != null && enableBundles.Value == true)
-            {
-                BundleSetup.Init();
-                BundleManager.GetBundles(); // Crash happens here
-                new EasyAssetsPatch().Enable();
-                new EasyBundlePatch().Enable();
-            }
-
-            //var enableRagdollBodies = Config.Bind("SERVPH Ragdoll Bodies", "Enable", true);
-            //if (enableRagdollBodies != null && enableRagdollBodies.Value == true)
-            //{
-            //    new PlayerPatches.SERVPH.SERVPHBodyPatch();
-            //}
-
             SetupMoreGraphicsMenuOptions();
-            //new WeaponDrawSpeed().Enable();
 
         }
 
@@ -287,48 +279,9 @@ namespace MTGA.Core
                     return;
                 }
 
-                //var raidE = Enum.Parse(poolsCategoryType, "Raid");
-                ////PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: raidE is " + raidE.ToString());
-
-                //var localE = Enum.Parse(assemblyTypeType, "Local");
-                ////PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: localE is " + localE.ToString());
-
-                //var GenProp = PatchConstants.GetPropertyFromType(PatchConstants.JobPriorityType, "General").GetValue(null, null);
-                //PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: GenProp is " + GenProp.ToString());
-
                 await Singleton<PoolManager>.Instance.LoadBundlesAndCreatePools(
                     PoolManager.PoolsCategory.Raid, PoolManager.AssemblyType.Local, resources, JobPriority.General, null, CancellationToken.None);
 
-                //await PatchConstants.InvokeAsyncStaticByReflection(
-                //    LoadBundlesAndCreatePoolsMethod,
-                //    BundleAndPoolManager
-                //    , raidE
-                //    , localE
-                //    , resources
-                //    , GenProp
-                //    , (object o) => { PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: Progressing!"); }
-                //    , default(CancellationToken)
-                //    );
-
-                //Task task = LoadBundlesAndCreatePoolsMethod.Invoke(BundleAndPoolManager,
-                //    new object[] {
-                //    Enum.Parse(poolsCategoryType, "Raid")
-                //    , Enum.Parse(assemblyTypeType, "Local")
-                //    , resources
-                //    , PatchConstants.GetPropertyFromType(PatchConstants.JobPriorityType, "General").GetValue(null, null)
-                //    , null
-                //    , default(CancellationToken)
-                //    }
-                //    ) as Task;
-                ////PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: task is " + task.GetType());
-
-                //if (task != null) // && task.GetType() == typeof(Task))
-                //{
-                //    task.ContinueWith(t => { PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools loaded"); });
-                //    //var t = task as Task;
-                //    PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: task is " + task.GetType());
-                //    return task;
-                //}
             }
             catch (Exception ex)
             {
@@ -348,14 +301,10 @@ namespace MTGA.Core
                 }
 
                 var raidE = Enum.Parse(poolsCategoryType, "Raid");
-                //PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: raidE is " + raidE.ToString());
 
                 var localE = Enum.Parse(assemblyTypeType, "Local");
-                //PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: localE is " + localE.ToString());
 
                 var GenProp = PatchConstants.GetPropertyFromType(PatchConstants.JobPriorityType, "General").GetValue(null, null);
-                //PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: GenProp is " + GenProp.ToString());
-
 
                 return PatchConstants.InvokeAsyncStaticByReflection(
                     LoadBundlesAndCreatePoolsMethod,
@@ -367,26 +316,6 @@ namespace MTGA.Core
                     , (object o) => { PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: Progressing!"); }
                     , default(CancellationToken)
                     );
-
-                //Task task = LoadBundlesAndCreatePoolsMethod.Invoke(BundleAndPoolManager,
-                //    new object[] {
-                //    Enum.Parse(poolsCategoryType, "Raid")
-                //    , Enum.Parse(assemblyTypeType, "Local")
-                //    , resources
-                //    , PatchConstants.GetPropertyFromType(PatchConstants.JobPriorityType, "General").GetValue(null, null)
-                //    , null
-                //    , default(CancellationToken)
-                //    }
-                //    ) as Task;
-                ////PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: task is " + task.GetType());
-
-                //if (task != null) // && task.GetType() == typeof(Task))
-                //{
-                //    task.ContinueWith(t => { PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools loaded"); });
-                //    //var t = task as Task;
-                //    PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: task is " + task.GetType());
-                //    return task;
-                //}
             }
             catch (Exception ex)
             {
@@ -396,35 +325,6 @@ namespace MTGA.Core
             return null;
         }
 
-        //public static void LoadBundlesAndCreatePoolsSync(ResourceKey[] resources)
-        //{
-        //    try
-        //    {
-        //        if (BundleAndPoolManager == null)
-        //        {
-        //            PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: BundleAndPoolManager is missing");
-        //            return;
-        //        }
-        //        var task = (Task)LoadBundlesAndCreatePoolsMethod.Invoke(BundleAndPoolManager,
-        //            new object[] {
-        //            Enum.Parse(poolsCategoryType, "Raid")
-        //            , Enum.Parse(assemblyTypeType, "Local")
-        //            , resources
-        //            , PatchConstants.GetPropertyFromType(PatchConstants.JobPriorityType, "General").GetValue(null, null)
-        //            , null
-        //            , default(CancellationToken)
-        //            }
-        //            );
-
-        //        task.Wait();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools -- ERROR ->>>");
-        //        PatchConstants.Logger.LogInfo(ex.ToString());
-        //    }
-        //}
-
         void FixedUpdate()
         {
             if (PatchConstants.PoolManagerType != null && ConstructedBundleAndPoolManagerSingletonType != null && BundleAndPoolManager == null)
@@ -432,7 +332,6 @@ namespace MTGA.Core
                 BundleAndPoolManager = PatchConstants.GetPropertyFromType(ConstructedBundleAndPoolManagerSingletonType, "Instance").GetValue(null, null); //Activator.CreateInstance(PatchConstants.PoolManagerType);
                 if (BundleAndPoolManager != null)
                 {
-                    //Logger.LogInfo("BundleAndPoolManager Singleton Instance found: " + BundleAndPoolManager.GetType().FullName);
                     poolsCategoryType = BundleAndPoolManager.GetType().GetNestedType("PoolsCategory");
                     if (poolsCategoryType != null)
                     {
