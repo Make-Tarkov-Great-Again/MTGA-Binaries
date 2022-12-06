@@ -126,7 +126,7 @@ namespace MTGA.Core
             {
                 if (_backEndSession == null)
                 {
-                    _backEndSession = Singleton<ClientApplication>.Instance.GetClientBackEndSession();
+                    _backEndSession = Singleton<ClientApplication<ISession>>.Instance.GetClientBackEndSession();
                 }
 
                 return _backEndSession;
@@ -426,7 +426,7 @@ namespace MTGA.Core
             FilesCheckerTypes = typeof(ICheckResult).Assembly.GetTypes();
             LocalGameType = EftTypes.Single(x => x.Name == "LocalGame");
             ExfilPointManagerType = EftTypes.Single(x => x.GetMethod("InitAllExfiltrationPoints") != null);
-            BackendInterfaceType = EftTypes.Single(x => x.GetMethods().Select(y => y.Name).Contains("CreateClientSession") && x.IsInterface);
+            //BackendInterfaceType = EftTypes.Single(x => x.GetMethods().Select(y => y.Name).Contains("CreateClientSession") && x.IsInterface);
             SessionInterfaceType = EftTypes.Single(x => x.GetMethods().Select(y => y.Name).Contains("GetPhpSessionId") && x.IsInterface);
             MessageNotificationType = EftTypes.Single(x => x.GetMethods(BindingFlags.Static | BindingFlags.Public).Select(y => y.Name).Contains("DisplayMessageNotification"));
             if (MessageNotificationType == null)

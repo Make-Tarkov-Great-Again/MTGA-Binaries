@@ -223,24 +223,9 @@ namespace MTGA.Core
             // load bundles
             Logger.LogInfo($"EasyAssetsPatch.Init.1.path={path}");
             Logger.LogInfo($"EasyAssetsPatch.Init.1.filepath={filepath}");
-            //Logger.LogInfo($"EasyAssetsPatch.Init.1.manifest={manifest}");
-            //uint iCrc = 100;
-            //foreach (var (key, value) in BundleManager.Bundles)
-            //{
-            //    var detail = new BundleDetails()
-            //    {
-            //        FileName = value.Path,
-            //        Crc = iCrc++,
-            //        Dependencies = value.DependencyKeys
-            //    };
-
-            //    //results.Add(key, detail);
-            //}
-            //manifest.SetResults(results);
 
             var bundleNames = manifest.GetAllAssetBundles().Union(BundleManager.Bundles.Keys).ToArray();
 
-            //var bundles = (IEasyBundle[])Array.CreateInstance(EasyBundleHelper.Type, bundleNames.Length);
             Logger.LogInfo("EasyAssetsPatch.Init.2");
             var bundles = (object[])Array.CreateInstance(EasyBundleHelper.Type, bundleNames.Length);
 
