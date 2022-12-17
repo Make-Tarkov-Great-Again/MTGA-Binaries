@@ -176,37 +176,37 @@ namespace MTGA.Core.PlayerPatches.Health
             }
         }
 
-        class SimpleTimer : UnityEngine.MonoBehaviour
-        {
-            // tick each 5 seconds
-            float sleepTime = 5f;
-            float timer = 0f;
+        //class SimpleTimer : UnityEngine.MonoBehaviour
+        //{
+        //    // tick each 5 seconds
+        //    float sleepTime = 5f;
+        //    float timer = 0f;
 
-            public bool isSyncHealthEnabled = false;
-            public bool isHealthSynchronized = false;
-            public Func<Task> syncHealthAction;
+        //    public bool isSyncHealthEnabled = false;
+        //    public bool isHealthSynchronized = false;
+        //    public Func<Task> syncHealthAction;
 
-            async void Update()
-            {
-                timer += UnityEngine.Time.deltaTime;
+        //    async void Update()
+        //    {
+        //        timer += UnityEngine.Time.deltaTime;
 
-                if (timer > sleepTime)
-                {
-                    timer -= sleepTime;
-                    await Tick();
-                }
-            }
+        //        if (timer > sleepTime)
+        //        {
+        //            timer -= sleepTime;
+        //            await Tick();
+        //        }
+        //    }
 
-            Task Tick()
-            {
-                if (isSyncHealthEnabled && !isHealthSynchronized)
-                {
-                    isHealthSynchronized = true;
-                    return syncHealthAction();
-                }
+        //    Task Tick()
+        //    {
+        //        if (isSyncHealthEnabled && !isHealthSynchronized)
+        //        {
+        //            isHealthSynchronized = true;
+        //            return syncHealthAction();
+        //        }
 
-                return Task.CompletedTask;
-            }
-        }
+        //        return Task.CompletedTask;
+        //    }
+        //}
     }
 }
