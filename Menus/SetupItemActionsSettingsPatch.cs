@@ -14,8 +14,10 @@ namespace MTGA.Core.Menus
     {
         protected override MethodBase GetTargetMethod()
         {
-            var t = PatchConstants.EftTypes.Single(x => PatchConstants.GetMethodForType(x, "TrySendCommands") != null);
-            return PatchConstants.GetMethodForType(t, "TrySendCommands");
+            return typeof(LocalBackendEvent).GetMethod("TrySendCommands");
+            //var c = PatchConstants.EftTypes.FirstOrDefault(x => x.FullName.StartsWith("LocalBackendEvent"));
+            //var m = PatchConstants.EftTypes.Single(x => PatchConstants.GetMethodForType(x, "TrySendCommands") != null);
+            //return PatchConstants.GetMethodForType(c, "TrySendCommands");
         }
 
         [PatchTranspiler]

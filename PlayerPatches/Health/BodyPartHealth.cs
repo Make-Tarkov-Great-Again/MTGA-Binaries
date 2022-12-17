@@ -4,7 +4,7 @@ namespace MTGA.Core.PlayerPatches.Health
 {
     public class BodyPartHealth
     {
-        private Dictionary<BodyPartEffect, float> _effects = new Dictionary<BodyPartEffect, float>();
+        private readonly Dictionary<BodyPartEffect, float> _effects = new Dictionary<BodyPartEffect, float>();
 
         public float Maximum { get; private set; }
         public float Current { get; private set; }
