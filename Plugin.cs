@@ -1,7 +1,9 @@
 ﻿using Aki.Custom.Airdrops.Patches;
 using BepInEx;
+using BepInEx.Configuration;
 using Comfort.Common;
 using EFT;
+using EFT.AssetsManager;
 using MTGA.Core.AI;
 using MTGA.Core.Bundles;
 using MTGA.Core.Hideout;
@@ -19,6 +21,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace MTGA.Core
@@ -26,6 +29,15 @@ namespace MTGA.Core
     [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
     public class Plugin : BaseUnityPlugin
     {
+
+        private static GameObject _flashlight;
+        private static GameObject[] _modes;
+        private static int _currentMode = 1;
+        internal static ConfigEntry<KeyboardShortcut> HeadlightToggleKey;
+        internal static ConfigEntry<KeyboardShortcut> HeadlightModeKey;
+        private bool enableHeadLamps;
+
+
         private void Awake()
         {
             PatchConstants.GetBackendUrl();
@@ -69,7 +81,7 @@ namespace MTGA.Core
             new AirdropFlarePatch().Enable();
 
             // --------- AI -----------------------
-            var enableMTGAAISystem = Config.Bind("AI", "Enable", true, "Description: Enable MTGA AI???????").Value;
+            var enableMTGAAISystem = Config.Bind("AI", "PauloV AI System", true, "Description: Enable MTGA AI???????").Value;
             if (enableMTGAAISystem)
             {
                 //new IsEnemyPatch().Enable();
@@ -98,7 +110,7 @@ namespace MTGA.Core
             // Raid
             new LoadBotDifficultyFromServer().Enable();
 
-            var enableCultistsDuringDay = Config.Bind("EXPERIEMENTAL", "Enable", false, "Description: Cultists Spawning During Day").Value;
+            var enableCultistsDuringDay = Config.Bind("EXPERIEMENTAL", "Cultists", false, "Description: Cultists Spawning During Day").Value;
             if (enableCultistsDuringDay)
             { 
                 new CultistsSpawnDuringDay().Enable();
@@ -116,11 +128,20 @@ namespace MTGA.Core
             new ChangeHydrationPatch().Enable();
 
             
-            var enableAdrenaline = Config.Bind("EXPERIEMENTAL", "Enable", false, "Description: Adrenaline effect when Damaged").Value;
+            var enableAdrenaline = Config.Bind("EXPERIEMENTAL", "Adrenaline", false, "Description: Adrenaline effect when Damaged").Value;
             if (enableAdrenaline) { 
                 new Adrenaline().Enable(); 
             };
-            
+
+            var enabledHeadLamps = Config.Bind("EXPERIEMENTAL", "Headlamps", false, "Description: Fix head lamps to toggle on with Y, and Shift + Y to toggle modes").Value;
+            if (enabledHeadLamps)
+            {
+                //HeadLamps code written by SamSwat, and adapted into MTGA. 
+                enableHeadLamps = true;
+                Plugin.HeadlightToggleKey = base.Config.Bind<KeyboardShortcut>("Main Settings", "Helmet Light Toggle", new KeyboardShortcut(KeyCode.Y, Array.Empty<KeyCode>()), "Key for helmet light toggle");
+                Plugin.HeadlightModeKey = base.Config.Bind<KeyboardShortcut>("Main Settings", "Helmet Light Mode", new KeyboardShortcut(KeyCode.Y, KeyCode.LeftShift), "Key for helemt light mode change");
+            };
+
 
             // ----------------------------------------------------------------
             // MongoID. This forces bad JET ids to become what BSG Code expects
@@ -129,7 +150,7 @@ namespace MTGA.Core
                 new MongoIDPatch().Enable();
             }
 
-            new HideoutItemViewFactoryShowPatch().Enable();
+            //new HideoutItemViewFactoryShowPatch().Enable();
 
             new LootContainerInitPatch().Enable();
             new CollectLootPointsDataPatch().Enable();
@@ -323,6 +344,96 @@ namespace MTGA.Core
                 PatchConstants.Logger.LogInfo(ex.ToString());
             }
             return null;
+        }
+        void Update()
+        {
+            if (enableHeadLamps)
+            {
+                EnabledHeadLamps();
+            }
+        }
+
+        private void EnabledHeadLamps()
+        {
+            GameWorld instance = Singleton<GameWorld>.Instance;
+            bool flag = instance == null || instance.RegisteredPlayers == null;
+            if (!flag)
+            {
+                bool flag2 = Plugin._flashlight != null && Plugin._flashlight.GetComponent<WeaponModPoolObject>().IsInPool;
+                if (flag2)
+                {
+                    Plugin._flashlight = null;
+                    Plugin._currentMode = 1;
+                }
+                bool flag3 = Plugin.HeadlightToggleKey.Value.IsUp() && this.PlayerHasFlashlight();
+                if (flag3)
+                {
+                    this.ToggleLight();
+                }
+                bool flag4 = Plugin.HeadlightModeKey.Value.IsUp() && this.PlayerHasFlashlight();
+                if (flag4)
+                {
+                    this.ChangeMode();
+                }
+            }
+        }
+
+        private void ToggleLight()
+        {
+            Plugin._modes[0].SetActive(!Plugin._modes[0].activeSelf);
+            Plugin._modes[Plugin._currentMode].SetActive(!Plugin._modes[Plugin._currentMode].activeSelf);
+        }
+
+        // Token: 0x06000004 RID: 4 RVA: 0x000021C8 File Offset: 0x000003C8
+        private void ChangeMode()
+        {
+            bool flag = !Plugin._modes[0].activeSelf;
+            if (flag)
+            {
+                bool flag2 = Plugin._currentMode < Plugin._modes.Length - 1;
+                if (flag2)
+                {
+                    Plugin._modes[Plugin._currentMode].SetActive(!Plugin._modes[Plugin._currentMode].activeSelf);
+                    Plugin._currentMode++;
+                    Plugin._modes[Plugin._currentMode].SetActive(!Plugin._modes[Plugin._currentMode].activeSelf);
+                }
+                else
+                {
+                    Plugin._modes[Plugin._currentMode].SetActive(!Plugin._modes[Plugin._currentMode].activeSelf);
+                    Plugin._currentMode = 1;
+                    Plugin._modes[Plugin._currentMode].SetActive(!Plugin._modes[Plugin._currentMode].activeSelf);
+                }
+            }
+        }
+
+        // Token: 0x06000005 RID: 5 RVA: 0x000022AC File Offset: 0x000004AC
+        private bool PlayerHasFlashlight()
+        {
+            bool flag = Plugin._flashlight == null;
+            bool result;
+            if (flag)
+            {
+                Player player = Singleton<GameWorld>.Instance.RegisteredPlayers.Find((Player p) => p.IsYourPlayer);
+                TacticalComboVisualController componentInChildren = player.GetComponentInChildren<TacticalComboVisualController>();
+                Plugin._flashlight = componentInChildren?.gameObject;
+                bool flag2 = Plugin._flashlight == null;
+                if (flag2)
+                {
+                    result = false;
+                }
+                else
+                {
+                    Plugin._modes = (from x in Array.ConvertAll<Transform, GameObject>(Plugin._flashlight.GetComponentsInChildren<Transform>(true), (Transform y) => y.gameObject)
+                                           where x.name.Contains("mode_")
+                                           select x).ToArray<GameObject>();
+                    result = true;
+                }
+            }
+            else
+            {
+                result = true;
+            }
+            return result;
         }
 
         void FixedUpdate()
