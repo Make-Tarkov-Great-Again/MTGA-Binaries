@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using EFT;
-using MTGA.Core;
 
 // Credit goes to Kobrakon
 // https://hub.sp-tarkov.com/files/file/860-adrenaline/
@@ -14,43 +10,57 @@ namespace MTGA.Core.PlayerPatches.Health
 {
     internal class Adrenaline : ModulePatch
     {
-        protected override MethodBase GetTargetMethod()
+
+        protected override MethodBase GetTargetMethod() => PatchConstants.GetAllMethodsForType(typeof(Player))
+        .Single(IsTargetMethod);
+
+        private bool IsTargetMethod(MethodInfo method)
         {
-            return typeof(Player).GetMethod("ReceiveDamage", BindingFlags.Instance | BindingFlags.NonPublic);
-        }
-        [PatchPostfix]
-        public static void Postfix(ref Player __instance, EDamageType type)
-        {
-            bool flag = type is (EDamageType)512 or (EDamageType)4 or (EDamageType)4096 or (EDamageType)2048 or (EDamageType)32;
-            if (flag)
+            var parameters = method.GetParameters();
+
+            if (parameters.Length != 5
+            || parameters[0].ParameterType != typeof(float)
+            || parameters[0].Name != "damage"
+            || parameters[1].ParameterType != typeof(EBodyPart)
+            || parameters[1].Name != "part"
+            || parameters[2].ParameterType != typeof(EDamageType)
+            || parameters[2].Name != "type"
+            || parameters[3].ParameterType != typeof(float)
+            || parameters[3].Name != "absorbed"
+            || parameters[4].ParameterType != typeof(EFT.Ballistics.MaterialType)
+            || parameters[4].Name != "special")
             {
-                bool flag2 = __instance.ActiveHealthController.BodyPartEffects.Effects[0].Any((KeyValuePair<string, float> v) => v.Key == "PainKiller");
-                if (flag2)
+                return false;
+            }
+
+            return true;
+        }
+
+
+        [PatchPostfix]
+        public static void PatchPostfix(Player __instance, EDamageType type)
+        {
+            if (type == EDamageType.Bullet || type == EDamageType.Explosion || type == EDamageType.Sniper || type == EDamageType.Landmine || type == EDamageType.GrenadeFragment)
+            {
+                try
                 {
-                    (typeof(GHealthController).GetMethod("FindActiveEffect", BindingFlags.Instance | BindingFlags.Public).MakeGenericMethod(new Type[]
+                    if (__instance.ActiveHealthController.BodyPartEffects.Effects[0].Any(v => v.Key == "PainKiller"))
                     {
-                typeof(GHealthController).GetNestedType("PainKiller", BindingFlags.Instance | BindingFlags.NonPublic)
-                    }).Invoke(__instance.ActiveHealthController, new object[]
-                    {
-                0
-                    }) as GHealthController.StatusEffect).AddWorkTime(new float?(30f), true);
-                } // GClass1908 IEffect (StatusEffect)
-                else
-                { //protected T method_13<T>(EBodyPart bodyPart, float? delayTime = null, float? workTime = null, float? residueTime = null, float? strength = null, Action<T> initCallback = null)
-                    MethodInfo method = typeof(GHealthController).GetMethod("method_13", BindingFlags.Instance | BindingFlags.NonPublic);
-                    MethodBase methodBase = method.MakeGenericMethod(new Type[]
-                    {
-                typeof(GHealthController).GetNestedType("PainKiller", BindingFlags.Instance | BindingFlags.NonPublic)
-                    });
-                    object activeHealthController = __instance.ActiveHealthController;
-                    object[] array = new object[6];
-                    array[0] = 0;
-                    array[1] = 0f;
-                    array[2] = 30f;
-                    array[3] = 5f;
-                    array[4] = 1f;
-                    methodBase.Invoke(activeHealthController, array);
+                        GHealthController.StatusEffect pk = typeof(GHealthController)
+                            .GetMethod("FindActiveEffect", BindingFlags.Instance | BindingFlags.Public)
+                            .MakeGenericMethod(typeof(GHealthController)
+                            .GetNestedType("PainKiller", BindingFlags.Instance | BindingFlags.NonPublic))
+                            .Invoke(__instance.ActiveHealthController, new object[] { EBodyPart.Head }) as GHealthController.StatusEffect;
+                        if (pk.TimeLeft < 30) pk.AddWorkTime(30f, false);
+                        return;
+                    }
+                    MethodInfo method = typeof(GHealthController)
+                        .GetMethod("method_13", BindingFlags.Instance | BindingFlags.NonPublic);
+                    method.MakeGenericMethod(typeof(GHealthController)
+                        .GetNestedType("PainKiller", BindingFlags.Instance | BindingFlags.NonPublic))
+                        .Invoke(__instance.ActiveHealthController, new object[] { EBodyPart.Head, 0f, 30f, 5f, 1f, null });
                 }
+                catch (Exception) { }
             }
         }
     }
