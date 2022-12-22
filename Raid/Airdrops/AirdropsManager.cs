@@ -88,6 +88,7 @@ namespace Aki.Custom.Airdrops
                 if (airdropParameters.distanceTraveled < airdropParameters.distanceToTravel)
                 {
                     airdropPlane.planeObject.transform.Translate(Vector3.forward, Space.Self);
+                    airdropPlane.counterMeasures.transform.position = airdropPlane.planeObject.transform.position;
                     airdropParameters.distanceTraveled++;
                 }
 
@@ -107,6 +108,7 @@ namespace Aki.Custom.Airdrops
             if (airdropParameters.distanceTraveled >= airdropParameters.distanceToDrop && !airdropParameters.boxSpawned)
             {
                 StartBox();
+                DeployFlares();
             }
 
             if (airdropParameters.boxSpawned && airdropBox.boxEnabled && !airdropParameters.boxLanded)
@@ -155,6 +157,10 @@ namespace Aki.Custom.Airdrops
         {
             airdropBox.Init(airdropParameters.randomAirdropPoint, airdropParameters.dropHeight);
             airdropParameters.boxSpawned = true;
+        }
+        private void DeployFlares()
+        {
+            airdropPlane.counterMeasures.SetActive(true);
         }
 
         private void EndParachute()

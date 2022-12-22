@@ -8,16 +8,13 @@ namespace MTGA.Core.PlayerPatches.Health
 {
     public class HealthListener
     {
-        private static object _lock = new object();
+        private static readonly object _lock = new();
         private static HealthListener _instance = null;
 
         //private IHealthController _healthController;
         public object MyHealthController { get; private set; }
         private bool _inRaid;
-        //private bool _runCheck;
-        //private IDisposable _disposable = null;
         private readonly Request _request;
-        //private readonly SimpleTimer _simpleTimer;
 
         public PlayerHealth CurrentHealth { get; } = new PlayerHealth();
 
@@ -29,10 +26,7 @@ namespace MTGA.Core.PlayerPatches.Health
                 {
                     lock (_lock)
                     {
-                        if (_instance == null)
-                        {
-                            _instance = new HealthListener();
-                        }
+                        _instance ??= new HealthListener();
                     }
                 }
 
@@ -43,10 +37,7 @@ namespace MTGA.Core.PlayerPatches.Health
         // ctor
         private HealthListener()
         {
-            _request = new Request(PatchConstants.GetPHPSESSID(), MTGA.Core.PatchConstants.GetBackendUrl());
-            //_simpleTimer = JET.Mono.JET_Instance.Instance.GetOrAddComponent<SimpleTimer>();
-            //_simpleTimer = Plugin.Instance.GetOrAddComponent<SimpleTimer>();
-            //_simpleTimer.syncHealthAction = () => Task.Run(() => _request.PostJson("/player/health/sync", CurrentHealth.MTGAToJson()));
+            _request = new Request(PatchConstants.GetPHPSESSID(), PatchConstants.GetBackendUrl());
         }
 
         /// <summary>
@@ -71,8 +62,6 @@ namespace MTGA.Core.PlayerPatches.Health
             // init dependencies
             MyHealthController = healthController;
             _inRaid = inRaid;
-
-            //_simpleTimer.isSyncHealthEnabled = !inRaid;
 
             CurrentHealth.IsAlive = true;
 
@@ -148,13 +137,9 @@ namespace MTGA.Core.PlayerPatches.Health
             var bodyPartHealth = getbodyparthealthmethod.Invoke(healthController, new object[] { bodyPart, false });
             //PatchConstants.Logger.LogInfo(bodyPart);
             //PatchConstants.Logger.LogInfo(bodyPartHealth);
-            //var bodyPartHealth = healthController.GetBodyPartHealth(bodyPart);
 
-            //var current = PatchConstants.GetFieldOrPropertyFromInstance<float>(bodyPartHealth, "Current", true);
-            //var maximum = PatchConstants.GetFieldOrPropertyFromInstance<float>(bodyPartHealth, "Maximum", true);
             var current = PatchConstants.GetAllFieldsForObject(bodyPartHealth).FirstOrDefault(x => x.Name == "Current").GetValue(bodyPartHealth).ToString();
             var maximum = PatchConstants.GetAllFieldsForObject(bodyPartHealth).FirstOrDefault(x => x.Name == "Maximum").GetValue(bodyPartHealth).ToString();
-            //var maximum = PatchConstants.GetFieldOrPropertyFromInstance<float>(bodyPartHealth, "Maximum", true);
 
             //PatchConstants.Logger.LogInfo($"HealthListener:GetBodyPartHealth:{current}/{maximum}");
             dictionary[bodyPart].Initialize(float.Parse(current), float.Parse(maximum));
@@ -175,38 +160,5 @@ namespace MTGA.Core.PlayerPatches.Health
                 _onDispose();
             }
         }
-
-        //class SimpleTimer : UnityEngine.MonoBehaviour
-        //{
-        //    // tick each 5 seconds
-        //    float sleepTime = 5f;
-        //    float timer = 0f;
-
-        //    public bool isSyncHealthEnabled = false;
-        //    public bool isHealthSynchronized = false;
-        //    public Func<Task> syncHealthAction;
-
-        //    async void Update()
-        //    {
-        //        timer += UnityEngine.Time.deltaTime;
-
-        //        if (timer > sleepTime)
-        //        {
-        //            timer -= sleepTime;
-        //            await Tick();
-        //        }
-        //    }
-
-        //    Task Tick()
-        //    {
-        //        if (isSyncHealthEnabled && !isHealthSynchronized)
-        //        {
-        //            isHealthSynchronized = true;
-        //            return syncHealthAction();
-        //        }
-
-        //        return Task.CompletedTask;
-        //    }
-        //}
     }
 }

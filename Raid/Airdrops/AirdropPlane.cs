@@ -1,4 +1,5 @@
 ﻿using Aki.Custom.Airdrops.Utils;
+using Comfort.Common;
 using EFT.Airdrop;
 using EFT.SynchronizableObjects;
 using UnityEngine;
@@ -30,7 +31,9 @@ namespace Aki.Custom.Airdrops
             var airplaneSync = planeObject.GetComponent<AirplaneSynchronizableObject>();
             airplaneSync.SetLogic(new AirplaneLogicClass());
 
-            counterMeasures = airplaneSync.infraredCountermeasureParticles;
+            counterMeasures = Instantiate(airplaneSync.infraredCountermeasureParticles);
+            counterMeasures.transform.eulerAngles = new Vector3(90, planeStartRotation.y, 0);
+            counterMeasures.SetActive(false);
 
             SetAudio(planeVolume, airplaneSync);
             SetLookTowardsDrop(airdropPoint, dropHeight);
@@ -51,6 +54,7 @@ namespace Aki.Custom.Airdrops
 
 
             airplaneAudio.dopplerLevel = 1f;
+            airplaneAudio.outputAudioMixerGroup = Singleton<BetterAudio>.Instance.VeryStandartMixerGroup;
             airplaneAudio.loop = true;
             airplaneAudio.maxDistance = 950;
             airplaneAudio.minDistance = 1;

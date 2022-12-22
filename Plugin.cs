@@ -45,10 +45,10 @@ namespace MTGA.Core
         public static ConfigEntry<float> BotDistance;
         public static ConfigEntry<float> TimeAfterSpawn;
         public static Dictionary<int, Player> playerMapping = new ();
-        public static Dictionary<int, botPlayer> botMapping = new();
-        public static List<botPlayer> botList = new();
+        public static Dictionary<int, BotPlayer> botMapping = new();
+        public static List<BotPlayer> botList = new();
         public static Player player;
-        public static botPlayer bot;
+        public static BotPlayer bot;
 
 
         private void Awake()
@@ -315,7 +315,7 @@ namespace MTGA.Core
         public static object BundleAndPoolManager { get; set; }
 
         public static Type poolsCategoryType { get; set; }
-        public static Type assemblyTypeType { get; set; }
+        public static Type AssemblyTypeType { get; set; }
 
         public static MethodInfo LoadBundlesAndCreatePoolsMethod { get; set; }
 
@@ -352,7 +352,7 @@ namespace MTGA.Core
 
                 var raidE = Enum.Parse(poolsCategoryType, "Raid");
 
-                var localE = Enum.Parse(assemblyTypeType, "Local");
+                var localE = Enum.Parse(AssemblyTypeType, "Local");
 
                 var GenProp = PatchConstants.GetPropertyFromType(PatchConstants.JobPriorityType, "General").GetValue(null, null);
 
@@ -374,7 +374,8 @@ namespace MTGA.Core
             }
             return null;
         }
-        void Update()
+
+        private void Update()
         {
             if (enableHeadLamps)
             {
@@ -417,12 +418,12 @@ namespace MTGA.Core
                     if (!botMapping.ContainsKey(player.Id) && !playerMapping.ContainsKey(player.Id))
                     {
                         playerMapping.Add(player.Id, player);
-                        botPlayer value = new(player.Id);
+                        BotPlayer value = new(player.Id);
                         botMapping.Add(player.Id, value);
                     }
                     bot = botMapping[player.Id];
                     bot.Distance = Vector3.Distance(player.Position, gameWorld.RegisteredPlayers[0].Position);
-                    if (bot.eligibleNow && !botList.Contains(bot))
+                    if (bot.EligibleNow && !botList.Contains(bot))
                     {
                         botList.Add(bot);
                     }
@@ -437,7 +438,7 @@ namespace MTGA.Core
             {
                 for (int j = 1; j < botList.Count; j++)
                 {
-                    botPlayer botPlayer = botList[j];
+                    BotPlayer botPlayer = botList[j];
                     int num2 = j - 1;
                     while (num2 >= 0 && botList[num2].Distance > botPlayer.Distance)
                     {
@@ -461,16 +462,16 @@ namespace MTGA.Core
             }
         }
 
-        public class botPlayer
+        public class BotPlayer
         {
             public int Id { get; set; }
             public float Distance { get; set; }
-            public bool eligibleNow { get; set; }
+            public bool EligibleNow { get; set; }
 
-            public botPlayer(int newID)
+            public BotPlayer(int newID)
             {
                 this.Id = newID;
-                this.eligibleNow = false;
+                this.EligibleNow = false;
                 this.timer.Enabled = false;
                 this.timer.AutoReset = false;
                 this.timer.Elapsed += EligiblePool(this);
@@ -484,7 +485,7 @@ namespace MTGA.Core
 
             public System.Timers.Timer timer = new((double)(TimeAfterSpawn.Value * 1000f));
         }
-        public static ElapsedEventHandler EligiblePool(botPlayer botplayer)
+        public static ElapsedEventHandler EligiblePool(BotPlayer botplayer)
         {
             if (!playerMapping.ContainsKey(botplayer.Id))
             {
@@ -495,7 +496,7 @@ namespace MTGA.Core
             else
             {
                 botplayer.timer.Stop();
-                botplayer.eligibleNow = true;
+                botplayer.EligibleNow = true;
             }
             return null;
         }
@@ -581,7 +582,7 @@ namespace MTGA.Core
             return result;
         }
 
-        void FixedUpdate()
+        private void FixedUpdate()
         {
             if (PatchConstants.PoolManagerType != null && ConstructedBundleAndPoolManagerSingletonType != null && BundleAndPoolManager == null)
             {
@@ -593,10 +594,10 @@ namespace MTGA.Core
                     {
                         Logger.LogInfo(poolsCategoryType.FullName);
                     }
-                    assemblyTypeType = BundleAndPoolManager.GetType().GetNestedType("AssemblyType");
-                    if (assemblyTypeType != null)
+                    AssemblyTypeType = BundleAndPoolManager.GetType().GetNestedType("AssemblyType");
+                    if (AssemblyTypeType != null)
                     {
-                        Logger.LogInfo(assemblyTypeType.FullName);
+                        Logger.LogInfo(AssemblyTypeType.FullName);
                     }
                     LoadBundlesAndCreatePoolsMethod = PatchConstants.GetMethodForType(BundleAndPoolManager.GetType(), "LoadBundlesAndCreatePools");
                     if (LoadBundlesAndCreatePoolsMethod != null)
