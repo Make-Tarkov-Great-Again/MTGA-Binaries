@@ -47,8 +47,8 @@ namespace MTGA.Core
         public static Dictionary<int, Player> playerMapping = new();
         public static Dictionary<int, BotPlayer> botMapping = new();
         public static List<BotPlayer> botList = new();
-        public static Player player;
-        public static BotPlayer bot;
+        public static Player player { get; set; }
+        public static BotPlayer bot { get; set; }
 
         // Bush ESP by Props
         public static bool BossesStillSee { get; set; }
@@ -147,12 +147,12 @@ namespace MTGA.Core
                 PatchConstants.Logger.LogInfo("Cultists During Day Enabled");
             }
 
-            var enabledNoBushESP = Config.Bind("EXPERIEMENTAL No Bush ESP by dvize", "Enable", true, "Description: Tired of AI Looking at your bush and destroying you through it? Now they no longer can.").Value;
+            var EnabledNoBushESP = Config.Bind("EXPERIEMENTAL No Bush ESP by dvize", "Enable", true, "Description: Tired of AI Looking at your bush and destroying you through it? Now they no longer can.").Value;
             BossesStillSee = Config.Bind("EXPERIEMENTAL No Bush ESP by dvize", "BossesStillSee", false, "Allow bosses to see through bushes").Value;
             FollowersStillSee = Config.Bind("EXPERIEMENTAL No Bush ESP by dvize", "FollowersStillSee", false, "Allow boss followers to see through bushes").Value;
             PMCsStillSee = Config.Bind("EXPERIEMENTAL No Bush ESP by dvize", "PMCsStillSee", false, "Allow PMCs to see through bushes").Value;
             ScavsStillSee = Config.Bind("EXPERIEMENTAL No Bush ESP by dvize", "ScavssStillSee", false, "Allow Scavs to see through bushes").Value;
-            if (enabledNoBushESP)
+            if (EnabledNoBushESP)
             {
                 PatchConstants.Logger.LogInfo("Enabling No Bush ESP");
                 new NoBushESP().Enable();
@@ -170,18 +170,18 @@ namespace MTGA.Core
             new ChangeHydrationPatch().Enable();
 
 
-            var enableAdrenaline = Config.Bind("EXPERIEMENTAL Adrenaline by Kobrakon", "Enable", false, "Description: Adrenaline effect when Damaged").Value;
-            if (enableAdrenaline)
+            var EnabledAdrenaline = Config.Bind("EXPERIEMENTAL Adrenaline by Kobrakon", "Enable", false, "Description: Adrenaline effect when Damaged").Value;
+            if (EnabledAdrenaline)
             {
                 PatchConstants.Logger.LogInfo("Enabling Adrenaline");
                 new Adrenaline().Enable();
                 PatchConstants.Logger.LogInfo("Adrenaline Enabled");
             };
 
-            var enabledHeadLamps = Config.Bind("EXPERIEMENTAL Headlamps by SamSwat", "Enable", true, "Description: Fix head lamps to toggle on with Y, and Shift + Y to toggle modes").Value;
+            EnabledHeadLamps = Config.Bind("EXPERIEMENTAL Headlamps by SamSwat", "Enable", true, "Description: Fix head lamps to toggle on with Y, and Shift + Y to toggle modes").Value;
             HeadlightToggleKey = Config.Bind<KeyboardShortcut>("EXPERIEMENTAL Headlamps by SamSwat", "Helmet Light Toggle", new KeyboardShortcut(KeyCode.Y, Array.Empty<KeyCode>()), "Key for helmet light toggle");
             HeadlightModeKey = Config.Bind<KeyboardShortcut>("EXPERIEMENTAL Headlamps by SamSwat", "Helmet Light Mode", new KeyboardShortcut(KeyCode.Y, KeyCode.LeftShift), "Key for helemt light mode change");
-            if (enabledHeadLamps)
+            if (EnabledHeadLamps)
             {
                 PatchConstants.Logger.LogInfo("Enabling Headlamps");
                 PatchConstants.Logger.LogInfo("Headlamps Enabled");
@@ -218,14 +218,29 @@ namespace MTGA.Core
         }
 
         GameWorld gameWorld = null;
+        public void GetGameWorld()
+        {
+            //Logger.LogInfo($"gameWorld is {gameWorld}");
 
+            gameWorld ??= gameWorld = Singleton<GameWorld>.Instance;
+
+            //Logger.LogInfo($"gameWorld is {gameWorld}");
+
+        }
+
+        public void GetPlayer()
+        {
+            GetGameWorld();
+            //Logger.LogInfo($"player is {player}");
+            player = gameWorld.RegisteredPlayers.Find((Player p) => p.IsYourPlayer);
+            //Logger.LogInfo($"player is {player}");
+        }
 
         private void SceneManager_sceneLoaded(Scene arg0, LoadSceneMode arg1)
         {
             GetPoolManager();
             GetBackendConfigurationInstance();
-
-            gameWorld = Singleton<GameWorld>.Instance;
+            GetGameWorld();
         }
 
         public void SetupMoreGraphicsMenuOptions()
@@ -304,7 +319,6 @@ namespace MTGA.Core
             }
 
         }
-
 
 
         private void GetPoolManager()
@@ -395,31 +409,28 @@ namespace MTGA.Core
         {
             if (EnabledHeadLamps)
             {
-                EnabledHeadLamps();
+                HeadLamps();
             }
             if (EnabledAILimit)
             {
-                EnabledAILimit();
+                AILimit();
             }
         }
 
-        private void EnabledAILimit()
+        private void AILimit()
         {
-            if (EnabledAILimit)
+            if (!Singleton<GameWorld>.Instantiated)
             {
-                if (!Singleton<GameWorld>.Instantiated)
-                {
-                    return;
-                }
-                gameWorld = Singleton<GameWorld>.Instance;
-                try
-                {
-                    this.UpdateBots(gameWorld);
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogInfo(ex);
-                }
+                return;
+            }
+            GetGameWorld();
+            try
+            {
+                this.UpdateBots(gameWorld);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogInfo(ex);
             }
         }
 
@@ -428,22 +439,23 @@ namespace MTGA.Core
             int num = 0;
             for (int i = 0; i < gameWorld.RegisteredPlayers.Count; i++)
             {
-                player = gameWorld.RegisteredPlayers[i];
-                if (!player.IsYourPlayer)
+                var players = gameWorld.RegisteredPlayers[i];
+                //Logger.LogInfo($"players is {players}");
+                if (!players.IsYourPlayer)
                 {
-                    if (!botMapping.ContainsKey(player.Id) && !playerMapping.ContainsKey(player.Id))
+                    if (!botMapping.ContainsKey(player.Id) && !playerMapping.ContainsKey(players.Id))
                     {
-                        playerMapping.Add(player.Id, player);
-                        BotPlayer value = new(player.Id);
-                        botMapping.Add(player.Id, value);
+                        playerMapping.Add(players.Id, players);
+                        BotPlayer value = new(players.Id);
+                        botMapping.Add(players.Id, value);
                     }
-                    bot = botMapping[player.Id];
-                    bot.Distance = Vector3.Distance(player.Position, gameWorld.RegisteredPlayers[0].Position);
+                    bot = botMapping[players.Id];
+                    bot.Distance = Vector3.Distance(players.Position, gameWorld.RegisteredPlayers[0].Position);
                     if (bot.EligibleNow && !botList.Contains(bot))
                     {
                         botList.Add(bot);
                     }
-                    if (!bot.timer.Enabled && player.CameraPosition != null)
+                    if (!bot.timer.Enabled && players.CameraPosition != null)
                     {
                         bot.timer.Enabled = true;
                         bot.timer.Start();
@@ -517,9 +529,10 @@ namespace MTGA.Core
             return null;
         }
 
-        private void EnabledHeadLamps()
+        private void HeadLamps()
         {
-            gameWorld ??= Singleton<GameWorld>.Instance;
+            GetGameWorld();
+            //Logger.LogInfo($"gameWorld is {gameWorld}");
             bool flag = gameWorld == null || gameWorld.RegisteredPlayers == null;
             if (!flag)
             {
@@ -575,7 +588,8 @@ namespace MTGA.Core
             bool result;
             if (flag)
             {
-                player = Singleton<GameWorld>.Instance.RegisteredPlayers.Find((Player p) => p.IsYourPlayer);
+                GetPlayer();
+                Logger.LogInfo($"player is {player}");
                 TacticalComboVisualController componentInChildren = player.GetComponentInChildren<TacticalComboVisualController>();
                 _flashlight = componentInChildren?.gameObject;
                 bool flag2 = _flashlight == null;
@@ -585,9 +599,9 @@ namespace MTGA.Core
                 }
                 else
                 {
-                    _modes = (from x in Array.ConvertAll<Transform, GameObject>(_flashlight.GetComponentsInChildren<Transform>(true), (Transform y) => y.gameObject)
+                    _modes = (from x in Array.ConvertAll(_flashlight.GetComponentsInChildren<Transform>(true), (Transform y) => y.gameObject)
                               where x.name.Contains("mode_")
-                              select x).ToArray<GameObject>();
+                              select x).ToArray();
                     result = true;
                 }
             }

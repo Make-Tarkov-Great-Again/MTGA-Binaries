@@ -131,4 +131,4 @@ namespace MTGA.Core.AI
         public static WildSpawnType[] scavList;
     }
 }
-}
+
