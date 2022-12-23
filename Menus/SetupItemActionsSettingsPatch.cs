@@ -12,13 +12,11 @@ namespace MTGA.Core.Menus
 {
     internal class SetupItemActionsSettingsPatch : ModulePatch
     {
-        protected override MethodBase GetTargetMethod()
-        {
-            return typeof(LocalBackendEvent).GetMethod("TrySendCommands");
-            //var c = PatchConstants.EftTypes.FirstOrDefault(x => x.FullName.StartsWith("LocalBackendEvent"));
-            //var m = PatchConstants.EftTypes.Single(x => PatchConstants.GetMethodForType(x, "TrySendCommands") != null);
-            //return PatchConstants.GetMethodForType(c, "TrySendCommands");
-        }
+        protected override MethodBase GetTargetMethod() => typeof(LocalBackendEvent).GetMethod("TrySendCommands");
+        //var c = PatchConstants.EftTypes.FirstOrDefault(x => x.FullName.StartsWith("LocalBackendEvent"));
+        //var m = PatchConstants.EftTypes.Single(x => PatchConstants.GetMethodForType(x, "TrySendCommands") != null);
+        //return PatchConstants.GetMethodForType(c, "TrySendCommands");
+
 
         [PatchTranspiler]
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
@@ -30,11 +28,11 @@ namespace MTGA.Core.Menus
             for (var i = 0; i < codes.Count; i++)
             {
                 // We are looking for the List Count that TrySendCommands checks before sending the next command
-                if(listCountIndex == -1 && codes[i].opcode == OpCodes.Ldc_I4_S)
+                if (listCountIndex == -1 && codes[i].opcode == OpCodes.Ldc_I4_S)
                 {
                     listCountIndex = i;
                 }
-                if(timeIndex == -1 && codes[i].opcode == OpCodes.Ldc_R4)
+                if (timeIndex == -1 && codes[i].opcode == OpCodes.Ldc_R4)
                 {
                     timeIndex = i;
                 }

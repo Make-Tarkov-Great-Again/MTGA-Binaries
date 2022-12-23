@@ -57,7 +57,7 @@ namespace MTGA.Core
         public static bool ScavsStillSee { get; set; }
 
 
-        private void Awake()
+        void Awake()
         {
             PatchConstants.GetBackendUrl();
 
@@ -81,7 +81,9 @@ namespace MTGA.Core
             }
 
             // --------- Container Id Debug ------------
-            //new LootableContainerInteractPatch().Enable();
+            var enableLootableContainerDebug = Config.Bind("Debug", "Lootable Container Debug", false, "Description: Print Lootable Container information").Value;
+            if (enableLootableContainerDebug)
+                new LootableContainerInteractPatch().Enable();
 
             // --------- PMC Dogtags -------------------
             new UpdateDogtagPatch().Enable();
@@ -190,10 +192,10 @@ namespace MTGA.Core
 
             // ----------------------------------------------------------------
             // MongoID. This forces bad JET ids to become what BSG Code expects
-            if (MongoIDPatch.MongoIDExists)
-            {
-                new MongoIDPatch().Enable();
-            }
+            //if (MongoIDPatch.MongoIDExists)
+            //{
+            //    new MongoIDPatch().Enable();
+            //}
 
             //new HideoutItemViewFactoryShowPatch().Enable();
 
@@ -212,7 +214,7 @@ namespace MTGA.Core
 
         }
 
-        private void SceneManager_sceneUnloaded(Scene arg0)
+        void SceneManager_sceneUnloaded(Scene arg0)
         {
 
         }
@@ -221,11 +223,8 @@ namespace MTGA.Core
         public void GetGameWorld()
         {
             //Logger.LogInfo($"gameWorld is {gameWorld}");
-
             gameWorld ??= gameWorld = Singleton<GameWorld>.Instance;
-
             //Logger.LogInfo($"gameWorld is {gameWorld}");
-
         }
 
         public void GetPlayer()
@@ -236,7 +235,7 @@ namespace MTGA.Core
             //Logger.LogInfo($"player is {player}");
         }
 
-        private void SceneManager_sceneLoaded(Scene arg0, LoadSceneMode arg1)
+        void SceneManager_sceneLoaded(Scene arg0, LoadSceneMode arg1)
         {
             GetPoolManager();
             GetBackendConfigurationInstance();
@@ -285,7 +284,7 @@ namespace MTGA.Core
             readOnlyCollection_3.SetValue(null, Collection_3);
             Logger.LogInfo("Adjusted sliders for Overall Visibility and LOD Quality");
         }
-        private void GetBackendConfigurationInstance()
+        void GetBackendConfigurationInstance()
         {
             if (
                 PatchConstants.BackendStaticConfigurationType != null &&
@@ -321,7 +320,7 @@ namespace MTGA.Core
         }
 
 
-        private void GetPoolManager()
+        void GetPoolManager()
         {
             if (PatchConstants.PoolManagerType == null)
             {
@@ -341,7 +340,7 @@ namespace MTGA.Core
             }
         }
 
-        private Type ConstructedBundleAndPoolManagerSingletonType { get; set; }
+        Type ConstructedBundleAndPoolManagerSingletonType { get; set; }
         public static object BundleAndPoolManager { get; set; }
 
         public static Type poolsCategoryType { get; set; }
@@ -405,7 +404,7 @@ namespace MTGA.Core
             return null;
         }
 
-        private void Update()
+        void Update()
         {
             if (EnabledHeadLamps)
             {
@@ -417,7 +416,7 @@ namespace MTGA.Core
             }
         }
 
-        private void AILimit()
+        void AILimit()
         {
             if (!Singleton<GameWorld>.Instantiated)
             {
@@ -426,7 +425,7 @@ namespace MTGA.Core
             GetGameWorld();
             try
             {
-                this.UpdateBots(gameWorld);
+                UpdateBots(gameWorld);
             }
             catch (Exception ex)
             {
@@ -434,7 +433,7 @@ namespace MTGA.Core
             }
         }
 
-        public void UpdateBots(GameWorld gameWorld)
+        void UpdateBots(GameWorld gameWorld)
         {
             int num = 0;
             for (int i = 0; i < gameWorld.RegisteredPlayers.Count; i++)
@@ -529,7 +528,7 @@ namespace MTGA.Core
             return null;
         }
 
-        private void HeadLamps()
+        void HeadLamps()
         {
             GetGameWorld();
             //Logger.LogInfo($"gameWorld is {gameWorld}");
@@ -542,26 +541,26 @@ namespace MTGA.Core
                     _flashlight = null;
                     _currentMode = 1;
                 }
-                bool flag3 = HeadlightToggleKey.Value.IsUp() && this.PlayerHasFlashlight();
+                bool flag3 = HeadlightToggleKey.Value.IsUp() && PlayerHasFlashlight();
                 if (flag3)
                 {
-                    this.ToggleLight();
+                    ToggleLight();
                 }
-                bool flag4 = HeadlightModeKey.Value.IsUp() && this.PlayerHasFlashlight();
+                bool flag4 = HeadlightModeKey.Value.IsUp() && PlayerHasFlashlight();
                 if (flag4)
                 {
-                    this.ChangeMode();
+                    ChangeMode();
                 }
             }
         }
 
-        private void ToggleLight()
+        void ToggleLight()
         {
             _modes[0].SetActive(!_modes[0].activeSelf);
             _modes[_currentMode].SetActive(!_modes[_currentMode].activeSelf);
         }
 
-        private void ChangeMode()
+        void ChangeMode()
         {
             bool flag = !_modes[0].activeSelf;
             if (flag)
@@ -582,14 +581,14 @@ namespace MTGA.Core
             }
         }
 
-        private bool PlayerHasFlashlight()
+        bool PlayerHasFlashlight()
         {
             bool flag = _flashlight == null;
             bool result;
             if (flag)
             {
                 GetPlayer();
-                Logger.LogInfo($"player is {player}");
+                //Logger.LogInfo($"player is {player}");
                 TacticalComboVisualController componentInChildren = player.GetComponentInChildren<TacticalComboVisualController>();
                 _flashlight = componentInChildren?.gameObject;
                 bool flag2 = _flashlight == null;
@@ -612,7 +611,7 @@ namespace MTGA.Core
             return result;
         }
 
-        private void FixedUpdate()
+        void FixedUpdate()
         {
             if (PatchConstants.PoolManagerType != null && ConstructedBundleAndPoolManagerSingletonType != null && BundleAndPoolManager == null)
             {

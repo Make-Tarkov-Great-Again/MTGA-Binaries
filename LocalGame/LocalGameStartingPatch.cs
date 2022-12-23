@@ -41,8 +41,7 @@ namespace MTGA.Core.LocalGame
         {
             Logger.LogInfo($"LocalGameStartingPatch:PatchPrefix");
             LocalGameInstance = __instance;
-            if (LocalGameStarted != null)
-                LocalGameStarted();
+            LocalGameStarted?.Invoke();
 
             BotSystemHelpers.BotControllerInstance = PatchConstants.GetFieldOrPropertyFromInstance<object>(__instance, BotSystemHelpers.BotControllerType.Name.ToLower() + "_0", false);
             Logger.LogInfo($"LocalGameStartingPatch:BotSystemInstance:" + BotSystemHelpers.BotControllerInstance.GetType().Name);
