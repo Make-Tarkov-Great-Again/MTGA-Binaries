@@ -32,7 +32,7 @@ namespace MTGA.Core
     {
 
         // Headlamp Fix by SamSwat
-        private bool enableHeadLamps;
+        private bool EnabledHeadLamps { get; set; }
         private static GameObject _flashlight;
         private static GameObject[] _modes;
         private static int _currentMode = 1;
@@ -40,15 +40,21 @@ namespace MTGA.Core
         internal static ConfigEntry<KeyboardShortcut> HeadlightModeKey;
 
         // AI Limit by Props
-        private bool enableAILimit;
+        private bool EnabledAILimit { get; set; }
         public static ConfigEntry<int> BotLimit;
         public static ConfigEntry<float> BotDistance;
         public static ConfigEntry<float> TimeAfterSpawn;
-        public static Dictionary<int, Player> playerMapping = new ();
+        public static Dictionary<int, Player> playerMapping = new();
         public static Dictionary<int, BotPlayer> botMapping = new();
         public static List<BotPlayer> botList = new();
         public static Player player;
         public static BotPlayer bot;
+
+        // Bush ESP by Props
+        public static bool BossesStillSee { get; set; }
+        public static bool FollowersStillSee { get; set; }
+        public static bool PMCsStillSee { get; set; }
+        public static bool ScavsStillSee { get; set; }
 
 
         private void Awake()
@@ -104,14 +110,13 @@ namespace MTGA.Core
                 new BotSelfEnemyPatch().Enable();
             }
 
-            var enabledAILimit = Config.Bind("EXPERIEMENTAL AI Limit by Props", "Enable", false, "Description: Disable AI (temporarily) based on distance to the player and user defined bot limit within that distance. Only the closest bots (distance wise) are enabled based on a max value set").Value;
-            BotDistance = Config.Bind<float>("EXPERIEMENTAL AI Limit by Props", "Bot Distance", 200f, "Set Max Distance to activate bots");
-            BotLimit = Config.Bind<int>("EXPERIEMENTAL AI Limit by Props", "Bot Limit (At Distance)", 10, "Based on your distance selected, limits up to this many # of bots moving at one time");
-            TimeAfterSpawn = Config.Bind<float>("EXPERIEMENTAL AI Limit by Props", "Time After Spawn", 10f, "Time (sec) to wait before disabling");
-            if (enabledAILimit)
+            EnabledAILimit = Config.Bind("EXPERIEMENTAL AI Limit by Props", "Enable", false, "Description: Disable AI (temporarily) based on distance to the player and user defined bot limit within that distance. Only the closest bots (distance wise) are enabled based on a max value set").Value;
+            BotDistance = Config.Bind("EXPERIEMENTAL AI Limit by Props", "Bot Distance", 200f, "Set Max Distance to activate bots");
+            BotLimit = Config.Bind("EXPERIEMENTAL AI Limit by Props", "Bot Limit (At Distance)", 10, "Based on your distance selected, limits up to this many # of bots moving at one time");
+            TimeAfterSpawn = Config.Bind("EXPERIEMENTAL AI Limit by Props", "Time After Spawn", 10f, "Time (sec) to wait before disabling");
+            if (EnabledAILimit)
             {
                 PatchConstants.Logger.LogInfo("Enabling AI Limit");
-                enableAILimit = true;
                 PatchConstants.Logger.LogInfo("AI Limit Enabled");
             }
 
@@ -134,14 +139,25 @@ namespace MTGA.Core
             // Raid
             new LoadBotDifficultyFromServer().Enable();
 
-            var enabledCultistsDuringDay = Config.Bind("EXPERIEMENTAL Cultists During Day by Lua", "Enable", false, "Description: Cultists Spawning During Day").Value;
+            var enabledCultistsDuringDay = Config.Bind("EXPERIEMENTAL Cultists During Day by Lua", "Enable", true, "Description: Cultists Spawning During Day").Value;
             if (enabledCultistsDuringDay)
             {
                 PatchConstants.Logger.LogInfo("Enabling Cultists During Day");
                 new CultistsSpawnDuringDay().Enable();
                 PatchConstants.Logger.LogInfo("Cultists During Day Enabled");
             }
-            
+
+            var enabledNoBushESP = Config.Bind("EXPERIEMENTAL No Bush ESP by dvize", "Enable", true, "Description: Tired of AI Looking at your bush and destroying you through it? Now they no longer can.").Value;
+            BossesStillSee = Config.Bind("EXPERIEMENTAL No Bush ESP by dvize", "BossesStillSee", false, "Allow bosses to see through bushes").Value;
+            FollowersStillSee = Config.Bind("EXPERIEMENTAL No Bush ESP by dvize", "FollowersStillSee", false, "Allow boss followers to see through bushes").Value;
+            PMCsStillSee = Config.Bind("EXPERIEMENTAL No Bush ESP by dvize", "PMCsStillSee", false, "Allow PMCs to see through bushes").Value;
+            ScavsStillSee = Config.Bind("EXPERIEMENTAL No Bush ESP by dvize", "ScavssStillSee", false, "Allow Scavs to see through bushes").Value;
+            if (enabledNoBushESP)
+            {
+                PatchConstants.Logger.LogInfo("Enabling No Bush ESP");
+                new NoBushESP().Enable();
+                PatchConstants.Logger.LogInfo("Enabled No Bush ESP");
+            }
             //new SpawnPointPatch().Enable();
             //new BossSpawnChancePatch().Enable();
 
@@ -153,21 +169,21 @@ namespace MTGA.Core
             new ChangeEnergyPatch().Enable();
             new ChangeHydrationPatch().Enable();
 
-            
+
             var enableAdrenaline = Config.Bind("EXPERIEMENTAL Adrenaline by Kobrakon", "Enable", false, "Description: Adrenaline effect when Damaged").Value;
-            if (enableAdrenaline) {
+            if (enableAdrenaline)
+            {
                 PatchConstants.Logger.LogInfo("Enabling Adrenaline");
                 new Adrenaline().Enable();
                 PatchConstants.Logger.LogInfo("Adrenaline Enabled");
             };
 
-            var enabledHeadLamps = Config.Bind("EXPERIEMENTAL Headlamps by SamSwat", "Enable", false, "Description: Fix head lamps to toggle on with Y, and Shift + Y to toggle modes").Value;
+            var enabledHeadLamps = Config.Bind("EXPERIEMENTAL Headlamps by SamSwat", "Enable", true, "Description: Fix head lamps to toggle on with Y, and Shift + Y to toggle modes").Value;
             HeadlightToggleKey = Config.Bind<KeyboardShortcut>("EXPERIEMENTAL Headlamps by SamSwat", "Helmet Light Toggle", new KeyboardShortcut(KeyCode.Y, Array.Empty<KeyCode>()), "Key for helmet light toggle");
             HeadlightModeKey = Config.Bind<KeyboardShortcut>("EXPERIEMENTAL Headlamps by SamSwat", "Helmet Light Mode", new KeyboardShortcut(KeyCode.Y, KeyCode.LeftShift), "Key for helemt light mode change");
             if (enabledHeadLamps)
             {
                 PatchConstants.Logger.LogInfo("Enabling Headlamps");
-                enableHeadLamps = true;
                 PatchConstants.Logger.LogInfo("Headlamps Enabled");
             };
 
@@ -377,11 +393,11 @@ namespace MTGA.Core
 
         private void Update()
         {
-            if (enableHeadLamps)
+            if (EnabledHeadLamps)
             {
                 EnabledHeadLamps();
             }
-            if (enableAILimit)
+            if (EnabledAILimit)
             {
                 EnabledAILimit();
             }
@@ -389,7 +405,7 @@ namespace MTGA.Core
 
         private void EnabledAILimit()
         {
-            if (enableAILimit)
+            if (EnabledAILimit)
             {
                 if (!Singleton<GameWorld>.Instantiated)
                 {
@@ -570,8 +586,8 @@ namespace MTGA.Core
                 else
                 {
                     _modes = (from x in Array.ConvertAll<Transform, GameObject>(_flashlight.GetComponentsInChildren<Transform>(true), (Transform y) => y.gameObject)
-                                           where x.name.Contains("mode_")
-                                           select x).ToArray<GameObject>();
+                              where x.name.Contains("mode_")
+                              select x).ToArray<GameObject>();
                     result = true;
                 }
             }
