@@ -8,7 +8,7 @@ namespace MTGA.Core.PlayerPatches
 {
     internal class InspectionlessMalfunctions : ModulePatch
     {
-        protected override MethodBase GetTargetMethod() => typeof(Weapon.MalfState).GetMethod("IsKnownMalfType", BindingFlags.Instance | BindingFlags.Public);
+        protected override MethodBase GetTargetMethod() => typeof(Weapon.MalfunctionState).GetMethod("IsKnownMalfType", BindingFlags.Instance | BindingFlags.Public);
 
         [PatchPostfix]
         public static void PatchPostfix(ref bool __result)

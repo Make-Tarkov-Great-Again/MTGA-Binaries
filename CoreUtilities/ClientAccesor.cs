@@ -14,9 +14,9 @@ namespace MTGA.Core
         /// Method toi get access to ClientApplication Instance
         /// </summary>
         /// <returns>ClientApplication</returns>
-        public static ClientApplication<ISession> GetClientApp()
+        public static ClientApplication<IBackEndSession> GetClientApp()
         {
-            return Singleton<ClientApplication<ISession>>.Instance;
+            return Singleton<ClientApplication<IBackEndSession>>.Instance;
         }
         /// <summary>
         /// Method to get accessto TarkovApplication instance

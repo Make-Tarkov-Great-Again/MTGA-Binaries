@@ -119,14 +119,14 @@ namespace MTGA.Core
         public static Type JsonConverterType { get; }
         public static JsonConverter[] JsonConverterDefault { get; }
 
-        private static ISession _backEndSession;
-        public static ISession BackEndSession
+        private static IBackEndSession _backEndSession;
+        public static IBackEndSession BackEndSession
         {
             get
             {
                 if (_backEndSession == null)
                 {
-                    _backEndSession = Singleton<ClientApplication<ISession>>.Instance.GetClientBackEndSession();
+                    _backEndSession = Singleton<ClientApplication<IBackEndSession>>.Instance.GetClientBackEndSession();
                 }
 
                 return _backEndSession;
