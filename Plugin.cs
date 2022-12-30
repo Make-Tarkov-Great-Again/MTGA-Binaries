@@ -147,6 +147,9 @@ namespace MTGA.Core
                 // -------------------------------------
                 // Raid
                 new LoadBotDifficultyFromServer().Enable();
+                new LighthouseDoorPatch().Enable();
+                new ForceMuteVoIP_0().Enable();
+                new ForceMuteVoIP_1().Enable();
 
                 var enabledCultistsDuringDay = Config.Bind("EXPERIEMENTAL Cultists During Day by Lua", "Enable", true, "Description: Cultists Spawning During Day").Value;
                 if (enabledCultistsDuringDay)

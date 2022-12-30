@@ -28,8 +28,9 @@ namespace MTGA.Core.Raid
         [PatchPrefix]
         private static bool PatchPrefix()
         {
-            ScreenManager instance = ScreenManager.Instance;
-            instance.CloseAllScreensForced();
+            //ScreenManager instance = ScreenManager.Instance;
+            ScreenManager.Instance.CloseAllScreensForced();
+            PatchConstants.Logger.LogDebug("It's working I guess?????");
             return true;
         }
     }
