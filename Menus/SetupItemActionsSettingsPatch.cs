@@ -7,8 +7,7 @@ namespace MTGA.Core.Menus
 {
     internal class SetupItemActionsSettingsPatch : ModulePatch
     {
-        //LocalBackendEvent => Class222 (LocalBackendCommands)
-        protected override MethodBase GetTargetMethod() => typeof(Class222).GetMethod("TrySendCommands");
+        protected override MethodBase GetTargetMethod() => typeof(LocalBackendCommands).GetMethod("TrySendCommands");
         //var c = PatchConstants.EftTypes.FirstOrDefault(x => x.FullName.StartsWith("LocalBackendEvent"));
         //var m = PatchConstants.EftTypes.Single(x => PatchConstants.GetMethodForType(x, "TrySendCommands") != null);
         //return PatchConstants.GetMethodForType(c, "TrySendCommands");
