@@ -1,18 +1,14 @@
 ﻿using HarmonyLib;
-using MTGA.Core;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MTGA.Core.Menus
 {
     internal class SetupItemActionsSettingsPatch : ModulePatch
     {
-        protected override MethodBase GetTargetMethod() => typeof(LocalBackendEvent).GetMethod("TrySendCommands");
+        //LocalBackendEvent => Class222 (LocalBackendCommands)
+        protected override MethodBase GetTargetMethod() => typeof(Class222).GetMethod("TrySendCommands");
         //var c = PatchConstants.EftTypes.FirstOrDefault(x => x.FullName.StartsWith("LocalBackendEvent"));
         //var m = PatchConstants.EftTypes.Single(x => PatchConstants.GetMethodForType(x, "TrySendCommands") != null);
         //return PatchConstants.GetMethodForType(c, "TrySendCommands");

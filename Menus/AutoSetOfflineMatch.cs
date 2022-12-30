@@ -25,7 +25,7 @@ namespace MTGA.Core.Menus
         [PatchPostfix]
         public static void PatchPostfix(
             UpdatableToggle ____offlineModeToggle,
-            UpdatableToggle ____botsEnabledToggle,
+            //UpdatableToggle ____botsEnabledToggle,
             DropDownBox ____aiAmountDropdown,
             DropDownBox ____aiDifficultyDropdown,
             UpdatableToggle ____enableBosses,
@@ -44,7 +44,7 @@ namespace MTGA.Core.Menus
             ____offlineModeToggle.gameObject.SetActive(false);
             ____offlineModeToggle.enabled = false;
             ____offlineModeToggle.interactable = false;
-            ____botsEnabledToggle.isOn = true;
+            //____botsEnabledToggle.isOn = true;
             ____enableBosses.isOn = true;
 
             ____aiAmountDropdown.UpdateValue((int)EBotAmount.AsOnline, false);
