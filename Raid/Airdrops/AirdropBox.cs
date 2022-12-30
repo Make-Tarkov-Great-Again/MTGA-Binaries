@@ -1,45 +1,222 @@
-﻿using Aki.Custom.Airdrops.Utils;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Comfort.Common;
 using EFT.Airdrop;
 using EFT.Interactive;
 using EFT.SynchronizableObjects;
 using UnityEngine;
+using MTGA.Core;
 
 /***
- * Full Credit for this patch goes to SPT-AKI team. Specifically CWX!
+ * Full Credit for this patch goes to SPT-AKI team. Specifically CWX & SamSwat!
  * Original Source is found here - https://dev.sp-tarkov.com/SPT-AKI/Modules. 
 */
 namespace Aki.Custom.Airdrops
 {
     public class AirdropBox : MonoBehaviour
     {
-        private readonly string cratePath = "EscapeFromTarkov_Data/StreamingAssets/Windows/assets/content/location_objects/lootable/prefab/scontainer_crate.bundle";
-        public GameObject boxObject;
-        public AirdropSynchronizableObject boxLogic;
+        private const string CRATE_PATH = "assets/content/location_objects/lootable/prefab/scontainer_crate.bundle";
+        private const string AIRDROP_SOUNDS_PATH = "assets/content/audio/prefabs/airdrop/airdropsounds.bundle";
+        private readonly int CROSSFADE = Shader.PropertyToID("_Crossfade");
+        private readonly int COLLISION = Animator.StringToHash("collision");
+
         public LootableContainer container;
-        public GameObject parachute;
-        public Animator paraAnimation;
+        private float boxFallSpeed;
+        private AirdropSynchronizableObject boxSync;
+        private AirdropLogicClass boxLogic;
+        private Material paraMaterial;
+        private Animator paraAnimator;
+        private AirdropSurfaceSet surfaceSet;
+        private Dictionary<BaseBallistic.ESurfaceSound, AirdropSurfaceSet> soundsDictionary;
+        private BetterSource audioSource;
 
-        public bool boxEnabled = false;
-
-        public async void Init(AirdropPoint airdropPoint, int dropHeight)
+        private BetterSource AudioSource
         {
-            boxObject = Instantiate(await BundlesUtil.LoadAssetAsync<GameObject>(cratePath), new Vector3(airdropPoint.transform.position.x, dropHeight, airdropPoint.transform.position.z), airdropPoint.transform.rotation);
+            get
+            {
+                if (audioSource != null) return audioSource;
 
-            boxLogic = boxObject.GetComponent<AirdropSynchronizableObject>();
-            container = boxLogic.GetComponentInChildren<LootableContainer>().gameObject.GetComponentInChildren<LootableContainer>();
+                audioSource = Singleton<BetterAudio>.Instance.GetSource(BetterAudio.AudioSourceGroupType.Environment, false);
+                audioSource.transform.parent = transform;
+                audioSource.transform.localPosition = Vector3.up;
 
-            boxLogic.SetLogic(new AirdropLogicClass());
-            boxLogic.Init(1, new Vector3(airdropPoint.transform.position.x, dropHeight, airdropPoint.transform.position.z), Vector3.zero);
-
-            parachute = boxObject.transform.Find("parachute").gameObject;
-            paraAnimation = parachute.GetComponent<Animator>();
-
-            boxEnabled = true;
+                return audioSource;
+            }
         }
 
-        private void OnDestroy()
+        public static async Task<AirdropBox> Init(float boxFallSpeedMulti)
         {
-            BundlesUtil.UnloadBundle("scontainer_crate.bundle", true);
+            var instance = (await LoadCrate()).AddComponent<AirdropBox>();
+            instance.soundsDictionary = await LoadSounds();
+
+            instance.container = instance.GetComponentInChildren<LootableContainer>();
+
+            instance.boxSync = instance.GetComponent<AirdropSynchronizableObject>();
+            instance.boxLogic = new AirdropLogicClass();
+            instance.boxSync.SetLogic(instance.boxLogic);
+
+            instance.paraAnimator = instance.boxSync.Parachute.GetComponent<Animator>();
+            instance.paraMaterial = instance.boxSync.Parachute.GetComponentInChildren<Renderer>().material;
+            instance.boxFallSpeed = boxFallSpeedMulti;
+            return instance;
+        }
+
+        private static async Task<GameObject> LoadCrate()
+        {
+            var easyAssets = Singleton<PoolManager>.Instance.EasyAssets;
+            await easyAssets.Retain(CRATE_PATH, null, null).LoadingJob;
+
+            var crate = Instantiate(easyAssets.GetAsset<GameObject>(CRATE_PATH));
+            crate.SetActive(false);
+            return crate;
+        }
+
+        private static async Task<Dictionary<BaseBallistic.ESurfaceSound, AirdropSurfaceSet>> LoadSounds()
+        {
+            var easyAssets = Singleton<PoolManager>.Instance.EasyAssets;
+            await easyAssets.Retain(AIRDROP_SOUNDS_PATH, null, null).LoadingJob;
+
+            var soundsDictionary = new Dictionary<BaseBallistic.ESurfaceSound, AirdropSurfaceSet>();
+            var sets = easyAssets.GetAsset<AirdropSounds>(AIRDROP_SOUNDS_PATH).Sets;
+            foreach (var set in sets)
+            {
+                if (!soundsDictionary.ContainsKey((BaseBallistic.ESurfaceSound)set.Surface))
+                {
+                    soundsDictionary.Add((BaseBallistic.ESurfaceSound)set.Surface, set);
+                }
+                else
+                {
+                    Debug.LogError(set.Surface + " surface sounds are duplicated");
+                }
+            }
+
+            return soundsDictionary;
+        }
+
+        public IEnumerator DropCrate(Vector3 position)
+        {
+            var parachuteOpenPos = position + new Vector3(0f, 15 * -9.8f, 0f);
+            boxSync.Init(1, position, Vector3.zero);
+            SetLandingSound();
+            PlayAudioClip(boxSync.SqueakClip, true);
+
+            for (float i = 0; i < 1; i += Time.deltaTime / 5f)
+            {
+                transform.position = Vector3.Lerp(position, parachuteOpenPos, i * i);
+                yield return null;
+            }
+
+            OpenParachute();
+
+            while (RaycastBoxDistance(LayerMaskController.TerrainLowPoly, out _))
+            {
+                transform.Translate(Vector3.down * (Time.deltaTime * boxFallSpeed));
+                transform.Rotate(Vector3.up, Time.deltaTime * 6f);
+                yield return null;
+            }
+
+            CloseParachute();
+            boxSync.AirdropDust.SetActive(true);
+            boxSync.AirdropDust.GetComponent<ParticleSystem>().Play();
+            AudioSource.source1.Stop();
+            var landingClip = surfaceSet.LandingSoundBank.PickSingleClip(surfaceSet.LandingSoundBank.GetRandomClipIndex(2));
+            PlayAudioClip(new TaggedClip
+            {
+                Clip = landingClip,
+                Falloff = (int)surfaceSet.LandingSoundBank.Rolloff,
+                Volume = surfaceSet.LandingSoundBank.BaseVolume
+            });
+            yield return new WaitForSecondsRealtime(landingClip.length + 0.5f);
+            ReleaseAudioSource();
+        }
+
+        private bool RaycastBoxDistance(LayerMask layerMask, out RaycastHit hitInfo)
+        {
+            var ray = new Ray(transform.position, Vector3.down);
+
+            var raycast = Physics.Raycast(ray, out hitInfo, Mathf.Infinity, layerMask);
+            if (!raycast) return false;
+
+            return hitInfo.distance > 0.05f;
+        }
+
+        private void SetLandingSound()
+        {
+            if (!RaycastBoxDistance(LayerMaskController.AudioControllerStepLayerMask, out var raycast))  
+            {
+                Debug.LogError("Raycast to ground returns no hit. Choose Concrete sound landing set");
+                surfaceSet = soundsDictionary[(BaseBallistic.ESurfaceSound)BaseBallistic.ESurfaceSound.Concrete];
+            }
+            else
+            {
+                if (raycast.collider.TryGetComponent(out BaseBallistic component))
+                {
+                    var surfaceSound = component.GetSurfaceSound(raycast.point);
+                    if (soundsDictionary.ContainsKey((BaseBallistic.ESurfaceSound)surfaceSound))
+                    {
+                        surfaceSet = soundsDictionary[(BaseBallistic.ESurfaceSound)surfaceSound];
+                        return;
+                    }
+                }
+
+                surfaceSet = soundsDictionary[(BaseBallistic.ESurfaceSound)BaseBallistic.ESurfaceSound.Concrete];
+            }
+        }
+
+        private void PlayAudioClip(TaggedClip clip, bool looped = false)
+        {
+            var volume = clip.Volume;
+            var occlusionGroupSimple = Singleton<BetterAudio>.Instance.GetOcclusionGroupSimple(transform.position, ref volume);
+            AudioSource.gameObject.SetActive(true);
+            AudioSource.source1.outputAudioMixerGroup = occlusionGroupSimple;
+            AudioSource.source1.spatialBlend = 1f;
+            AudioSource.SetRolloff(clip.Falloff);
+            AudioSource.source1.volume = volume;
+
+            if (AudioSource.source1.isPlaying) return;
+
+            AudioSource.source1.clip = clip.Clip;
+            AudioSource.source1.loop = looped;
+            AudioSource.source1.Play();
+        }
+
+        private void OpenParachute()
+        {
+            boxSync.Parachute.SetActive(true);
+            paraAnimator.SetBool(COLLISION, false);
+            StartCoroutine(CrossFadeAnimation(1f));
+        }
+
+        private void CloseParachute()
+        {
+            paraAnimator.SetBool(COLLISION, true);
+            StartCoroutine(CrossFadeAnimation(0f));
+        }
+
+        private IEnumerator CrossFadeAnimation(float targetFadeValue)
+        {
+            var curFadeValue = paraMaterial.GetFloat(CROSSFADE);
+            for (float i = 0; i < 1; i += Time.deltaTime / 2f)
+            {
+                paraMaterial.SetFloat(CROSSFADE, Mathf.Lerp(curFadeValue, targetFadeValue, i * i));
+                yield return null;
+            }
+            paraMaterial.SetFloat(CROSSFADE, targetFadeValue);
+
+            if (targetFadeValue == 0f)
+            {
+                boxSync.Parachute.SetActive(false);
+            }
+        }
+
+        private void ReleaseAudioSource()
+        {
+            if (audioSource == null) return;
+
+            audioSource.transform.parent = null;
+            audioSource.Release();
+            audioSource = null;
         }
     }
 }

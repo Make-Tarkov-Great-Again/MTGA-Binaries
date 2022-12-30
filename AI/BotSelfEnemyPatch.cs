@@ -3,7 +3,7 @@ using MTGA.Core;
 using System.Reflection;
 
 /***
- * Full Credit for this patch goes to SPT-AKI team. Specifically CWX!
+ * Full Credit for this patch goes to SPT-AKI team. Specifically CWX & SamSwat!
  * Original Source is found here - https://dev.sp-tarkov.com/SPT-AKI/Modules. 
 */
 namespace MTGA.Core.AI

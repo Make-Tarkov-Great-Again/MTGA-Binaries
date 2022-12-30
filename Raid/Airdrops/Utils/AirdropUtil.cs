@@ -8,7 +8,7 @@ using System.Linq;
 using UnityEngine;
 
 /***
- * Full Credit for this patch goes to SPT-AKI team. Specifically CWX!
+ * Full Credit for this patch goes to SPT-AKI team. Specifically CWX & SamSwat!
  * Original Source is found here - https://dev.sp-tarkov.com/SPT-AKI/Modules. 
 */
 namespace Aki.Custom.Airdrops.Utils
@@ -23,6 +23,7 @@ namespace Aki.Custom.Airdrops.Utils
 
         public static int ChanceToSpawn(GameWorld gameWorld, AirdropConfigModel config, bool isFlare)
         {
+            // Flare summoned airdrops are guaranteed
             if (isFlare)
             {
                 return 100;
@@ -93,33 +94,24 @@ namespace Aki.Custom.Airdrops.Utils
 
             if (flareAirdropPoints.Count == 0 && isFlare)
             {
-                Debug.LogError($"[AIRDROPS]: Airdrop called in by flare, Unable to find an airdropPoint within 100m, defaulting to normal drop");
+                Debug.LogError($"[AKI-AIRDROPS]: Airdrop called in by flare, Unable to find an airdropPoint within 100m, defaulting to normal drop");
                 flareAirdropPoints.Add(allAirdropPoints.OrderBy(_ => Guid.NewGuid()).FirstOrDefault());
             }
-
 
             return new AirdropParametersModel()
             {
                 config = serverConfig,
                 dropChance = ChanceToSpawn(gameWorld, serverConfig, isFlare),
-                parachuteStarted = false,
-                parachuteStartedTimer = 0,
-                parachutePaused = false,
-                containerBuilt = false,
-                airdropComplete = false,
-                parachuteComplete = false,
 
                 distanceTraveled = 0f,
-                distanceToTravel = 6000f, // once picked drop point, get distance between plane and drop
+                distanceToTravel = 8000f, // once picked drop point, get distance between plane and drop
                 distanceToDrop = 10000f,
                 timer = 0,
                 planeSpawned = false,
                 boxSpawned = false,
-                boxLanded = false,
-                boxFallSpeedMulti = 0.10f,
-
+                boxFallSpeed = 3f, //meters per second
                 dropHeight = UnityEngine.Random.Range(serverConfig.planeMinFlyHeight, serverConfig.planeMaxFlyHeight),
-                timeToStart = UnityEngine.Random.Range(1, 30),
+                timeToStart = isFlare ? 5 : UnityEngine.Random.Range(serverConfig.airdropMinStartTimeSeconds, serverConfig.airdropMaxStartTimeSeconds),
 
                 airdropPoints = allAirdropPoints,
                 randomAirdropPoint = isFlare && allAirdropPoints.Count > 0 ? flareAirdropPoints.OrderBy(_ => Guid.NewGuid()).FirstOrDefault() : allAirdropPoints.OrderBy(_ => Guid.NewGuid()).FirstOrDefault()

@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using EFT;
 using UnityEngine;
@@ -35,69 +37,35 @@ namespace MTGA.Core.AI
                                 bool flag5 = pmcList.Contains(bot.Profile.Info.Settings.Role) && Plugin.PMCsStillSee;
                                 if (!flag5)
                                 {
-                                    float num = 1f;
-                                    float num2 = 137f;
                                     LayerMask layerMask = 67110913;
-                                    bool flag6 = Physics.SphereCast(bot.Position, num, iaidetails.GetPlayer.Position, out RaycastHit raycastHit, num2, layerMask);
+                                    float num = Vector3.Distance(bot.Position, iaidetails.GetPlayer.Position);
+                                    bool flag6 = Physics.SphereCast(bot.Position, Plugin.TestRayRadius, iaidetails.GetPlayer.Position, out RaycastHit raycastHit, num, layerMask);
                                     if (flag6)
                                     {
+                                        List<string> list = exclusionList;
                                         Transform parent = raycastHit.collider.transform.parent;
-                                        bool flag7;
+                                        string text;
                                         if (parent == null)
                                         {
-                                            flag7 = false;
+                                            text = null;
                                         }
                                         else
                                         {
                                             GameObject gameObject = parent.gameObject;
-                                            bool? flag8;
-                                            if (gameObject == null)
+                                            text = ((gameObject != null) ? gameObject.name.ToLower() : null);
+                                        }
+                                        bool flag7 = list.Contains(text);
+                                        if (flag7)
+                                        {
+                                            bool value2 = Plugin.BlockingTypeGoalEnemy;
+                                            if (value2)
                                             {
-                                                flag8 = null;
+                                                bot.Memory.GetType().GetProperty("GoalEnemy").SetValue(bot.Memory, null);
                                             }
                                             else
                                             {
-                                                string name = gameObject.name;
-                                                flag8 = ((name != null) ? new bool?(name.Contains("filbert")) : null);
+                                                value.GetType().GetProperty("IsVisible").SetValue(value, false);
                                             }
-                                            bool? flag9 = flag8;
-                                            bool flag10 = true;
-                                            flag7 = (flag9.GetValueOrDefault() == flag10) & (flag9 != null);
-                                        }
-                                        bool flag11;
-                                        if (!flag7)
-                                        {
-                                            Transform parent2 = raycastHit.collider.transform.parent;
-                                            if (parent2 == null)
-                                            {
-                                                flag11 = false;
-                                            }
-                                            else
-                                            {
-                                                GameObject gameObject2 = parent2.gameObject;
-                                                bool? flag12;
-                                                if (gameObject2 == null)
-                                                {
-                                                    flag12 = null;
-                                                }
-                                                else
-                                                {
-                                                    string name2 = gameObject2.name;
-                                                    flag12 = ((name2 != null) ? new bool?(name2.Contains("fibert")) : null);
-                                                }
-                                                bool? flag9 = flag12;
-                                                bool flag10 = true;
-                                                flag11 = (flag9.GetValueOrDefault() == flag10) & (flag9 != null);
-                                            }
-                                        }
-                                        else
-                                        {
-                                            flag11 = true;
-                                        }
-                                        bool flag13 = flag11;
-                                        if (flag13)
-                                        {
-                                            value.GetType().GetProperty("IsVisible").SetValue(value, false);
                                         }
                                     }
                                 }
@@ -120,6 +88,7 @@ namespace MTGA.Core.AI
             pmcList = array3;
             WildSpawnType[] array4 = new WildSpawnType[4];
             scavList = array4;
+            exclusionList = new List<string> { "filbert", "fibert", "tree", "pine", "plant" };
         }
 
         public static WildSpawnType[] bossesList;
@@ -129,6 +98,8 @@ namespace MTGA.Core.AI
         public static WildSpawnType[] pmcList;
 
         public static WildSpawnType[] scavList;
+
+        public static List<string> exclusionList;
     }
 }
 

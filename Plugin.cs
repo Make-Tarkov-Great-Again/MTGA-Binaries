@@ -48,9 +48,13 @@ namespace MTGA.Core
         public static Dictionary<int, BotPlayer> botMapping = new();
         public static List<BotPlayer> botList = new();
         public static Player player { get; set; }
-        public static BotPlayer bot { get; set; }
+        public static BotPlayer Bot { get; set; }
 
         // Bush ESP by Props
+
+        public static float TestRayRadius { get; set; }
+
+        public static bool BlockingTypeGoalEnemy { get; set; }
         public static bool BossesStillSee { get; set; }
         public static bool FollowersStillSee { get; set; }
         public static bool PMCsStillSee { get; set; }
@@ -59,158 +63,171 @@ namespace MTGA.Core
 
         void Awake()
         {
-            PatchConstants.GetBackendUrl();
 
-
-            // - TURN OFF FileChecker and BattlEye -----
-            new ConsistencySinglePatch().Enable();
-            new ConsistencyMultiPatch().Enable();
-            new BattlEyePatch().Enable();
-            new SslCertificatePatch().Enable();
-            new UnityWebRequestPatch().Enable();
-            new WebSocketPatch().Enable();
-
-            // - Loading Bundles from Server. Working Aki version with some tweaks by me -----
-            var enableBundles = Config.Bind("Bundles", "Enable", true);
-            if (enableBundles != null && enableBundles.Value == true)
+            try
             {
-                BundleSetup.Init();
-                BundleManager.GetBundles(); // Crash happens here
-                new EasyAssetsPatch().Enable();
-                new EasyBundlePatch().Enable();
+                PatchConstants.GetBackendUrl();
+
+
+                // - TURN OFF FileChecker and BattlEye -----
+                new ConsistencySinglePatch().Enable();
+                new ConsistencyMultiPatch().Enable();
+                new BattlEyePatch().Enable();
+                new SslCertificatePatch().Enable();
+                new UnityWebRequestPatch().Enable();
+                new WebSocketPatch().Enable();
+
+                // - Loading Bundles from Server. Working Aki version with some tweaks by me -----
+                var enableBundles = Config.Bind("Bundles", "Enable", true);
+                if (enableBundles != null && enableBundles.Value == true)
+                {
+                    BundleSetup.Init();
+                    BundleManager.GetBundles(); // Crash happens here
+                    new EasyAssetsPatch().Enable();
+                    new EasyBundlePatch().Enable();
+                }
+
+                // --------- Container Id Debug ------------
+                var enableLootableContainerDebug = Config.Bind("Debug", "Lootable Container Debug", false, "Description: Print Lootable Container information").Value;
+                if (enableLootableContainerDebug)
+                    new LootableContainerInteractPatch().Enable();
+
+                // --------- PMC Dogtags -------------------
+                new UpdateDogtagPatch().Enable();
+
+                // --------- On Dead -----------------------
+                new OnDeadPatch(Config).Enable();
+
+                // --------- Player Init -------------------
+                new PlayerInitPatch().Enable();
+
+                // --------- SCAV MODE ---------------------
+                new DisableScavModePatch().Enable();
+
+                // --------- Airdrop (THANKS TO AKI) -----------------------
+                new AirdropPatch().Enable();
+                new AirdropFlarePatch().Enable();
+
+                // --------- AI -----------------------
+                var enabledMTGAAISystem = Config.Bind("AI", "AI System", true, "Description: Enable MTGA AI???????").Value;
+                if (enabledMTGAAISystem)
+                {
+                    //new IsEnemyPatch().Enable();
+                    new IsPlayerEnemyPatch().Enable();
+                    new IsPlayerEnemyByRolePatch().Enable();
+                    new BotBrainActivatePatch().Enable();
+                    new BotSelfEnemyPatch().Enable();
+                }
+
+                EnabledAILimit = Config.Bind("EXPERIEMENTAL AI Limit by Props", "Enable", false, "Description: Disable AI (temporarily) based on distance to the player and user defined bot limit within that distance. Only the closest bots (distance wise) are enabled based on a max value set").Value;
+                BotDistance = Config.Bind("EXPERIEMENTAL AI Limit by Props", "Bot Distance", 200f, "Set Max Distance to activate bots");
+                BotLimit = Config.Bind("EXPERIEMENTAL AI Limit by Props", "Bot Limit (At Distance)", 10, "Based on your distance selected, limits up to this many # of bots moving at one time");
+                TimeAfterSpawn = Config.Bind("EXPERIEMENTAL AI Limit by Props", "Time After Spawn", 10f, "Time (sec) to wait before disabling");
+                if (EnabledAILimit)
+                {
+                    PatchConstants.Logger.LogInfo("Enabling AI Limit");
+                    PatchConstants.Logger.LogInfo("AI Limit Enabled");
+                }
+
+                // --------- Matchmaker ----------------
+                new AutoSetOfflineMatch().Enable();
+                //new BringBackInsuranceScreen().Enable();
+                new DisableReadyButtonOnFirstScreen().Enable();
+
+                // -------------------------------------
+                // Progression
+                new OfflineSaveProfile().Enable();
+                new ExperienceGainFix().Enable();
+                new OfflineDisplayProgressPatch().Enable();
+
+                // -------------------------------------
+                // Quests
+                new ItemDroppedAtPlace_Beacon().Enable();
+
+                // -------------------------------------
+                // Raid
+                new LoadBotDifficultyFromServer().Enable();
+
+                var enabledCultistsDuringDay = Config.Bind("EXPERIEMENTAL Cultists During Day by Lua", "Enable", true, "Description: Cultists Spawning During Day").Value;
+                if (enabledCultistsDuringDay)
+                {
+                    PatchConstants.Logger.LogInfo("Enabling Cultists During Day");
+                    new CultistsSpawnDuringDay().Enable();
+                    PatchConstants.Logger.LogInfo("Cultists During Day Enabled");
+                }
+
+                var EnabledNoBushESP = Config.Bind("EXPERIEMENTAL No Bush ESP by dvize", "Enable", true, "Description: Tired of AI Looking at your bush and destroying you through it? Now they no longer can.").Value;
+                TestRayRadius = Config.Bind("EXPERIEMENTAL No Bush ESP by dvize", "Test Ray Radius", 1f, "Width of the Ray that checks if obstruction. !!DO NOT SET THIS TOO LOW!!").Value;
+                BlockingTypeGoalEnemy = Config.Bind("EXPERIEMENTAL No Bush ESP by dvize", "Blocking Type Goal Enemy", true, "Enabled means GoalEnemy Method, Disabled means IsVisible Method. !!DO NOT TOUCH!!").Value;
+                BossesStillSee = Config.Bind("EXPERIEMENTAL No Bush ESP by dvize", "BossesStillSee", false, "Allow bosses to see through bushes").Value;
+                FollowersStillSee = Config.Bind("EXPERIEMENTAL No Bush ESP by dvize", "FollowersStillSee", false, "Allow boss followers to see through bushes").Value;
+                PMCsStillSee = Config.Bind("EXPERIEMENTAL No Bush ESP by dvize", "PMCsStillSee", false, "Allow PMCs to see through bushes").Value;
+                ScavsStillSee = Config.Bind("EXPERIEMENTAL No Bush ESP by dvize", "ScavssStillSee", false, "Allow Scavs to see through bushes").Value;
+                if (EnabledNoBushESP)
+                {
+                    PatchConstants.Logger.LogInfo("Enabling No Bush ESP");
+                    new NoBushESP().Enable();
+                    PatchConstants.Logger.LogInfo("Enabled No Bush ESP");
+                }
+                //new SpawnPointPatch().Enable();
+                //new BossSpawnChancePatch().Enable();
+
+                // --------------------------------------
+                // Health stuff
+                new ReplaceInPlayer().Enable();
+
+                new ChangeHealthPatch().Enable();
+                new ChangeEnergyPatch().Enable();
+                new ChangeHydrationPatch().Enable();
+
+
+                var EnabledAdrenaline = Config.Bind("EXPERIEMENTAL Adrenaline by Kobrakon", "Enable", false, "Description: Adrenaline effect when Damaged").Value;
+                if (EnabledAdrenaline)
+                {
+                    PatchConstants.Logger.LogInfo("Enabling Adrenaline");
+                    new Adrenaline().Enable();
+                    PatchConstants.Logger.LogInfo("Adrenaline Enabled");
+                };
+
+                EnabledHeadLamps = Config.Bind("EXPERIEMENTAL Headlamps by SamSwat", "Enable", true, "Description: Fix head lamps to toggle on with Y, and Shift + Y to toggle modes").Value;
+                HeadlightToggleKey = Config.Bind<KeyboardShortcut>("EXPERIEMENTAL Headlamps by SamSwat", "Helmet Light Toggle", new KeyboardShortcut(KeyCode.Y, Array.Empty<KeyCode>()), "Key for helmet light toggle");
+                HeadlightModeKey = Config.Bind<KeyboardShortcut>("EXPERIEMENTAL Headlamps by SamSwat", "Helmet Light Mode", new KeyboardShortcut(KeyCode.Y, KeyCode.LeftShift), "Key for helemt light mode change");
+                if (EnabledHeadLamps)
+                {
+                    PatchConstants.Logger.LogInfo("Enabling Headlamps");
+                    PatchConstants.Logger.LogInfo("Headlamps Enabled");
+                };
+
+                var EnabledInspectionlessMalfunctions = Config.Bind("EXPERIEMENTAL Inspectionless Malfunctions by Fontaine", "Enable", true, "Description: Makes it so you don't need to inspect/examine malfunctions before clearing them").Value;
+                if (EnabledAdrenaline)
+                {
+                    PatchConstants.Logger.LogInfo("Enabling Inspectionless Malfunctions");
+                    new InspectionlessMalfunctions().Enable();
+                    PatchConstants.Logger.LogInfo("Enabled Inspectionless Malfunctions");
+
+                }
+
+                //new HideoutItemViewFactoryShowPatch().Enable();
+
+                new LootContainerInitPatch().Enable();
+                new CollectLootPointsDataPatch().Enable();
+
+                new SetupItemActionsSettingsPatch().Enable();
+
+                // Plugin startup logic
+                Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
+
+                SceneManager.sceneLoaded += SceneManager_sceneLoaded;
+                SceneManager.sceneUnloaded += SceneManager_sceneUnloaded;
+
+                SetupMoreGraphicsMenuOptions();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError($"{GetType().Name}: {ex}");
+                throw;
             }
 
-            // --------- Container Id Debug ------------
-            var enableLootableContainerDebug = Config.Bind("Debug", "Lootable Container Debug", false, "Description: Print Lootable Container information").Value;
-            if (enableLootableContainerDebug)
-                new LootableContainerInteractPatch().Enable();
-
-            // --------- PMC Dogtags -------------------
-            new UpdateDogtagPatch().Enable();
-
-            // --------- On Dead -----------------------
-            new OnDeadPatch(Config).Enable();
-
-            // --------- Player Init -------------------
-            new PlayerInitPatch().Enable();
-
-            // --------- SCAV MODE ---------------------
-            new DisableScavModePatch().Enable();
-
-            // --------- Airdrop (THANKS TO AKI) -----------------------
-            new AirdropPatch().Enable();
-            new AirdropFlarePatch().Enable();
-
-            // --------- AI -----------------------
-            var enabledMTGAAISystem = Config.Bind("AI", "AI System", true, "Description: Enable MTGA AI???????").Value;
-            if (enabledMTGAAISystem)
-            {
-                //new IsEnemyPatch().Enable();
-                new IsPlayerEnemyPatch().Enable();
-                new IsPlayerEnemyByRolePatch().Enable();
-                new BotBrainActivatePatch().Enable();
-                new BotSelfEnemyPatch().Enable();
-            }
-
-            EnabledAILimit = Config.Bind("EXPERIEMENTAL AI Limit by Props", "Enable", false, "Description: Disable AI (temporarily) based on distance to the player and user defined bot limit within that distance. Only the closest bots (distance wise) are enabled based on a max value set").Value;
-            BotDistance = Config.Bind("EXPERIEMENTAL AI Limit by Props", "Bot Distance", 200f, "Set Max Distance to activate bots");
-            BotLimit = Config.Bind("EXPERIEMENTAL AI Limit by Props", "Bot Limit (At Distance)", 10, "Based on your distance selected, limits up to this many # of bots moving at one time");
-            TimeAfterSpawn = Config.Bind("EXPERIEMENTAL AI Limit by Props", "Time After Spawn", 10f, "Time (sec) to wait before disabling");
-            if (EnabledAILimit)
-            {
-                PatchConstants.Logger.LogInfo("Enabling AI Limit");
-                PatchConstants.Logger.LogInfo("AI Limit Enabled");
-            }
-
-            // --------- Matchmaker ----------------
-            new AutoSetOfflineMatch().Enable();
-            //new BringBackInsuranceScreen().Enable();
-            new DisableReadyButtonOnFirstScreen().Enable();
-
-            // -------------------------------------
-            // Progression
-            new OfflineSaveProfile().Enable();
-            new ExperienceGainFix().Enable();
-            new OfflineDisplayProgressPatch().Enable();
-
-            // -------------------------------------
-            // Quests
-            new ItemDroppedAtPlace_Beacon().Enable();
-
-            // -------------------------------------
-            // Raid
-            new LoadBotDifficultyFromServer().Enable();
-
-            var enabledCultistsDuringDay = Config.Bind("EXPERIEMENTAL Cultists During Day by Lua", "Enable", true, "Description: Cultists Spawning During Day").Value;
-            if (enabledCultistsDuringDay)
-            {
-                PatchConstants.Logger.LogInfo("Enabling Cultists During Day");
-                new CultistsSpawnDuringDay().Enable();
-                PatchConstants.Logger.LogInfo("Cultists During Day Enabled");
-            }
-
-            var EnabledNoBushESP = Config.Bind("EXPERIEMENTAL No Bush ESP by dvize", "Enable", true, "Description: Tired of AI Looking at your bush and destroying you through it? Now they no longer can.").Value;
-            BossesStillSee = Config.Bind("EXPERIEMENTAL No Bush ESP by dvize", "BossesStillSee", false, "Allow bosses to see through bushes").Value;
-            FollowersStillSee = Config.Bind("EXPERIEMENTAL No Bush ESP by dvize", "FollowersStillSee", false, "Allow boss followers to see through bushes").Value;
-            PMCsStillSee = Config.Bind("EXPERIEMENTAL No Bush ESP by dvize", "PMCsStillSee", false, "Allow PMCs to see through bushes").Value;
-            ScavsStillSee = Config.Bind("EXPERIEMENTAL No Bush ESP by dvize", "ScavssStillSee", false, "Allow Scavs to see through bushes").Value;
-            if (EnabledNoBushESP)
-            {
-                PatchConstants.Logger.LogInfo("Enabling No Bush ESP");
-                new NoBushESP().Enable();
-                PatchConstants.Logger.LogInfo("Enabled No Bush ESP");
-            }
-            //new SpawnPointPatch().Enable();
-            //new BossSpawnChancePatch().Enable();
-
-            // --------------------------------------
-            // Health stuff
-            new ReplaceInPlayer().Enable();
-
-            new ChangeHealthPatch().Enable();
-            new ChangeEnergyPatch().Enable();
-            new ChangeHydrationPatch().Enable();
-
-
-            var EnabledAdrenaline = Config.Bind("EXPERIEMENTAL Adrenaline by Kobrakon", "Enable", false, "Description: Adrenaline effect when Damaged").Value;
-            if (EnabledAdrenaline)
-            {
-                PatchConstants.Logger.LogInfo("Enabling Adrenaline");
-                new Adrenaline().Enable();
-                PatchConstants.Logger.LogInfo("Adrenaline Enabled");
-            };
-
-            EnabledHeadLamps = Config.Bind("EXPERIEMENTAL Headlamps by SamSwat", "Enable", true, "Description: Fix head lamps to toggle on with Y, and Shift + Y to toggle modes").Value;
-            HeadlightToggleKey = Config.Bind<KeyboardShortcut>("EXPERIEMENTAL Headlamps by SamSwat", "Helmet Light Toggle", new KeyboardShortcut(KeyCode.Y, Array.Empty<KeyCode>()), "Key for helmet light toggle");
-            HeadlightModeKey = Config.Bind<KeyboardShortcut>("EXPERIEMENTAL Headlamps by SamSwat", "Helmet Light Mode", new KeyboardShortcut(KeyCode.Y, KeyCode.LeftShift), "Key for helemt light mode change");
-            if (EnabledHeadLamps)
-            {
-                PatchConstants.Logger.LogInfo("Enabling Headlamps");
-                PatchConstants.Logger.LogInfo("Headlamps Enabled");
-            };
-
-
-            // ----------------------------------------------------------------
-            // MongoID. This forces bad JET ids to become what BSG Code expects
-            //if (MongoIDPatch.MongoIDExists)
-            //{
-            //    new MongoIDPatch().Enable();
-            //}
-
-            //new HideoutItemViewFactoryShowPatch().Enable();
-
-            new LootContainerInitPatch().Enable();
-            new CollectLootPointsDataPatch().Enable();
-
-            new SetupItemActionsSettingsPatch().Enable();
-
-            // Plugin startup logic
-            Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
-
-            SceneManager.sceneLoaded += SceneManager_sceneLoaded;
-            SceneManager.sceneUnloaded += SceneManager_sceneUnloaded;
-
-            SetupMoreGraphicsMenuOptions();
 
         }
 
@@ -223,7 +240,7 @@ namespace MTGA.Core
         public void GetGameWorld()
         {
             //Logger.LogInfo($"gameWorld is {gameWorld}");
-            gameWorld ??= gameWorld = Singleton<GameWorld>.Instance;
+            gameWorld ??= Singleton<GameWorld>.Instance;
             //Logger.LogInfo($"gameWorld is {gameWorld}");
         }
 
@@ -448,16 +465,16 @@ namespace MTGA.Core
                         BotPlayer value = new(players.Id);
                         botMapping.Add(players.Id, value);
                     }
-                    bot = botMapping[players.Id];
-                    bot.Distance = Vector3.Distance(players.Position, gameWorld.RegisteredPlayers[0].Position);
-                    if (bot.EligibleNow && !botList.Contains(bot))
+                    Bot = botMapping[players.Id];
+                    Bot.Distance = Vector3.Distance(players.Position, gameWorld.RegisteredPlayers[0].Position);
+                    if (Bot.EligibleNow && !botList.Contains(Bot))
                     {
-                        botList.Add(bot);
+                        botList.Add(Bot);
                     }
-                    if (!bot.timer.Enabled && players.CameraPosition != null)
+                    if (!Bot.timer.Enabled && players.CameraPosition != null)
                     {
-                        bot.timer.Enabled = true;
-                        bot.timer.Start();
+                        Bot.timer.Enabled = true;
+                        Bot.timer.Start();
                     }
                 }
             }
@@ -489,6 +506,13 @@ namespace MTGA.Core
             }
         }
 
+        public static ElapsedEventHandler EligiblePool(BotPlayer botplayer)
+        {
+            botplayer.timer.Stop();
+            botplayer.EligibleNow = true;
+            return null;
+        }
+
         public class BotPlayer
         {
             public int Id { get; set; }
@@ -504,28 +528,24 @@ namespace MTGA.Core
                 this.timer.Elapsed += EligiblePool(this);
                 playerMapping[this.Id].OnPlayerDeadOrUnspawn += delegate (Player deadArgs)
                 {
-                    botList.Remove(botMapping[deadArgs.Id]);
-                    botMapping.Remove(deadArgs.Id);
-                    playerMapping.Remove(deadArgs.Id);
+                    BotPlayer botPlayer = null;
+                    if (botMapping.ContainsKey(deadArgs.Id))
+                    {
+                        botPlayer = botMapping[deadArgs.Id];
+                        botMapping.Remove(deadArgs.Id);
+                    }
+                    if (botList.Contains(botPlayer))
+                    {
+                        botList.Remove(botPlayer);
+                    }
+                    if (playerMapping.ContainsKey(deadArgs.Id))
+                    {
+                        playerMapping.Remove(deadArgs.Id);
+                    }
                 };
             }
 
             public System.Timers.Timer timer = new((double)(TimeAfterSpawn.Value * 1000f));
-        }
-        public static ElapsedEventHandler EligiblePool(BotPlayer botplayer)
-        {
-            if (!playerMapping.ContainsKey(botplayer.Id))
-            {
-                playerMapping.Remove(botplayer.Id);
-                botMapping.Remove(botplayer.Id);
-                botList.Remove(botplayer);
-            }
-            else
-            {
-                botplayer.timer.Stop();
-                botplayer.EligibleNow = true;
-            }
-            return null;
         }
 
         void HeadLamps()

@@ -23,9 +23,15 @@ namespace MTGA.Core.Menus
 
 
         [PatchPostfix]
-        public static void PatchPostfix(UpdatableToggle ____offlineModeToggle, UpdatableToggle ____botsEnabledToggle,
-            DropDownBox ____aiAmountDropdown, DropDownBox ____aiDifficultyDropdown, UpdatableToggle ____enableBosses,
-            UpdatableToggle ____scavWars, UpdatableToggle ____taggedAndCursed, UpdatableToggle ____coopModeToggle)
+        public static void PatchPostfix(
+            UpdatableToggle ____offlineModeToggle,
+            UpdatableToggle ____botsEnabledToggle,
+            DropDownBox ____aiAmountDropdown,
+            DropDownBox ____aiDifficultyDropdown,
+            UpdatableToggle ____enableBosses,
+            UpdatableToggle ____scavWars,
+            UpdatableToggle ____taggedAndCursed,
+            UpdatableToggle ____coopModeToggle)
         {
 
             //Logger.LogInfo("AutoSetOfflineMatch.PatchPostfix");

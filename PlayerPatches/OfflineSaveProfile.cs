@@ -86,7 +86,7 @@ namespace MTGA.Core
             string backendUrl
             , string session, EFT.ExitStatus exitStatus, EFT.Profile profileData, PlayerHealth currentHealth, bool isPlayerScav)
         {
-            SaveProfileRequest request = new SaveProfileRequest
+            SaveProfileRequest request = new()
             {
                 exit = exitStatus.ToString().ToLower(),
                 profile = profileData,

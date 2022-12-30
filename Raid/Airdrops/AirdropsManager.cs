@@ -2,74 +2,60 @@
 using Aki.Custom.Airdrops.Utils;
 using Comfort.Common;
 using EFT;
-using MTGA.Core;
 using UnityEngine;
 /***
- * Full Credit for this patch goes to SPT-AKI team. Specifically CWX!
+ * Full Credit for this patch goes to SPT-AKI team. Specifically CWX & SamSwat!
  * Original Source is found here - https://dev.sp-tarkov.com/SPT-AKI/Modules. 
 */
 namespace Aki.Custom.Airdrops
 {
     public class AirdropsManager : MonoBehaviour
     {
-        GameWorld gameWorld;
+        private GameWorld gameWorld;
 
-        AirdropPlane airdropPlane;
-        AirdropBox airdropBox;
-        ItemFactoryUtil factory;
+        private AirdropPlane airdropPlane;
+        private AirdropBox airdropBox;
+        private ItemFactoryUtil factory;
 
-        public bool isFlareDrop = false;
+        public bool isFlareDrop;
         private AirdropParametersModel airdropParameters;
 
-        public void Start()
+        public async void Start()
         {
-            PatchConstants.Logger.LogInfo("AirdropsManager.Start");
             if (gameWorld == null)
             {
-                PatchConstants.Logger.LogInfo("AirdropsManager.Start.Get GameWorld");
                 gameWorld = Singleton<GameWorld>.Instance;
             }
 
-            if (airdropParameters == null)
-            {
-                PatchConstants.Logger.LogInfo("AirdropsManager.Start.Get Airdrop Params");
-                airdropParameters = AirdropUtil.InitAirdropParams(gameWorld, isFlareDrop);
-            }
+            airdropParameters ??= AirdropUtil.InitAirdropParams(gameWorld, isFlareDrop);
 
             if (!AirdropUtil.ShouldAirdropOccur(airdropParameters.dropChance.Value)
                 || !AirdropUtil.AirdropHasDropPoint(airdropParameters.airdropPoints))
             {
-                PatchConstants.Logger.LogWarning("AirdropsManager.Start.Airdrop - do not run?");
-
-                airdropParameters.doNotRun = true;
+                Destroy(this);
                 return;
-
             }
 
-            //airdropPlane = new AirdropPlane();
-            airdropPlane = this.GetOrAddComponent<AirdropPlane>();
-            DontDestroyOnLoad(airdropPlane);
-            airdropBox = new AirdropBox();
-            factory = new ItemFactoryUtil();
-            PatchConstants.Logger.LogInfo("AirdropsManager.Start.Complete");
+            try
+            {
+                airdropPlane = await AirdropPlane.Init(airdropParameters.randomAirdropPoint.transform.position, airdropParameters.dropHeight,
+                    airdropParameters.config.planeVolume);
+                airdropBox = await AirdropBox.Init(airdropParameters.boxFallSpeed);
+                factory = new ItemFactoryUtil();
+            }
+            catch
+            {
+                Debug.LogError($"Unable to create plane or crate, airdrop won't occur");
+                Destroy(this);
+                throw;
+            }
 
+            SetDistanceToDrop();
         }
 
         public void FixedUpdate()
         {
-            if (airdropParameters == null)
-                return;
-
-            if (gameWorld == null)
-            {
-                PatchConstants.Logger.LogInfo("AirdropsManager.FixedUpdate.No gameWorld");
-                return;
-            }
-
-            if (airdropParameters.doNotRun || airdropParameters.airdropComplete)
-            {
-                return;
-            }
+            if (gameWorld == null) return;
 
             airdropParameters.timer += 0.02f;
 
@@ -78,136 +64,55 @@ namespace Aki.Custom.Airdrops
                 StartPlane();
             }
 
-            if (airdropPlane == null)
-            {
-                return;
-            }
-
-            if (airdropParameters.planeSpawned && airdropPlane.planeEnabled)
-            {
-                if (airdropParameters.distanceTraveled < airdropParameters.distanceToTravel)
-                {
-                    airdropPlane.planeObject.transform.Translate(Vector3.forward, Space.Self);
-                    airdropPlane.counterMeasures.transform.position = airdropPlane.planeObject.transform.position;
-                    airdropParameters.distanceTraveled++;
-                }
-
-                if (airdropParameters.distanceTraveled == airdropParameters.distanceToTravel)
-                {
-                    airdropPlane.planeEnabled = false;
-                    airdropPlane.planeObject.SetActive(false);
-                }
-            }
-
-            if (airdropParameters.distanceTraveled > 40 && airdropParameters.planeSpawned
-                && airdropPlane.planeEnabled && airdropParameters.distanceToDrop == 10000f)
-            {
-                GetDistanceToDrop();
-            }
-
             if (airdropParameters.distanceTraveled >= airdropParameters.distanceToDrop && !airdropParameters.boxSpawned)
             {
                 StartBox();
-                DeployFlares();
-            }
-
-            if (airdropParameters.boxSpawned && airdropBox.boxEnabled && !airdropParameters.boxLanded)
-            {
-                RaycastBoxDistance();
-            }
-
-            if (!airdropParameters.parachuteStarted && airdropParameters.boxSpawned && airdropBox.boxEnabled)
-            {
-                airdropBox.parachute.SetActive(true);
-                airdropParameters.parachuteStarted = true;
-                airdropParameters.parachuteStartedTimer = airdropParameters.timer;
-            }
-
-            if (airdropParameters.timer > airdropParameters.parachuteStartedTimer + 0.5f && airdropParameters.boxSpawned && !airdropParameters.parachutePaused
-                && airdropBox.boxEnabled && !airdropParameters.airdropComplete && !airdropParameters.parachuteComplete)
-            {
-                airdropBox.paraAnimation.enabled = false;
-                airdropParameters.parachutePaused = true;
-            }
-
-            if (airdropParameters.timer > airdropParameters.parachuteStartedTimer + 2f && airdropParameters.boxSpawned
-                && airdropParameters.parachutePaused && !airdropParameters.containerBuilt)
-            {
                 BuildLootContainer();
             }
 
-            if (airdropParameters.boxLanded && airdropParameters.parachutePaused && !airdropParameters.airdropComplete && !airdropParameters.parachuteComplete)
-            {
-                EndParachute();
-            }
+            if (!airdropParameters.planeSpawned) return;
 
-            if (airdropParameters.boxLanded && !airdropPlane.planeEnabled)
+            if (airdropParameters.distanceTraveled < airdropParameters.distanceToTravel)
             {
-                airdropParameters.airdropComplete = true;
+                airdropParameters.distanceTraveled++;
+                var distanceToDrop = airdropParameters.distanceToDrop - airdropParameters.distanceTraveled;
+                airdropPlane.ManualUpdate(distanceToDrop);
+            }
+            else
+            {
+                Destroy(airdropPlane.gameObject);
+                Destroy(this);
             }
         }
 
         private void StartPlane()
         {
+            airdropPlane.gameObject.SetActive(true);
             airdropParameters.planeSpawned = true;
-            airdropPlane.Init(airdropParameters.randomAirdropPoint, airdropParameters.dropHeight, airdropParameters.config.planeVolume);
         }
 
         private void StartBox()
         {
-            airdropBox.Init(airdropParameters.randomAirdropPoint, airdropParameters.dropHeight);
             airdropParameters.boxSpawned = true;
-        }
-        private void DeployFlares()
-        {
-            airdropPlane.counterMeasures.SetActive(true);
-        }
-
-        private void EndParachute()
-        {
-            airdropBox.paraAnimation.enabled = true;
-            airdropParameters.parachutePaused = false;
-            airdropParameters.parachuteComplete = true;
+            var pointPos = airdropParameters.randomAirdropPoint.transform.position;
+            var dropPos = new Vector3(pointPos.x, airdropParameters.dropHeight, pointPos.z);
+            airdropBox.gameObject.SetActive(true);
+            airdropBox.StartCoroutine(airdropBox.DropCrate(dropPos));
         }
 
         private void BuildLootContainer()
         {
             factory.BuildContainer(airdropBox.container);
-            airdropParameters.containerBuilt = true;
             factory.AddLoot(airdropBox.container);
         }
 
-        private void GetDistanceToDrop()
+        private void SetDistanceToDrop()
         {
+            var position = airdropParameters.randomAirdropPoint.transform.position;
+
             airdropParameters.distanceToDrop = Vector3.Distance(
-                new Vector3(airdropParameters.randomAirdropPoint.transform.position.x,
-                airdropParameters.dropHeight,
-                airdropParameters.randomAirdropPoint.transform.position.z),
-                airdropPlane.planeObject.transform.position);
-        }
-
-        private void RaycastBoxDistance()
-        {
-            Ray ray = new Ray(airdropBox.boxObject.transform.position, Vector3.down);
-
-            var raycast = Physics.Raycast(ray, out RaycastHit hitinfo, 600, LayerMaskController.TerrainLowPoly);
-
-            if (raycast)
-            {
-                if (hitinfo.distance > 0.1f)
-                {
-                    airdropBox.boxObject.transform.Translate(new Vector3(0, -1 * airdropParameters.boxFallSpeedMulti, 0), Space.Self);
-                }
-                else
-                {
-                    airdropParameters.boxLanded = true;
-                }
-            }
-            else if (!raycast && airdropParameters.boxSpawned)
-            {
-                airdropParameters.boxLanded = true;
-                EndParachute();
-            }
+                new Vector3(position.x, airdropParameters.dropHeight, position.z),
+                airdropPlane.transform.position);
         }
     }
 }

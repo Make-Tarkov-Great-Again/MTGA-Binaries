@@ -1,21 +1,24 @@
-﻿using Aki.Custom.Airdrops.Models;
-using Comfort.Common;
+﻿using Comfort.Common;
 using EFT;
+using UnityEngine;
 using EFT.Interactive;
 using EFT.InventoryLogic;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using Aki.Custom.Airdrops.Models;
 using System.Linq;
-using UnityEngine;
+using MTGA;
+using System.Threading.Tasks;
+
 /***
- * Full Credit for this patch goes to SPT-AKI team. Specifically CWX!
+ * Full Credit for this patch goes to SPT-AKI team. Specifically CWX & SamSwat!
  * Original Source is found here - https://dev.sp-tarkov.com/SPT-AKI/Modules. 
 */
 namespace Aki.Custom.Airdrops.Utils
 {
-    public class ItemFactoryUtil : MonoBehaviour
+    public class ItemFactoryUtil
     {
-        private ItemFactory itemFactory;
+        private readonly ItemFactory itemFactory;
         private static readonly string DropContainer = "6223349b3136504a544d1608";
 
         public ItemFactoryUtil()
@@ -41,27 +44,26 @@ namespace Aki.Custom.Airdrops.Utils
             List<AirdropLootModel> loot = GetLoot();
 
             Item actualItem;
-            List<ResourceKey> resources = new List<ResourceKey>(50);
 
             foreach (var item in loot)
             {
+                ResourceKey[] resources;
                 if (item.isPreset)
                 {
                     actualItem = itemFactory.GetPresetItem(item.tpl);
-                    resources.AddRange(actualItem.GetAllItems().Select(x => x.Template).SelectMany(x => x.AllResources));
+                    resources = actualItem.GetAllItems().Select(x => x.Template).SelectMany(x => x.AllResources).ToArray();
                 }
                 else
                 {
                     actualItem = itemFactory.CreateItem(item.id, item.tpl, null);
                     actualItem.StackObjectsCount = item.stackCount;
 
-                    resources.AddRange(actualItem.Template.AllResources);
+                    resources = actualItem.Template.AllResources.ToArray();
                 }
 
                 container.ItemOwner.MainStorage[0].Add(actualItem);
+                await Singleton<PoolManager>.Instance.LoadBundlesAndCreatePools(PoolManager.PoolsCategory.Raid, PoolManager.AssemblyType.Local, resources, JobPriority.Immediate, null, PoolManager.DefaultCancellationToken);
             }
-
-            await Singleton<PoolManager>.Instance.LoadBundlesAndCreatePools(PoolManager.PoolsCategory.Raid, PoolManager.AssemblyType.Local, resources.ToArray(), JobPriority.General, null, PoolManager.DefaultCancellationToken);
         }
 
         private List<AirdropLootModel> GetLoot()
