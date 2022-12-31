@@ -1,18 +1,23 @@
-﻿using Aki.Custom.Airdrops.Patches;
-using BepInEx;
+﻿using BepInEx;
 using Comfort.Common;
 using EFT;
-using MTGA.Core.AI;
 using MTGA.Core.Bundles;
-using MTGA.Core.Hideout;
-using MTGA.Core.Menus;
-using MTGA.Core.Misc;
-using MTGA.Core.PlayerPatches;
-using MTGA.Core.PlayerPatches.Health;
-using MTGA.Core.Raid;
-using MTGA.Core.SP;
-using MTGA.Core.SP.ScavMode;
+using MTGA.Patches.AI;
+using MTGA.Patches.AntiCheat;
+using MTGA.Patches.FileChecker;
+using MTGA.Patches.Hideout;
+using MTGA.Patches.Menus;
+using MTGA.Patches.Misc;
+using MTGA.Patches.Player;
+using MTGA.Patches.Player.Health;
+using MTGA.Patches.Raid;
+using MTGA.Patches.Raid.Airdrops;
+using MTGA.Patches.Raid.Fixes;
+using MTGA.Patches.Raid.FromServer;
+using MTGA.Patches.ScavMode;
+using MTGA.Patches.Web;
 using MTGA.SP;
+using MTGA.Web;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -77,21 +82,21 @@ namespace MTGA.Core
             // -------------------------------------
             // Progression
             new OfflineSaveProfile().Enable();
-            new ExperienceGainFix().Enable();
+            new ExperienceGainFixPatch().Enable();
             new OfflineDisplayProgressPatch().Enable();
 
             // -------------------------------------
             // Quests
-            new ItemDroppedAtPlace_Beacon().Enable();
+            new ItemDroppedAtPlace_BeaconPatch().Enable();
 
             // -------------------------------------
             // Raid
-            new LoadBotDifficultyFromServer().Enable();
+            new LoadBotDifficultyFromServerPatch().Enable();
 
             var enableCultistsDuringDay = Config.Bind("Raid", "Enabled Cultists Spawning During Day", false).Value;
             if (enableCultistsDuringDay)
             { 
-                new CultistsSpawnDuringDay().Enable();
+                new CultistsSpawnDuringDayPatch().Enable();
             }
             
             //new SpawnPointPatch().Enable();
@@ -106,9 +111,9 @@ namespace MTGA.Core
             new ChangeHydrationPatch().Enable();
 
             /*
-            var enableAdrenaline = Config.Bind("Extras", "Enable Adrenaline", true).Value;
+            var enableAdrenaline = Config.Bind("Extras", "Enable AdrenalineRealismPatch", true).Value;
             if (enableAdrenaline) { 
-                new Adrenaline().Enable(); 
+                new AdrenalineRealismPatch().Enable(); 
             };
             */
 
@@ -264,7 +269,7 @@ namespace MTGA.Core
                 //Logger.LogInfo(ConstructedBundleAndPoolManagerSingletonType.FullName);
 
                 //new LoadBotTemplatesPatch().Enable();
-                //new RemoveUsedBotProfile().Enable();
+                //new RemoveUsedBotProfilePatch().Enable();
                 //new CreateFriendlyAIPatch().Enable();
             }
         }
@@ -364,7 +369,7 @@ namespace MTGA.Core
                     , localE
                     , resources
                     , GenProp
-                    , (object o) => { PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: Progressing!"); }
+                    , null //(object o) => { PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: Progressing!"); }
                     , default(CancellationToken)
                     );
 

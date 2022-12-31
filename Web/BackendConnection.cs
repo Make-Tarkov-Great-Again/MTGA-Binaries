@@ -1,12 +1,8 @@
 ﻿using Newtonsoft.Json;
 using MTGA.Core;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace MTGA.Core.Web
+namespace MTGA.Web
 {
     public class BackendConnection
     {

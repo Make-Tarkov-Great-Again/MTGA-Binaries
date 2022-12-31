@@ -9,8 +9,8 @@ using EFT;
 using EFT.Communications;
 using FilesChecker;
 using Newtonsoft.Json;
-using MTGA.Core.Web;
-using MTGA.Core.AI;
+using MTGA.Web;
+using MTGA.Utilities;
 
 namespace MTGA.Core
 {
