@@ -22,7 +22,7 @@ namespace Aki.Custom.Airdrops
         private readonly int COLLISION = Animator.StringToHash("collision");
 
         public LootableContainer container;
-        private float boxFallSpeed;
+        private float fallSpeed;
         private AirdropSynchronizableObject boxSync;
         private AirdropLogicClass boxLogic;
         private Material paraMaterial;
@@ -45,7 +45,7 @@ namespace Aki.Custom.Airdrops
             }
         }
 
-        public static async Task<AirdropBox> Init(float boxFallSpeedMulti)
+        public static async Task<AirdropBox> Init(float crateFallSpeed)
         {
             var instance = (await LoadCrate()).AddComponent<AirdropBox>();
             instance.soundsDictionary = await LoadSounds();
@@ -58,7 +58,7 @@ namespace Aki.Custom.Airdrops
 
             instance.paraAnimator = instance.boxSync.Parachute.GetComponent<Animator>();
             instance.paraMaterial = instance.boxSync.Parachute.GetComponentInChildren<Renderer>().material;
-            instance.boxFallSpeed = boxFallSpeedMulti;
+            instance.fallSpeed = crateFallSpeed;
             return instance;
         }
 
@@ -96,44 +96,67 @@ namespace Aki.Custom.Airdrops
 
         public IEnumerator DropCrate(Vector3 position)
         {
-            var parachuteOpenPos = position + new Vector3(0f, 15 * -9.8f, 0f);
-            boxSync.Init(1, position, Vector3.zero);
+            RaycastBoxDistance(LayerMaskController.TerrainLowPoly, out var hitInfo, position);
             SetLandingSound();
+            boxSync.Init(1, position, Vector3.zero);
             PlayAudioClip(boxSync.SqueakClip, true);
 
-            for (float i = 0; i < 1; i += Time.deltaTime / 5f)
+            if (hitInfo.distance < 155f)
             {
-                transform.position = Vector3.Lerp(position, parachuteOpenPos, i * i);
-                yield return null;
+                for (float i = 0; i < 1; i += Time.deltaTime / 6f)
+                {
+                    transform.position = Vector3.Lerp(position, hitInfo.point, i * i);
+                    yield return null;
+                }
+
+                transform.position = hitInfo.point;
+            }
+            else
+            {
+                var parachuteOpenPos = position + new Vector3(0f, -148.2f, 0f); // (5.5s * -9.8m/s^2) / 2
+                for (float i = 0; i < 1; i += Time.deltaTime / 5.5f)
+                {
+                    transform.position = Vector3.Lerp(position, parachuteOpenPos, i * i);
+                    yield return null;
+                }
+                OpenParachute();
+                while (RaycastBoxDistance(LayerMaskController.TerrainLowPoly, out _))
+                {
+                    transform.Translate(Vector3.down * (Time.deltaTime * fallSpeed));
+                    transform.Rotate(Vector3.up, Time.deltaTime * 6f);
+                    yield return null;
+                }
+                transform.position = hitInfo.point;
+                CloseParachute();
             }
 
-            OpenParachute();
-
-            while (RaycastBoxDistance(LayerMaskController.TerrainLowPoly, out _))
-            {
-                transform.Translate(Vector3.down * (Time.deltaTime * boxFallSpeed));
-                transform.Rotate(Vector3.up, Time.deltaTime * 6f);
-                yield return null;
-            }
-
-            CloseParachute();
+            OnBoxLand(out var clipLength);
+            yield return new WaitForSecondsRealtime(clipLength + 0.5f);
+            ReleaseAudioSource();
+        }
+        private void OnBoxLand(out float clipLength)
+        {
+            var landingClip = surfaceSet.LandingSoundBank.PickSingleClip(surfaceSet.LandingSoundBank.GetRandomClipIndex(2));
+            clipLength = landingClip.length;
             boxSync.AirdropDust.SetActive(true);
             boxSync.AirdropDust.GetComponent<ParticleSystem>().Play();
             AudioSource.source1.Stop();
-            var landingClip = surfaceSet.LandingSoundBank.PickSingleClip(surfaceSet.LandingSoundBank.GetRandomClipIndex(2));
             PlayAudioClip(new TaggedClip
             {
                 Clip = landingClip,
                 Falloff = (int)surfaceSet.LandingSoundBank.Rolloff,
                 Volume = surfaceSet.LandingSoundBank.BaseVolume
             });
-            yield return new WaitForSecondsRealtime(landingClip.length + 0.5f);
-            ReleaseAudioSource();
         }
 
         private bool RaycastBoxDistance(LayerMask layerMask, out RaycastHit hitInfo)
         {
-            var ray = new Ray(transform.position, Vector3.down);
+            return RaycastBoxDistance(layerMask, out hitInfo, transform.position);
+        }
+
+        private bool RaycastBoxDistance(LayerMask layerMask, out RaycastHit hitInfo, Vector3 origin)
+        {
+            var ray = new Ray(origin, Vector3.down);
 
             var raycast = Physics.Raycast(ray, out hitInfo, Mathf.Infinity, layerMask);
             if (!raycast) return false;

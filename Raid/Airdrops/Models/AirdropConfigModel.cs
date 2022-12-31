@@ -2,25 +2,58 @@
  * Full Credit for this patch goes to SPT-AKI team. Specifically CWX & SamSwat!
  * Original Source is found here - https://dev.sp-tarkov.com/SPT-AKI/Modules. 
 */
+using Newtonsoft.Json;
+
 namespace Aki.Custom.Airdrops.Models
 {
     public class AirdropConfigModel
     {
-        public AirdropChancePercent airdropChancePercent { get; set; }
-        public int airdropMinStartTimeSeconds { get; set; }
-        public int airdropMaxStartTimeSeconds { get; set; }
-        public int planeMinFlyHeight { get; set; }
-        public int planeMaxFlyHeight { get; set; }
-        public float planeVolume { get; set; }
+        [JsonProperty("airdropChancePercent")]
+        public AirdropChancePercent AirdropChancePercent { get; set; }
+
+        [JsonProperty("airdropMinStartTimeSeconds")]
+        public int AirdropMinStartTimeSeconds { get; set; }
+
+        [JsonProperty("airdropMaxStartTimeSeconds")]
+        public int AirdropMaxStartTimeSeconds { get; set; }
+
+        [JsonProperty("planeMinFlyHeight")]
+        public int PlaneMinFlyHeight { get; set; }
+
+        [JsonProperty("planeMaxFlyHeight")]
+        public int PlaneMaxFlyHeight { get; set; }
+
+        [JsonProperty("planeVolume")]
+        public float PlaneVolume { get; set; }
+
+        [JsonProperty("planeSpeed")]
+        public float PlaneSpeed { get; set; }
+
+        [JsonProperty("crateFallSpeed")]
+        public float CrateFallSpeed { get; set; }
     }
 
     public class AirdropChancePercent
     {
-        public int bigmap { get; set; }
-        public int woods { get; set; }
-        public int lighthouse { get; set; }
-        public int shoreline { get; set; }
-        public int interchange { get; set; }
-        public int reserve { get; set; }
+        [JsonProperty("bigmap")]
+        public int Bigmap { get; set; }
+
+        [JsonProperty("woods")]
+        public int Woods { get; set; }
+
+        [JsonProperty("lighthouse")]
+        public int Lighthouse { get; set; }
+
+        [JsonProperty("shoreline")]
+        public int Shoreline { get; set; }
+
+        [JsonProperty("interchange")]
+        public int Interchange { get; set; }
+
+        [JsonProperty("reserve")]
+        public int Reserve { get; set; }
+
+        [JsonProperty("tarkovStreets")]
+        public int TarkovStreets { get; set; }
     }
 }

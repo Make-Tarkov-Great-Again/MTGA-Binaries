@@ -147,9 +147,14 @@ namespace MTGA.Core
                 // -------------------------------------
                 // Raid
                 new LoadBotDifficultyFromServer().Enable();
-                new LighthouseDoorPatch().Enable();
-                new ForceMuteVoIP_0().Enable();
-                new ForceMuteVoIP_1().Enable();
+
+                var EnabledLighthouseKeeperAlwaysOpen = Config.Bind("Lighthouse", "Enable Lighthouse Door Always Open", false, "Description: Lighthouse Keeper's Door Always Open").Value;
+                if (EnabledLighthouseKeeperAlwaysOpen)
+                {
+                    new LighthouseDoorPatch().Enable();
+                }
+
+                new ForceMuteVoIP().Enable();
 
                 var enabledCultistsDuringDay = Config.Bind("EXPERIEMENTAL Cultists During Day by Lua", "Enable", true, "Description: Cultists Spawning During Day").Value;
                 if (enabledCultistsDuringDay)

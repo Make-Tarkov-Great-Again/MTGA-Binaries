@@ -15,16 +15,16 @@ namespace Aki.Custom.Airdrops
     public class AirdropPlane : MonoBehaviour
     {
         private const string PLANE_PATH = "assets/content/location_objects/lootable/prefab/il76md-90.prefab";
-        private const float PLANE_POSITIVE_POS = 3000f;
-        private const float PLANE_NEGATIVE_POS = -3000f;
+        private const float RADIUS_TO_PICK_RANDOM_POINT = 3000f;
 
         private AirplaneSynchronizableObject airplaneSync;
+        private float speed;
         private float distanceToDrop;
         private float flaresCooldown;
         private bool flaresDeployed;
         private bool headingChanged;
 
-        public static async Task<AirdropPlane> Init(Vector3 airdropPoint, int dropHeight, float planeVolume)
+        public static async Task<AirdropPlane> Init(Vector3 airdropPoint, int dropHeight, float planeVolume, float speed)
         {
             var instance = (await LoadPlane()).AddComponent<AirdropPlane>();
 
@@ -33,6 +33,7 @@ namespace Aki.Custom.Airdrops
 
             instance.SetPosition(dropHeight, airdropPoint);
             instance.SetAudio(planeVolume);
+            instance.speed = speed;
             instance.gameObject.SetActive(false);
             return instance;
         }
@@ -68,37 +69,15 @@ namespace Aki.Custom.Airdrops
 
         private void SetPosition(int dropHeight, Vector3 airdropPoint)
         {
-            var startNumber = Random.Range(1, 4);
-            var planeStartPosition = Vector3.zero;
-            var planeStartRotation = Vector3.zero;
+            var pointOnCircle = Random.insideUnitCircle.normalized * RADIUS_TO_PICK_RANDOM_POINT;
 
-            switch (startNumber)
-            {
-                case 1:
-                    planeStartPosition = new Vector3(0, dropHeight, PLANE_NEGATIVE_POS);
-                    planeStartRotation = Vector3.zero;
-                    break;
-                case 2:
-                    planeStartPosition = new Vector3(PLANE_NEGATIVE_POS, dropHeight, 0);
-                    planeStartRotation = new Vector3(0, 90, 0);
-                    break;
-                case 3:
-                    planeStartPosition = new Vector3(0, dropHeight, PLANE_POSITIVE_POS);
-                    planeStartRotation = new Vector3(0, 180, 0);
-                    break;
-                case 4:
-                    planeStartPosition = new Vector3(PLANE_POSITIVE_POS, dropHeight, 0);
-                    planeStartRotation = new Vector3(0, 270, 0);
-                    break;
-            }
-
-            transform.SetPositionAndRotation(planeStartPosition, Quaternion.Euler(planeStartRotation));
+            transform.position = new Vector3(pointOnCircle.x, dropHeight, pointOnCircle.y);
             transform.LookAt(new Vector3(airdropPoint.x, dropHeight, airdropPoint.z));
         }
 
         public void ManualUpdate(float distance)
         {
-            transform.Translate(Vector3.forward);
+            transform.Translate(Vector3.forward * (Time.deltaTime * speed));
             distanceToDrop = distance;
             UpdateFlaresLogic();
 

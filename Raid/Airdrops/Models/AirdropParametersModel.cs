@@ -1,25 +1,21 @@
-﻿using EFT.Airdrop;
-using System.Collections.Generic;
-
+﻿
 namespace Aki.Custom.Airdrops.Models
 {
     public class AirdropParametersModel
     {
-        public AirdropConfigModel config;
+        public AirdropConfigModel Config;
 
-        public float distanceTraveled;
-        public float distanceToTravel;
-        public float distanceToDrop;
-        public float timer;
-        public bool planeSpawned;
-        public bool boxSpawned;
-        public float boxFallSpeed;
+        public bool AirdropAvailable;
+        public float DistanceTraveled;
+        public float DistanceToTravel;
+        public float DistanceToDrop;
+        public float Timer;
+        public bool PlaneSpawned;
+        public bool BoxSpawned;
 
-        public int dropHeight;
-        public int timeToStart;
-        public int? dropChance;
+        public int DropHeight;
+        public int TimeToStart;
 
-        public List<AirdropPoint> airdropPoints;
-        public AirdropPoint randomAirdropPoint;
+        public UnityEngine.Vector3 RandomAirdropPoint;
     }
 }

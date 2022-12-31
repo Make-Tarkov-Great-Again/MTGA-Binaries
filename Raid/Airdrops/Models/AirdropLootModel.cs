@@ -1,10 +1,19 @@
-﻿namespace Aki.Custom.Airdrops.Models
+﻿using Newtonsoft.Json;
+
+namespace Aki.Custom.Airdrops.Models
 {
     public class AirdropLootModel
     {
-        public string tpl { get; set; }
-        public bool isPreset { get; set; }
-        public int stackCount { get; set; }
-        public string id { get; set; }
+        [JsonProperty("tpl")]
+        public string Tpl { get; set; }
+
+        [JsonProperty("isPreset")]
+        public bool IsPreset { get; set; }
+
+        [JsonProperty("stackCount")]
+        public int StackCount { get; set; }
+
+        [JsonProperty("id")]
+        public string ID { get; set; }
     }
 }

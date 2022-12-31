@@ -7,8 +7,6 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using Aki.Custom.Airdrops.Models;
 using System.Linq;
-using MTGA;
-using System.Threading.Tasks;
 
 /***
  * Full Credit for this patch goes to SPT-AKI team. Specifically CWX & SamSwat!
@@ -35,7 +33,7 @@ namespace Aki.Custom.Airdrops.Utils
             }
             else
             {
-                Debug.LogError($"[AKI-AIRDROPS]: unable to find template: {DropContainer}");
+                Debug.LogError($"[AIRDROPS]: Unable to find template: {DropContainer}");
             }
         }
 
@@ -48,15 +46,15 @@ namespace Aki.Custom.Airdrops.Utils
             foreach (var item in loot)
             {
                 ResourceKey[] resources;
-                if (item.isPreset)
+                if (item.IsPreset)
                 {
-                    actualItem = itemFactory.GetPresetItem(item.tpl);
+                    actualItem = itemFactory.GetPresetItem(item.Tpl);
                     resources = actualItem.GetAllItems().Select(x => x.Template).SelectMany(x => x.AllResources).ToArray();
                 }
                 else
                 {
-                    actualItem = itemFactory.CreateItem(item.id, item.tpl, null);
-                    actualItem.StackObjectsCount = item.stackCount;
+                    actualItem = itemFactory.CreateItem(item.ID, item.Tpl, null);
+                    actualItem.StackObjectsCount = item.StackCount;
 
                     resources = actualItem.Template.AllResources.ToArray();
                 }

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 /***
  * Full Credit for this patch goes to SPT-AKI team. Specifically CWX & SamSwat!
@@ -36,32 +37,37 @@ namespace Aki.Custom.Airdrops.Utils
             {
                 case "bigmap":
                     {
-                        result = config.airdropChancePercent.bigmap;
+                        result = config.AirdropChancePercent.Bigmap;
                         break;
                     }
                 case "interchange":
                     {
-                        result = config.airdropChancePercent.interchange;
+                        result = config.AirdropChancePercent.Interchange;
                         break;
                     }
                 case "rezervbase":
                     {
-                        result = config.airdropChancePercent.reserve;
+                        result = config.AirdropChancePercent.Reserve;
                         break;
                     }
                 case "shoreline":
                     {
-                        result = config.airdropChancePercent.shoreline;
+                        result = config.AirdropChancePercent.Shoreline;
                         break;
                     }
                 case "woods":
                     {
-                        result = config.airdropChancePercent.woods;
+                        result = config.AirdropChancePercent.Woods;
                         break;
                     }
                 case "lighthouse":
                     {
-                        result = config.airdropChancePercent.lighthouse;
+                        result = config.AirdropChancePercent.Lighthouse;
+                        break;
+                    }
+                case "tarkovstreets":
+                    {
+                        result = config.AirdropChancePercent.TarkovStreets;
                         break;
                     }
             }
@@ -69,23 +75,24 @@ namespace Aki.Custom.Airdrops.Utils
             return result;
         }
 
-        public static bool ShouldAirdropOccur(int dropChance)
+        public static bool ShouldAirdropOccur(int dropChance, List<AirdropPoint> airdropPoints)
         {
-            return UnityEngine.Random.Range(1, 99) <= dropChance;
+            return airdropPoints.Count > 0 && Random.Range(0, 100) <= dropChance;
         }
 
         public static AirdropParametersModel InitAirdropParams(GameWorld gameWorld, bool isFlare)
         {
-            AirdropConfigModel serverConfig = GetConfigFromServer();
-            List<AirdropPoint> allAirdropPoints = LocationScene.GetAll<AirdropPoint>().ToList();
-            Vector3 playerVector = gameWorld.RegisteredPlayers.Find(p => p.IsYourPlayer).Position;
-            List<AirdropPoint> flareAirdropPoints = new List<AirdropPoint>();
+            var serverConfig = GetConfigFromServer();
+            var allAirdropPoints = LocationScene.GetAll<AirdropPoint>().ToList();
+            var playerPosition = gameWorld.RegisteredPlayers[0].Position;
+            var flareAirdropPoints = new List<AirdropPoint>();
+            var dropChance = ChanceToSpawn(gameWorld, serverConfig, isFlare);
 
             if (isFlare && allAirdropPoints.Count > 0)
             {
                 foreach (AirdropPoint point in allAirdropPoints)
                 {
-                    if (Vector3.Distance(playerVector, point.transform.position) <= 100f)
+                    if (Vector3.Distance(playerPosition, point.transform.position) <= 100f)
                     {
                         flareAirdropPoints.Add(point);
                     }
@@ -94,33 +101,30 @@ namespace Aki.Custom.Airdrops.Utils
 
             if (flareAirdropPoints.Count == 0 && isFlare)
             {
-                Debug.LogError($"[AKI-AIRDROPS]: Airdrop called in by flare, Unable to find an airdropPoint within 100m, defaulting to normal drop");
+                Debug.LogError($"Airdrop called in by flare, Unable to find an airdropPoint within 100m, defaulting to normal drop");
                 flareAirdropPoints.Add(allAirdropPoints.OrderBy(_ => Guid.NewGuid()).FirstOrDefault());
             }
 
             return new AirdropParametersModel()
             {
-                config = serverConfig,
-                dropChance = ChanceToSpawn(gameWorld, serverConfig, isFlare),
+                Config = serverConfig,
+                AirdropAvailable = ShouldAirdropOccur(dropChance, allAirdropPoints),
 
-                distanceTraveled = 0f,
-                distanceToTravel = 8000f, // once picked drop point, get distance between plane and drop
-                distanceToDrop = 10000f,
-                timer = 0,
-                planeSpawned = false,
-                boxSpawned = false,
-                boxFallSpeed = 3f, //meters per second
-                dropHeight = UnityEngine.Random.Range(serverConfig.planeMinFlyHeight, serverConfig.planeMaxFlyHeight),
-                timeToStart = isFlare ? 5 : UnityEngine.Random.Range(serverConfig.airdropMinStartTimeSeconds, serverConfig.airdropMaxStartTimeSeconds),
+                DistanceTraveled = 0f,
+                DistanceToTravel = 8000f,
+                Timer = 0,
+                PlaneSpawned = false,
+                BoxSpawned = false,
 
-                airdropPoints = allAirdropPoints,
-                randomAirdropPoint = isFlare && allAirdropPoints.Count > 0 ? flareAirdropPoints.OrderBy(_ => Guid.NewGuid()).FirstOrDefault() : allAirdropPoints.OrderBy(_ => Guid.NewGuid()).FirstOrDefault()
+                DropHeight = Random.Range(serverConfig.PlaneMinFlyHeight, serverConfig.PlaneMaxFlyHeight),
+                TimeToStart = isFlare
+                    ? 5
+                    : Random.Range(serverConfig.AirdropMinStartTimeSeconds, serverConfig.AirdropMaxStartTimeSeconds),
+
+                RandomAirdropPoint = isFlare && allAirdropPoints.Count > 0
+                    ? flareAirdropPoints.OrderBy(_ => Guid.NewGuid()).First().transform.position
+                    : allAirdropPoints.OrderBy(_ => Guid.NewGuid()).First().transform.position
             };
-        }
-
-        public static bool AirdropHasDropPoint(List<AirdropPoint> airdropPoints)
-        {
-            return airdropPoints.Count > 0;
         }
     }
 }

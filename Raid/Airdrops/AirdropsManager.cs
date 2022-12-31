@@ -11,8 +11,6 @@ namespace Aki.Custom.Airdrops
 {
     public class AirdropsManager : MonoBehaviour
     {
-        private GameWorld gameWorld;
-
         private AirdropPlane airdropPlane;
         private AirdropBox airdropBox;
         private ItemFactoryUtil factory;
@@ -22,15 +20,13 @@ namespace Aki.Custom.Airdrops
 
         public async void Start()
         {
-            if (gameWorld == null)
-            {
-                gameWorld = Singleton<GameWorld>.Instance;
-            }
+            var gameWorld = Singleton<GameWorld>.Instance;
 
-            airdropParameters ??= AirdropUtil.InitAirdropParams(gameWorld, isFlareDrop);
+            if (gameWorld == null) Destroy(this);
 
-            if (!AirdropUtil.ShouldAirdropOccur(airdropParameters.dropChance.Value)
-                || !AirdropUtil.AirdropHasDropPoint(airdropParameters.airdropPoints))
+            airdropParameters = AirdropUtil.InitAirdropParams(gameWorld, isFlareDrop);
+
+            if (!airdropParameters.AirdropAvailable)
             {
                 Destroy(this);
                 return;
@@ -38,9 +34,9 @@ namespace Aki.Custom.Airdrops
 
             try
             {
-                airdropPlane = await AirdropPlane.Init(airdropParameters.randomAirdropPoint.transform.position, airdropParameters.dropHeight,
-                    airdropParameters.config.planeVolume);
-                airdropBox = await AirdropBox.Init(airdropParameters.boxFallSpeed);
+                airdropPlane = await AirdropPlane.Init(airdropParameters.RandomAirdropPoint,
+                    airdropParameters.DropHeight, airdropParameters.Config.PlaneVolume, airdropParameters.Config.PlaneSpeed);
+                airdropBox = await AirdropBox.Init(airdropParameters.Config.CrateFallSpeed);
                 factory = new ItemFactoryUtil();
             }
             catch
@@ -55,27 +51,25 @@ namespace Aki.Custom.Airdrops
 
         public void FixedUpdate()
         {
-            if (gameWorld == null) return;
+            airdropParameters.Timer += 0.02f;
 
-            airdropParameters.timer += 0.02f;
-
-            if (airdropParameters.timer >= airdropParameters.timeToStart && !airdropParameters.planeSpawned)
+            if (airdropParameters.Timer >= airdropParameters.TimeToStart && !airdropParameters.PlaneSpawned)
             {
                 StartPlane();
             }
 
-            if (airdropParameters.distanceTraveled >= airdropParameters.distanceToDrop && !airdropParameters.boxSpawned)
+            if (!airdropParameters.PlaneSpawned) return;
+
+            if (airdropParameters.DistanceTraveled >= airdropParameters.DistanceToDrop && !airdropParameters.BoxSpawned)
             {
                 StartBox();
                 BuildLootContainer();
             }
 
-            if (!airdropParameters.planeSpawned) return;
-
-            if (airdropParameters.distanceTraveled < airdropParameters.distanceToTravel)
+            if (airdropParameters.DistanceTraveled < airdropParameters.DistanceToTravel)
             {
-                airdropParameters.distanceTraveled++;
-                var distanceToDrop = airdropParameters.distanceToDrop - airdropParameters.distanceTraveled;
+                airdropParameters.DistanceTraveled += Time.deltaTime * airdropParameters.Config.PlaneSpeed;
+                var distanceToDrop = airdropParameters.DistanceToDrop - airdropParameters.DistanceTraveled;
                 airdropPlane.ManualUpdate(distanceToDrop);
             }
             else
@@ -88,14 +82,14 @@ namespace Aki.Custom.Airdrops
         private void StartPlane()
         {
             airdropPlane.gameObject.SetActive(true);
-            airdropParameters.planeSpawned = true;
+            airdropParameters.PlaneSpawned = true;
         }
 
         private void StartBox()
         {
-            airdropParameters.boxSpawned = true;
-            var pointPos = airdropParameters.randomAirdropPoint.transform.position;
-            var dropPos = new Vector3(pointPos.x, airdropParameters.dropHeight, pointPos.z);
+            airdropParameters.BoxSpawned = true;
+            var pointPos = airdropParameters.RandomAirdropPoint;
+            var dropPos = new Vector3(pointPos.x, airdropParameters.DropHeight, pointPos.z);
             airdropBox.gameObject.SetActive(true);
             airdropBox.StartCoroutine(airdropBox.DropCrate(dropPos));
         }
@@ -108,10 +102,8 @@ namespace Aki.Custom.Airdrops
 
         private void SetDistanceToDrop()
         {
-            var position = airdropParameters.randomAirdropPoint.transform.position;
-
-            airdropParameters.distanceToDrop = Vector3.Distance(
-                new Vector3(position.x, airdropParameters.dropHeight, position.z),
+            airdropParameters.DistanceToDrop = Vector3.Distance(
+                new Vector3(airdropParameters.RandomAirdropPoint.x, airdropParameters.DropHeight, airdropParameters.RandomAirdropPoint.z),
                 airdropPlane.transform.position);
         }
     }

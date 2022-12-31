@@ -12,10 +12,10 @@ namespace Aki.Custom.Airdrops.Patches
 {
     public class AirdropPatch : ModulePatch
     {
-        protected override MethodBase GetTargetMethod()
-        {
-            return typeof(GameWorld).GetMethod("OnGameStarted", BindingFlags.Public | BindingFlags.Instance);
-        }
+        protected override MethodBase GetTargetMethod() => typeof(GameWorld).GetMethod(nameof(GameWorld.OnGameStarted));
+        /*        {
+                    return typeof(GameWorld).GetMethod("OnGameStarted", BindingFlags.Public | BindingFlags.Instance);
+                }*/
 
         [PatchPostfix]
         public static void PatchPostFix()
