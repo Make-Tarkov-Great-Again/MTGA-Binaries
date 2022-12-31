@@ -7,6 +7,9 @@ using MTGA.Core.PlayerPatches.Health;
 using System;
 using System.Linq;
 using System.Reflection;
+using EFT.UI.Matchmaker;
+using static EFTBackendSettings;
+using static GClass1720;
 
 namespace MTGA.Core
 {
@@ -25,15 +28,23 @@ namespace MTGA.Core
 
         protected override MethodBase GetTargetMethod()
         {
-            foreach (var method in PatchConstants.GetAllMethodsForType(PatchConstants.EftTypes.Single(x=>x.Name == "TarkovApplication")))
+            var methods = PatchConstants.GetAllMethodsForType(PatchConstants.EftTypes.Single(x => x.Name == "TarkovApplication"));
+            foreach (var method in methods)
             {
-                if (method.Name.StartsWith("method") &&
-                    method.GetParameters().Length >= 3 &&
-                    method.GetParameters()[0].Name == "profileId" &&
-                    method.GetParameters()[1].Name == "savageProfile" &&
-                    method.GetParameters()[2].Name == "location" &&
-                    method.GetParameters().Any(x => x.Name == "result") &&
-                    method.GetParameters()[method.GetParameters().Length-1].Name == "timeHasComeScreenController"
+                var paramameters = method.GetParameters();
+
+                if (method.Name.StartsWith("method")
+                    && paramameters.Length == 5
+                    && paramameters[0].Name == "profileId"
+                    && paramameters[0].ParameterType == typeof(string)
+                    && paramameters[1].Name == "savageProfile"
+                    && paramameters[1].ParameterType == typeof(EFT.Profile)
+                    && paramameters[2].Name == "location"
+                    && paramameters[2].ParameterType == typeof(LocationSettingsClass.SelectedLocation)
+                    && paramameters[3].Name == "result"
+                    && paramameters[3].ParameterType == typeof(Result<ExitStatus, TimeSpan, MetricsClass>)
+                    && paramameters[4].Name == "timeHasComeScreenController"
+                    && paramameters[4].ParameterType == typeof(EFT.UI.Matchmaker.MatchmakerTimeHasCome.TimeHasComeScreenController)
                     )
                 {
                     Logger.Log(BepInEx.Logging.LogLevel.Info, method.Name);
@@ -46,58 +57,29 @@ namespace MTGA.Core
         }
 
         [PatchPrefix]
-        public static bool PatchPrefix(
-            ref EFT.RaidSettings ____raidSettings
-            , ref Result<EFT.ExitStatus, TimeSpan, object> result
-            )
-        //    [PatchPostfix]
-        //public static void PatchPostfix(ref ESideType ___esideType_0, ref object result)
+        public static bool PatchPrefix(ref EFT.RaidSettings ____raidSettings, ref Result<EFT.ExitStatus, TimeSpan, MetricsClass> result)
         {
             Logger.LogInfo("OfflineSaveProfile::PatchPrefix");
             // isLocal = false;
             ____raidSettings.RaidMode = ERaidMode.Online;
 
             var session = ClientAccesor.GetClientApp().GetClientBackEndSession();
-            var isPlayerScav = false;
-            var profile = session.Profile;
-
-            if (____raidSettings.Side == ESideType.Savage)
-            {
-                profile = session.ProfileOfPet;
-                isPlayerScav = true;
-            }
-
+            var profile = (____raidSettings.IsScav && ____raidSettings.Side == ESideType.Savage) ? session.Profile : session.ProfileOfPet;
+            var exitStatus = result.Value0.ToString().ToLower();
             var currentHealth = HealthListener.Instance.CurrentHealth;
-            
-            var beUrl = MTGA.Core.PatchConstants.GetBackendUrl();
-            var sessionId = MTGA.Core.PatchConstants.GetPHPSESSID();
 
-            SaveProfileProgress(beUrl
-                , sessionId
-                , result.Value0
-                , profile
-                , currentHealth
-                , isPlayerScav);
-
-            return true;
-        }
-
-        public static void SaveProfileProgress(
-            string backendUrl
-            , string session, EFT.ExitStatus exitStatus, EFT.Profile profileData, PlayerHealth currentHealth, bool isPlayerScav)
-        {
             SaveProfileRequest request = new()
             {
-                exit = exitStatus.ToString().ToLower(),
-                profile = profileData,
+                exit = exitStatus,
+                profile = profile,
                 health = currentHealth,
-                //health = profileData.Health,
-                isPlayerScav = isPlayerScav
+                isPlayerScav = ____raidSettings.IsScav
             };
 
             var convertedJson = request.MTGAToJson();
-            new Request(session, backendUrl).PostJson("/client/raid/profile/save", convertedJson);
-           
+            new Request(PatchConstants.GetPHPSESSID(), PatchConstants.GetBackendUrl()).PostJson("/client/raid/profile/save", convertedJson);
+
+            return true;
         }
 
         public class SaveProfileRequest
