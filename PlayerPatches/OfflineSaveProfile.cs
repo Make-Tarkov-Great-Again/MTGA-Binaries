@@ -1,15 +1,9 @@
 ﻿using Comfort.Common;
 using EFT;
-using HarmonyLib;
-using Newtonsoft.Json;
-using MTGA.Core;
 using MTGA.Core.PlayerPatches.Health;
 using System;
 using System.Linq;
 using System.Reflection;
-using EFT.UI.Matchmaker;
-using static EFTBackendSettings;
-using static GClass1720;
 
 namespace MTGA.Core
 {
