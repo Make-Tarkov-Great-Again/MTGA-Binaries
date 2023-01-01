@@ -13,13 +13,8 @@ namespace MTGA.Patches.Player
     {
         static OfflineSaveProfile()
         {
-            // compile-time check
-            //_ = nameof(ClientMetrics.Metrics);
-
             _ = nameof(TarkovApplication);
-            _ = nameof(RaidSettings);
-
-            //_defaultJsonConverters = Traverse.Create(converterClass).Field<JsonConverter[]>("Converters").Value;
+            _ = nameof(EFT.RaidSettings);
         }
 
         protected override MethodBase GetTargetMethod()
@@ -47,7 +42,7 @@ namespace MTGA.Patches.Player
                     return method;
                 }
             }
-            Logger.Log(BepInEx.Logging.LogLevel.Error, "OfflineSaveProfile::Method is not found!");
+            Logger.Log(BepInEx.Logging.LogLevel.Error, "OfflineSaveProfile:: Method is not found!");
 
             return null;
         }
@@ -55,38 +50,26 @@ namespace MTGA.Patches.Player
         [PatchPrefix]
         public static bool PatchPrefix(ref RaidSettings ____raidSettings, ref Result<ExitStatus, TimeSpan, MetricsClass> result)
         {
-            Logger.LogInfo("OfflineSaveProfile::PatchPrefix");
-            //Logger.LogInfo($"URL: {MTGA.PatchConstants.GetBackendUrl()}");
+            Logger.LogInfo("OfflineSaveProfile:: PatchPrefix");
             ____raidSettings.RaidMode = ERaidMode.Online;
-            //Logger.LogInfo($"RaidMod = {____raidSettings.RaidMode}");
 
 
             var session = ClientAccesor.GetClientApp().GetClientBackEndSession();
-            //Logger.LogInfo($"SESSION = {session}");
 
-            var profile = ____raidSettings.IsScav && ____raidSettings.Side == ESideType.Savage ? session.Profile : session.ProfileOfPet;
-            //Logger.LogInfo($"profile = {profile}");
+            var profile = (____raidSettings.IsScav && ____raidSettings.Side == ESideType.Savage) ? session.Profile : session.ProfileOfPet;
             var exitStatus = result.Value0.ToString().ToLower();
-            //Logger.LogInfo($"exitStatus = {exitStatus}");
-            var currentHealth = HealthListener.Instance.CurrentHealth;
-            //Logger.LogInfo($"currentHealth = {currentHealth}");
+            var currentHealth = PlayerPatches.Health.HealthListener.Instance.CurrentHealth;
 
-            SaveProfileRequest request = new SaveProfileRequest()
+            SaveProfileRequest request = new()
             {
                 exit = exitStatus,
                 profile = profile,
                 health = currentHealth,
                 isPlayerScav = ____raidSettings.IsScav
             };
-            //Logger.LogInfo($"SaveProfileRequest fulfilled");
 
             var convertedJson = request.MTGAToJson();
-            Logger.LogInfo($"convertedJson fulfilled : {convertedJson}");
-
             MTGA_Request.Instance.PostJson("/client/raid/profile/save", convertedJson, true);
-
-            Logger.LogInfo($"PostJson to /client/raid/profile/save fulfilled");
-
             return true;
         }
 
