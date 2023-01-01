@@ -81,28 +81,18 @@ namespace MTGA.Patches.AI.Mods
 
         // Token: 0x06000004 RID: 4 RVA: 0x00002314 File Offset: 0x00000514
         // Note: this type is marked as 'beforefieldinit'.
-        static NoBushESP()
-        {
-            WildSpawnType[] array = new WildSpawnType[9];
-            bossesList = array;
-            WildSpawnType[] array2 = new WildSpawnType[10];
-            followersList = array2;
-            WildSpawnType[] array3 = new WildSpawnType[5];
-            pmcList = array3;
-            WildSpawnType[] array4 = new WildSpawnType[4];
-            scavList = array4;
-            exclusionList = new List<string> { "filbert", "fibert", "tree", "pine", "plant" };
-        }
 
-        public static WildSpawnType[] bossesList;
+        public static WildSpawnType[] bossesList = { WildSpawnType.bossBully, WildSpawnType.bossKilla, WildSpawnType.bossKojaniy, WildSpawnType.bossGluhar, WildSpawnType.bossSanitar, WildSpawnType.bossTagilla,
+                WildSpawnType.bossKnight, WildSpawnType.sectantWarrior, WildSpawnType.sectantPriest };
 
-        public static WildSpawnType[] followersList;
+        public static WildSpawnType[] followersList = { WildSpawnType.followerBully, WildSpawnType.followerKojaniy, WildSpawnType.followerGluharAssault, WildSpawnType.followerGluharSecurity, WildSpawnType.followerGluharScout,
+                WildSpawnType.followerGluharSnipe, WildSpawnType.followerSanitar, WildSpawnType.followerTagilla, WildSpawnType.followerBigPipe, WildSpawnType.followerBirdEye };
 
-        public static WildSpawnType[] pmcList;
+        public static WildSpawnType[] pmcList = { WildSpawnType.pmcBot, WildSpawnType.exUsec, WildSpawnType.gifter};
 
-        public static WildSpawnType[] scavList;
+        public static WildSpawnType[] scavList = { WildSpawnType.assault, WildSpawnType.marksman, WildSpawnType.cursedAssault, WildSpawnType.assaultGroup };
 
-        public static List<string> exclusionList;
+        public static List<string> exclusionList = new List<string> { "filbert", "fibert", "tree", "pine", "plant" };
     }
 }
 

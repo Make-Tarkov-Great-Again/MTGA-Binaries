@@ -56,9 +56,9 @@ namespace MTGA.Patches.Player
 
             var session = ClientAccesor.GetClientApp().GetClientBackEndSession();
 
-            var profile = (____raidSettings.IsScav && ____raidSettings.Side == ESideType.Savage) ? session.Profile : session.ProfileOfPet;
+            var profile = (____raidSettings.IsScav && ____raidSettings.Side == ESideType.Savage) ? session.ProfileOfPet : session.Profile;
             var exitStatus = result.Value0.ToString().ToLower();
-            var currentHealth = PlayerPatches.Health.HealthListener.Instance.CurrentHealth;
+            var currentHealth = HealthListener.Instance.CurrentHealth;
 
             SaveProfileRequest request = new()
             {
