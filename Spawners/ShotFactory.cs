@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace MTGA.Core.Spawners
+namespace MTGA.Spawners
 {
     public class ShotFactory
 	{

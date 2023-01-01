@@ -1,20 +1,9 @@
-﻿using Aki.Custom.Airdrops.Patches;
-using BepInEx;
+﻿using BepInEx;
 using BepInEx.Configuration;
 using Comfort.Common;
 using EFT;
 using EFT.AssetsManager;
-using MTGA.Core.AI;
-using MTGA.Core.Bundles;
-using MTGA.Core.Hideout;
-using MTGA.Core.Menus;
-using MTGA.Core.Misc;
-using MTGA.Core.PlayerPatches;
-using MTGA.Core.PlayerPatches.Health;
-using MTGA.Core.Raid;
-using MTGA.Core.SP;
-using MTGA.Core.SP.ScavMode;
-using MTGA.SP;
+using MTGA.Menus;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,8 +13,28 @@ using System.Threading.Tasks;
 using System.Timers;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using MTGA.Utilities.Bundles;
+using MTGA.Patches.FileChecker;
+using MTGA.Patches.AntiCheat;
+using MTGA.Patches.Web;
+using MTGA.Patches.Bundles;
+using MTGA.Patches.Raid.Menus;
+using MTGA.Patches.Raid.Fixes;
+using MTGA.Patches.Player.Health;
+using MTGA.Patches.Player.Fixes;
+using MTGA.Patches.ScavMode;
+using MTGA.Patches.Raid.Airdrops;
+using MTGA.Patches.AI.Fixes;
+using MTGA.Patches.AI;
+using MTGA.Patches.Menus;
+using MTGA.Patches.Player;
+using MTGA.Patches.Raid.FromServer;
+using MTGA.Patches.Raid.Mods;
+using MTGA.Patches.AI.Mods;
+using MTGA.Patches.Player.Mods;
+using MTGA.Patches.Misc;
 
-namespace MTGA.Core
+namespace MTGA
 {
     [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
     public class Plugin : BaseUnityPlugin
@@ -193,7 +202,7 @@ namespace MTGA.Core
                 if (EnabledAdrenaline)
                 {
                     PatchConstants.Logger.LogInfo("Enabling Adrenaline");
-                    new Adrenaline().Enable();
+                    new AdrenalinePunchPatch().Enable();
                     PatchConstants.Logger.LogInfo("Adrenaline Enabled");
                 };
 
@@ -417,7 +426,7 @@ namespace MTGA.Core
                     , localE
                     , resources
                     , GenProp
-                    , (object o) => { PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: Progressing!"); }
+                    //, (object o) => { PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: Progressing!"); }
                     , default(CancellationToken)
                     );
             }

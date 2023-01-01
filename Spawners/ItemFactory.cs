@@ -4,9 +4,9 @@ using System.Linq;
 using System.Reflection;
 using Comfort.Common;
 using EFT.InventoryLogic;
-using MTGA.Core;
+using MTGA;
 
-namespace MTGA.Core.Spawners
+namespace MTGA.Spawners
 {
     public class ItemFactory
 	{

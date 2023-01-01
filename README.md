@@ -1,4 +1,4 @@
-# MTGA.Core
+# MTGA
 
 ## Status - Complete
 

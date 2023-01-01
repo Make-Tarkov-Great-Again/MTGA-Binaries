@@ -9,10 +9,10 @@ using EFT;
 using EFT.Communications;
 using FilesChecker;
 using Newtonsoft.Json;
-using MTGA.Core.Web;
-using MTGA.Core.AI;
+using MTGA.Utilities.AI;
+using MTGA.Utilities.Web;
 
-namespace MTGA.Core
+namespace MTGA
 {
     public static class PatchConstants
     {
@@ -279,7 +279,7 @@ namespace MTGA.Core
             if(property != null)
             {
                 if (safeConvert)
-                    return MTGA.Core.PatchConstants.DoSafeConversion<T>(property.GetValue(o));
+                    return MTGA.PatchConstants.DoSafeConversion<T>(property.GetValue(o));
                 else 
                     return (T)property.GetValue(o);
             }
@@ -287,7 +287,7 @@ namespace MTGA.Core
             if(field != null)
             {
                 if (safeConvert)
-                    return MTGA.Core.PatchConstants.DoSafeConversion<T>(field.GetValue(o));
+                    return MTGA.PatchConstants.DoSafeConversion<T>(field.GetValue(o));
                 else
                     return (T)field.GetValue(o);
             }
@@ -419,7 +419,7 @@ namespace MTGA.Core
         static PatchConstants()
         {
             if (Logger == null)
-                Logger = BepInEx.Logging.Logger.CreateLogSource("MTGA.Core.PatchConstants");
+                Logger = BepInEx.Logging.Logger.CreateLogSource("MTGA.PatchConstants");
 
             TypesDictionary.Add("EftTypes", EftTypes);
 
@@ -431,12 +431,12 @@ namespace MTGA.Core
             MessageNotificationType = EftTypes.Single(x => x.GetMethods(BindingFlags.Static | BindingFlags.Public).Select(y => y.Name).Contains("DisplayMessageNotification"));
             if (MessageNotificationType == null)
             {
-                Logger.LogInfo("MTGA.Core:PatchConstants():MessageNotificationType:Not Found");
+                Logger.LogInfo("MTGA:PatchConstants():MessageNotificationType:Not Found");
             }
             GroupingType = EftTypes.Single(x => x.GetMethods(BindingFlags.Public | BindingFlags.Static).Select(y => y.Name).Contains("CreateRaidPlayer"));
             if (GroupingType != null)
             {
-                Logger.LogInfo("MTGA.Core:PatchConstants():Found GroupingType:" + GroupingType.FullName);
+                Logger.LogInfo("MTGA:PatchConstants():Found GroupingType:" + GroupingType.FullName);
             }
 
             JsonConverterType = typeof(AbstractGame).Assembly.GetTypes()

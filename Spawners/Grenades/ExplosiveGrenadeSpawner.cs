@@ -8,7 +8,7 @@ using UnityEngine;
 using Comfort;
 using Comfort.Common;
 
-namespace MTGA.Core.Spawners.Grenades
+namespace MTGA.Spawners.Grenades
 {
     public class ExplosiveGrenadeSpawner : GrenadeSpawner
     {
