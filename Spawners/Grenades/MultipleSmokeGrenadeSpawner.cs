@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MTGA.Core.Spawners.Grenades
+namespace MTGA.Spawners.Grenades
 {
     public class MultipleSmokeGrenadeSpawner : SmokeGrenadeSpawner
     {

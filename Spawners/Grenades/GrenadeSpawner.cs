@@ -3,7 +3,7 @@ using EFT;
 using UnityEngine;
 
 
-namespace MTGA.Core.Spawners.Grenades
+namespace MTGA.Spawners.Grenades
 {
 	public class GrenadeSpawner : MonoBehaviour
 	{
