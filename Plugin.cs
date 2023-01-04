@@ -33,7 +33,6 @@ using MTGA.Patches.Raid.Mods;
 using MTGA.Patches.AI.Mods;
 using MTGA.Patches.Player.Mods;
 using MTGA.Patches.Misc;
-using MTGA.Patches.Hideout;
 
 namespace MTGA
 {
@@ -193,8 +192,6 @@ namespace MTGA
                 // --------------------------------------
                 // Health stuff
                 new ReplaceInPlayer().Enable();
-
-                new Gains().Enable();
 
                 new ChangeHealthPatch().Enable();
                 new ChangeEnergyPatch().Enable();
