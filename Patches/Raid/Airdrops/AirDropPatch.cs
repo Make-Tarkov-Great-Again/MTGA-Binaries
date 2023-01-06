@@ -17,9 +17,6 @@ namespace MTGA.Patches.Raid.Airdrops
     public class AirdropPatch : ModulePatch
     {
         protected override MethodBase GetTargetMethod() => typeof(GameWorld).GetMethod(nameof(GameWorld.OnGameStarted));
-        /*        {
-                    return typeof(GameWorld).GetMethod("OnGameStarted", BindingFlags.Public | BindingFlags.Instance);
-                }*/
 
         [PatchPostfix]
         public static void PatchPostFix()

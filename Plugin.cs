@@ -33,6 +33,7 @@ using MTGA.Patches.Raid.Mods;
 using MTGA.Patches.AI.Mods;
 using MTGA.Patches.Player.Mods;
 using MTGA.Patches.Misc;
+using MTGA.Patches.Hideout;
 
 namespace MTGA
 {
@@ -95,6 +96,9 @@ namespace MTGA
                     new EasyAssetsPatch().Enable();
                     new EasyBundlePatch().Enable();
                 }
+
+                new QTE().Enable();
+                new RemoveUsedBotProfile().Enable();
 
                 // --------- Container Id Debug ------------
                 var enableLootableContainerDebug = Config.Bind("Debug", "Lootable Container Debug", false, "Description: Print Lootable Container information").Value;
