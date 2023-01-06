@@ -141,6 +141,9 @@ namespace MTGA
                     PatchConstants.Logger.LogInfo("Enabling AI Limit");
                     PatchConstants.Logger.LogInfo("AI Limit Enabled");
                 }
+                new RemoveUsedBotProfile().Enable();
+                //new LoadBotTemplatesPatch().Enable();
+                //new CreateFriendlyAIPatch().Enable();
 
                 // --------- Matchmaker ----------------
                 new AutoSetOfflineMatch().Enable();
@@ -372,9 +375,6 @@ namespace MTGA
                 //Logger.LogInfo(PatchConstants.PoolManagerType.FullName);
                 //Logger.LogInfo(ConstructedBundleAndPoolManagerSingletonType.FullName);
 
-                //new LoadBotTemplatesPatch().Enable();
-                //new RemoveUsedBotProfile().Enable();
-                //new CreateFriendlyAIPatch().Enable();
             }
         }
 
