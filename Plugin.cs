@@ -34,6 +34,7 @@ using MTGA.Patches.AI.Mods;
 using MTGA.Patches.Player.Mods;
 using MTGA.Patches.Misc;
 using MTGA.Patches.Hideout;
+using static MTGA.Plugin;
 
 namespace MTGA
 {
@@ -57,7 +58,7 @@ namespace MTGA
         public static Dictionary<int, Player> playerMapping = new();
         public static Dictionary<int, BotPlayer> botMapping = new();
         public static List<BotPlayer> botList = new();
-        public static Player player { get; set; }
+        public static Player Player { get; set; }
         public static BotPlayer Bot { get; set; }
 
         // Bush ESP by Props
@@ -261,19 +262,16 @@ namespace MTGA
         }
 
         GameWorld gameWorld = null;
+        readonly GameStatus currentGameStatus;
         public void GetGameWorld()
         {
-            //Logger.LogInfo($"gameWorld is {gameWorld}");
-            gameWorld ??= Singleton<GameWorld>.Instance;
-            //Logger.LogInfo($"gameWorld is {gameWorld}");
+            gameWorld = Singleton<GameWorld>.Instance;
         }
 
         public void GetPlayer()
         {
             GetGameWorld();
-            //Logger.LogInfo($"player is {player}");
-            player = gameWorld.RegisteredPlayers.Find((Player p) => p.IsYourPlayer);
-            //Logger.LogInfo($"player is {player}");
+            Player = gameWorld.RegisteredPlayers.Find((Player p) => p.IsYourPlayer);
         }
 
         void SceneManager_sceneLoaded(Scene arg0, LoadSceneMode arg1)
@@ -473,56 +471,82 @@ namespace MTGA
 
         void UpdateBots(GameWorld gameWorld)
         {
-            int num = 0;
+
+            int botCount = 0;
+
             for (int i = 0; i < gameWorld.RegisteredPlayers.Count; i++)
             {
-                var players = gameWorld.RegisteredPlayers[i];
-                //Logger.LogInfo($"players is {players}");
-                if (!players.IsYourPlayer)
+                Player = gameWorld.RegisteredPlayers[i];
+                if (!Player.IsYourPlayer)
                 {
-                    if (!botMapping.ContainsKey(player.Id) && !playerMapping.ContainsKey(players.Id))
+                    if (!botMapping.ContainsKey(Player.Id) && (!playerMapping.ContainsKey(Player.Id)))
                     {
-                        playerMapping.Add(players.Id, players);
-                        BotPlayer value = new(players.Id);
-                        botMapping.Add(players.Id, value);
+                        playerMapping.Add(Player.Id, Player);
+                        var tempbotplayer = new BotPlayer(Player.Id);
+                        botMapping.Add(Player.Id, tempbotplayer);
                     }
-                    Bot = botMapping[players.Id];
-                    Bot.Distance = Vector3.Distance(players.Position, gameWorld.RegisteredPlayers[0].Position);
-                    if (Bot.EligibleNow && !botList.Contains(Bot))
+                    else if (!playerMapping.ContainsKey(Player.Id))
                     {
-                        botList.Add(Bot);
+                        playerMapping.Add(Player.Id, Player);
                     }
-                    if (!Bot.timer.Enabled && players.CameraPosition != null)
+
+                    if (botMapping.ContainsKey(Player.Id))
                     {
-                        Bot.timer.Enabled = true;
-                        Bot.timer.Start();
+                        Bot = botMapping[Player.Id];
+                        Bot.Distance = Vector3.Distance(Player.Position, gameWorld.RegisteredPlayers[0].Position);
+
+                        //add bot if eligible
+                        if (Bot.EligibleNow && !botList.Contains(Bot))
+                        {
+                            botList.Add(Bot);
+                        }
+
+                        if (!Bot.timer.Enabled && Player.CameraPosition != null)
+                        {
+                            Bot.timer.Enabled = true;
+                            Bot.timer.Start();
+                        }
                     }
+
                 }
             }
+
+            //add sort by distance
             if (botList.Count > 1)
             {
-                for (int j = 1; j < botList.Count; j++)
+                //botList = botList.OrderBy(o => o.Distance).ToList();
+                for (int i = 1; i < botList.Count; i++)
                 {
-                    BotPlayer botPlayer = botList[j];
-                    int num2 = j - 1;
-                    while (num2 >= 0 && botList[num2].Distance > botPlayer.Distance)
+                    BotPlayer current = botList[i];
+                    int j = i - 1;
+                    while (j >= 0 && botList[j].Distance > current.Distance)
                     {
-                        botList[num2 + 1] = botList[num2];
-                        num2--;
+                        botList[j + 1] = botList[j];
+                        j--;
                     }
-                    botList[num2 + 1] = botPlayer;
+                    botList[j + 1] = current;
                 }
             }
-            for (int k = 0; k < botList.Count; k++)
+
+            for (int i = 0; i < botList.Count; i++)
             {
-                if (num < BotLimit.Value && botList[k].Distance < BotDistance.Value)
+                if (botCount < BotLimit.Value && botList[i].Distance < BotDistance.Value)
                 {
-                    playerMapping[botList[k].Id].enabled = true;
-                    num++;
+                    if (playerMapping.ContainsKey(botList[i].Id))
+                    {
+                        playerMapping[botList[i].Id].enabled = true;
+                        //playerMapping[botList[i].Id].gameObject.SetActive(true);
+
+                        botCount++;
+                    }
                 }
                 else
                 {
-                    playerMapping[botList[k].Id].enabled = false;
+                    if (playerMapping.ContainsKey(botList[i].Id))
+                    {
+                        playerMapping[botList[i].Id].enabled = false;
+                        //playerMapping[botList[i].Id].gameObject.SetActive(false);
+                    }
                 }
             }
         }
@@ -540,14 +564,17 @@ namespace MTGA
             public float Distance { get; set; }
             public bool EligibleNow { get; set; }
 
+            public System.Timers.Timer timer = new (TimeAfterSpawn.Value * 1000);
+
             public BotPlayer(int newID)
             {
-                this.Id = newID;
-                this.EligibleNow = false;
-                this.timer.Enabled = false;
-                this.timer.AutoReset = false;
-                this.timer.Elapsed += EligiblePool(this);
-                playerMapping[this.Id].OnPlayerDeadOrUnspawn += delegate (Player deadArgs)
+                Id = newID;
+                EligibleNow = false;
+                timer.Enabled = false;
+                timer.AutoReset = false;
+                timer.Elapsed += EligiblePool(this);
+
+                playerMapping[Id].OnPlayerDeadOrUnspawn += delegate (Player deadArgs)
                 {
                     BotPlayer botPlayer = null;
                     if (botMapping.ContainsKey(deadArgs.Id))
@@ -565,14 +592,11 @@ namespace MTGA
                     }
                 };
             }
-
-            public System.Timers.Timer timer = new((double)(TimeAfterSpawn.Value * 1000f));
         }
 
         void HeadLamps()
         {
             GetGameWorld();
-            //Logger.LogInfo($"gameWorld is {gameWorld}");
             bool flag = gameWorld == null || gameWorld.RegisteredPlayers == null;
             if (!flag)
             {
@@ -630,7 +654,7 @@ namespace MTGA
             {
                 GetPlayer();
                 //Logger.LogInfo($"player is {player}");
-                TacticalComboVisualController componentInChildren = player.GetComponentInChildren<TacticalComboVisualController>();
+                TacticalComboVisualController componentInChildren = Player.GetComponentInChildren<TacticalComboVisualController>();
                 _flashlight = componentInChildren?.gameObject;
                 bool flag2 = _flashlight == null;
                 if (flag2)
