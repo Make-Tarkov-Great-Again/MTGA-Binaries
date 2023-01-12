@@ -31,7 +31,6 @@ using MTGA.Patches.Player;
 using MTGA.Patches.Raid.FromServer;
 using MTGA.Patches.Raid.Mods;
 using MTGA.Patches.AI.Mods;
-using MTGA.Patches.Player.Mods;
 using MTGA.Patches.Misc;
 using MTGA.Patches.Hideout;
 using static MTGA.Plugin;
@@ -165,21 +164,7 @@ namespace MTGA
                 // Raid
                 new LoadBotDifficultyFromServer().Enable();
 
-                var EnabledLighthouseKeeperAlwaysOpen = Config.Bind("Lighthouse", "Enable Lighthouse Door Always Open", false, "Description: Lighthouse Keeper's Door Always Open").Value;
-                if (EnabledLighthouseKeeperAlwaysOpen)
-                {
-                    new LighthouseDoorPatch().Enable();
-                }
-
                 new ForceMuteVoIP().Enable();
-
-                var enabledCultistsDuringDay = Config.Bind("EXPERIEMENTAL Cultists During Day by Lua", "Enable", true, "Description: Cultists Spawning During Day").Value;
-                if (enabledCultistsDuringDay)
-                {
-                    PatchConstants.Logger.LogInfo("Enabling Cultists During Day");
-                    new CultistsSpawnDuringDay().Enable();
-                    PatchConstants.Logger.LogInfo("Cultists During Day Enabled");
-                }
 
                 var EnabledNoBushESP = Config.Bind("EXPERIEMENTAL No Bush ESP by dvize", "Enable", true, "Description: Tired of AI Looking at your bush and destroying you through it? Now they no longer can.").Value;
                 TestRayRadius = Config.Bind("EXPERIEMENTAL No Bush ESP by dvize", "Test Ray Radius", 1f, "Width of the Ray that checks if obstruction. !!DO NOT SET THIS TOO LOW!!").Value;
@@ -204,33 +189,6 @@ namespace MTGA
                 new ChangeHealthPatch().Enable();
                 new ChangeEnergyPatch().Enable();
                 new ChangeHydrationPatch().Enable();
-
-
-                var EnabledAdrenaline = Config.Bind("EXPERIEMENTAL Adrenaline by Kobrakon", "Enable", false, "Description: Adrenaline effect when Damaged").Value;
-                if (EnabledAdrenaline)
-                {
-                    PatchConstants.Logger.LogInfo("Enabling Adrenaline");
-                    new AdrenalinePunchPatch().Enable();
-                    PatchConstants.Logger.LogInfo("Adrenaline Enabled");
-                };
-
-                EnabledHeadLamps = Config.Bind("EXPERIEMENTAL Headlamps by SamSwat", "Enable", true, "Description: Fix head lamps to toggle on with Y, and Shift + Y to toggle modes").Value;
-                HeadlightToggleKey = Config.Bind<KeyboardShortcut>("EXPERIEMENTAL Headlamps by SamSwat", "Helmet Light Toggle", new KeyboardShortcut(KeyCode.Y, Array.Empty<KeyCode>()), "Key for helmet light toggle");
-                HeadlightModeKey = Config.Bind<KeyboardShortcut>("EXPERIEMENTAL Headlamps by SamSwat", "Helmet Light Mode", new KeyboardShortcut(KeyCode.Y, KeyCode.LeftShift), "Key for helemt light mode change");
-                if (EnabledHeadLamps)
-                {
-                    PatchConstants.Logger.LogInfo("Enabling Headlamps");
-                    PatchConstants.Logger.LogInfo("Headlamps Enabled");
-                };
-
-                var EnabledInspectionlessMalfunctions = Config.Bind("EXPERIEMENTAL Inspectionless Malfunctions by Fontaine", "Enable", true, "Description: Makes it so you don't need to inspect/examine malfunctions before clearing them").Value;
-                if (EnabledAdrenaline)
-                {
-                    PatchConstants.Logger.LogInfo("Enabling Inspectionless Malfunctions");
-                    new InspectionlessMalfunctions().Enable();
-                    PatchConstants.Logger.LogInfo("Enabled Inspectionless Malfunctions");
-
-                }
 
                 //new HideoutItemViewFactoryShowPatch().Enable();
 
@@ -442,10 +400,6 @@ namespace MTGA
 
         void Update()
         {
-            if (EnabledHeadLamps)
-            {
-                HeadLamps();
-            }
             if (EnabledAILimit)
             {
                 AILimit();
@@ -592,88 +546,6 @@ namespace MTGA
                     }
                 };
             }
-        }
-
-        void HeadLamps()
-        {
-            GetGameWorld();
-            bool flag = gameWorld == null || gameWorld.RegisteredPlayers == null;
-            if (!flag)
-            {
-                bool flag2 = _flashlight != null && _flashlight.GetComponent<WeaponModPoolObject>().IsInPool;
-                if (flag2)
-                {
-                    _flashlight = null;
-                    _currentMode = 1;
-                }
-                bool flag3 = HeadlightToggleKey.Value.IsUp() && PlayerHasFlashlight();
-                if (flag3)
-                {
-                    ToggleLight();
-                }
-                bool flag4 = HeadlightModeKey.Value.IsUp() && PlayerHasFlashlight();
-                if (flag4)
-                {
-                    ChangeMode();
-                }
-            }
-        }
-
-        void ToggleLight()
-        {
-            _modes[0].SetActive(!_modes[0].activeSelf);
-            _modes[_currentMode].SetActive(!_modes[_currentMode].activeSelf);
-        }
-
-        void ChangeMode()
-        {
-            bool flag = !_modes[0].activeSelf;
-            if (flag)
-            {
-                bool flag2 = _currentMode < _modes.Length - 1;
-                if (flag2)
-                {
-                    _modes[_currentMode].SetActive(!_modes[_currentMode].activeSelf);
-                    _currentMode++;
-                    _modes[_currentMode].SetActive(!_modes[_currentMode].activeSelf);
-                }
-                else
-                {
-                    _modes[_currentMode].SetActive(!_modes[_currentMode].activeSelf);
-                    _currentMode = 1;
-                    _modes[_currentMode].SetActive(!_modes[_currentMode].activeSelf);
-                }
-            }
-        }
-
-        bool PlayerHasFlashlight()
-        {
-            bool flag = _flashlight == null;
-            bool result;
-            if (flag)
-            {
-                GetPlayer();
-                //Logger.LogInfo($"player is {player}");
-                TacticalComboVisualController componentInChildren = Player.GetComponentInChildren<TacticalComboVisualController>();
-                _flashlight = componentInChildren?.gameObject;
-                bool flag2 = _flashlight == null;
-                if (flag2)
-                {
-                    result = false;
-                }
-                else
-                {
-                    _modes = (from x in Array.ConvertAll(_flashlight.GetComponentsInChildren<Transform>(true), (Transform y) => y.gameObject)
-                              where x.name.Contains("mode_")
-                              select x).ToArray();
-                    result = true;
-                }
-            }
-            else
-            {
-                result = true;
-            }
-            return result;
         }
 
         void FixedUpdate()

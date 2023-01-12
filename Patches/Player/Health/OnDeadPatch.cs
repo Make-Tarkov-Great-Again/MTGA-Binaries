@@ -39,10 +39,7 @@ namespace MTGA.Patches.Player.Health
             if (deadPlayer == null)
                 return;
 
-            if (OnPersonKilled != null)
-            {
-                OnPersonKilled(__instance, damageType);
-            }
+            OnPersonKilled?.Invoke(__instance, damageType);
 
             var killedBy = PatchConstants.GetFieldOrPropertyFromInstance<EFT.Player>(deadPlayer, "LastAggressor", false);
             if (killedBy == null)
@@ -60,8 +57,11 @@ namespace MTGA.Patches.Player.Health
                     PatchConstants.DisplayMessageNotification($"{deadPlayer.Profile.Nickname} has died by {damageType}");
             }
 
-            Dictionary<string, object> map = new Dictionary<string, object>();
-            map.Add("diedAID", __instance.Profile.AccountId);
+            Dictionary<string, object> map = new()
+            {
+                { "diedAID", __instance.Profile.AccountId }
+            };
+
             if (__instance.Profile.Info != null)
             {
                 map.Add("diedFaction", __instance.Side);
