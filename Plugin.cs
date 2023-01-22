@@ -29,7 +29,6 @@ using MTGA.Patches.AI;
 using MTGA.Patches.Menus;
 using MTGA.Patches.Player;
 using MTGA.Patches.Raid.FromServer;
-using MTGA.Patches.Raid.Mods;
 using MTGA.Patches.AI.Mods;
 using MTGA.Patches.Misc;
 using MTGA.Patches.Hideout;
@@ -40,14 +39,6 @@ namespace MTGA
     [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
     public class Plugin : BaseUnityPlugin
     {
-
-        // Headlamp Fix by SamSwat
-        private bool EnabledHeadLamps { get; set; }
-        private static GameObject _flashlight;
-        private static GameObject[] _modes;
-        private static int _currentMode = 1;
-        internal static ConfigEntry<KeyboardShortcut> HeadlightToggleKey;
-        internal static ConfigEntry<KeyboardShortcut> HeadlightModeKey;
 
         // AI Limit by Props
         private bool EnabledAILimit { get; set; }
@@ -220,7 +211,6 @@ namespace MTGA
         }
 
         GameWorld gameWorld = null;
-        readonly GameStatus currentGameStatus;
         public void GetGameWorld()
         {
             gameWorld = Singleton<GameWorld>.Instance;
