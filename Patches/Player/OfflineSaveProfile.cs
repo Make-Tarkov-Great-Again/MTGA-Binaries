@@ -36,6 +36,7 @@ namespace MTGA.Patches.Player
                     && paramameters[3].ParameterType == typeof(Result<ExitStatus, TimeSpan, MetricsClass>)
                     && paramameters[4].Name == "timeHasComeScreenController"
                     && paramameters[4].ParameterType == typeof(EFT.UI.Matchmaker.MatchmakerTimeHasCome.TimeHasComeScreenController)
+                    && method.ReturnType == typeof(void)
                     )
                 {
                     Logger.Log(BepInEx.Logging.LogLevel.Info, method.Name);
@@ -47,25 +48,37 @@ namespace MTGA.Patches.Player
             return null;
         }
 
+
         [PatchPrefix]
-        public static bool PatchPrefix(ref RaidSettings ____raidSettings, ref Result<ExitStatus, TimeSpan, MetricsClass> result)
+        public static bool PatchPrefix(ref RaidSettings ____raidSettings, ref LocationSettingsClass.SelectedLocation location, ref Result<ExitStatus, TimeSpan, MetricsClass> result)
         {
             Logger.LogInfo("OfflineSaveProfile:: PatchPrefix");
             ____raidSettings.RaidMode = ERaidMode.Online;
 
-
-            var session = ClientAccesor.GetClientApp().GetClientBackEndSession();
+		//public int EscapeTimeLimit;
+        
+        var session = ClientAccesor.GetClientApp().GetClientBackEndSession();
 
             var profile = (____raidSettings.IsScav && ____raidSettings.Side == ESideType.Savage) ? session.ProfileOfPet : session.Profile;
             var exitStatus = result.Value0.ToString().ToLower();
             var currentHealth = HealthListener.Instance.CurrentHealth;
 
+
+            var exitTime = result.Value1.TotalMilliseconds;
+            var locationTime = location.EscapeTimeLimit * 60000;
+            if (exitTime > locationTime)
+            {
+                result.Value0 = ExitStatus.MissingInAction;
+                exitStatus = ExitStatus.MissingInAction.ToString().ToLower();
+                //Logger.LogInfo($"ExitStatus changed to {exitStatus}");
+            }
+
             SaveProfileRequest request = new()
             {
-                exit = exitStatus,
-                profile = profile,
-                health = currentHealth,
-                isPlayerScav = ____raidSettings.IsScav
+                ExitStatus = exitStatus,
+                IsPlayerScav = ____raidSettings.IsScav,
+                Profile = profile,
+                Health = currentHealth
             };
 
             var convertedJson = request.MTGAToJson();
@@ -75,11 +88,10 @@ namespace MTGA.Patches.Player
 
         public class SaveProfileRequest
         {
-            public string exit { get; set; }
-            public Profile profile { get; set; }
-            public bool isPlayerScav { get; set; }
-            //public PlayerHealth health { get; set; }
-            public object health { get; set; }
+            public string ExitStatus { get; set; }
+            public bool IsPlayerScav { get; set; }
+            public Profile Profile { get; set; }
+            public object Health { get; set; }
         }
     }
 }

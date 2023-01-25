@@ -150,6 +150,8 @@ namespace MTGA
                 // -------------------------------------
                 // Quests
                 new ItemDroppedAtPlace_Beacon().Enable();
+                new MidRaidQuestChangePatch().Enable();
+
 
                 // -------------------------------------
                 // Raid

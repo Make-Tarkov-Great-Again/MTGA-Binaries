@@ -9,7 +9,7 @@ namespace MTGA.Patches.Raid.Menus
     public class EndByTimer : ModulePatch
     {
         private static PropertyInfo _profileIdProperty;
-        private static MethodInfo _stopRaidMethod;
+        //private static MethodInfo _stopRaidMethod;
 
         static EndByTimer()
         {
