@@ -3,7 +3,8 @@ using System.Reflection;
 using UnityEngine.Networking;
 
 namespace MTGA
-{
+{ 
+    // Commenting here, because this dont need if want to switch to http (Need to check)
     public class UnityWebRequestPatch : ModulePatch
     {
         //private static CertificateHandler _certificateHandler = new FakeCertificateHandler();
