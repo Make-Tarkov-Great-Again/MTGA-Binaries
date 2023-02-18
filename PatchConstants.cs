@@ -347,7 +347,8 @@ namespace MTGA
             return JsonConvert.SerializeObject(o
                     , new JsonSerializerSettings()
                     {
-                        Converters = PatchConstants.JsonConverterDefault
+                        Converters = JsonConverterDefault,
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                     }
                     );
         }
@@ -365,7 +366,8 @@ namespace MTGA
             return (T)JsonConvert.DeserializeObject<T>(str
                     , new JsonSerializerSettings()
                     {
-                        Converters = PatchConstants.JsonConverterDefault
+                        Converters = JsonConverterDefault,
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                     }
                     ) ;
         }
