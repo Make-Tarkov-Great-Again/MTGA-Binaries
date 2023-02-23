@@ -31,7 +31,7 @@ namespace MTGA.Patches.Player
                     && paramameters[1].Name == "savageProfile"
                     && paramameters[1].ParameterType == typeof(Profile)
                     && paramameters[2].Name == "location"
-                    && paramameters[2].ParameterType == typeof(LocationSettingsClass.SelectedLocation)
+                    && paramameters[2].ParameterType == typeof(LocationSettingsClass.Location)
                     && paramameters[3].Name == "result"
                     && paramameters[3].ParameterType == typeof(Result<ExitStatus, TimeSpan, MetricsClass>)
                     && paramameters[4].Name == "timeHasComeScreenController"
@@ -50,7 +50,7 @@ namespace MTGA.Patches.Player
 
 
         [PatchPrefix]
-        public static bool PatchPrefix(ref RaidSettings ____raidSettings, ref LocationSettingsClass.SelectedLocation location, ref Result<ExitStatus, TimeSpan, MetricsClass> result)
+        public static bool PatchPrefix(ref RaidSettings ____raidSettings, ref LocationSettingsClass.Location location, ref Result<ExitStatus, TimeSpan, MetricsClass> result)
         {
             Logger.LogInfo("OfflineSaveProfile:: PatchPrefix");
             ____raidSettings.RaidMode = ERaidMode.Online;
