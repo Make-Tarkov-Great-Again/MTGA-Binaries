@@ -137,7 +137,9 @@ namespace MTGA
                 //new CreateFriendlyAIPatch().Enable();
 
                 // --------- Matchmaker ----------------
-                new AutoSetOfflineMatch().Enable();
+                //new AutoSetOfflineMatch().Enable();
+                new AutoSetRaidConfig().Enable();
+                new RemovePracticeModeWarning().Enable();
                 //new BringBackInsuranceScreen().Enable();
                 new DisableReadyButtonOnFirstScreen().Enable();
 
