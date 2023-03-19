@@ -26,10 +26,10 @@ namespace MTGA.Patches.Menus
 
         private static DefaultRaidSettings raidSettings = null;
 
-        [PatchPrefix]
-        public static void PatchPrefix(object controller)
+/*        [PatchPrefix]
+        public static void PatchPrefix(ref RaidSettings raidSettings)
         {
-            var raidSettings = Traverse.Create(controller).Field<RaidSettings>("RaidSettings").Value;
+            //var raidSettings = Traverse.Create(controller).Field<RaidSettings>("RaidSettings").Value;
             //Logger.LogInfo("AutoSetOfflineMatch.PatchPrefix");
 
             var serverSettings = Request();
@@ -58,7 +58,7 @@ namespace MTGA.Patches.Menus
             }
 
 
-        }
+        }*/
 
         public static DefaultRaidSettings Request()
         {
@@ -103,8 +103,37 @@ namespace MTGA.Patches.Menus
         }
 
         [PatchPostfix]
-        public static void PatchPostfix(UpdatableToggle ____offlineModeToggle)
+        public static void PatchPostfix(ref RaidSettings raidSettings, UpdatableToggle ____offlineModeToggle)
         {
+
+            //var raidSettings = Traverse.Create(controller).Field<RaidSettings>("RaidSettings").Value;
+            //Logger.LogInfo("AutoSetOfflineMatch.PatchPrefix");
+
+            var serverSettings = Request();
+
+            var botSettings = raidSettings.BotSettings;
+            var waveSettings = raidSettings.WavesSettings;
+
+            if (raidSettings != null)
+            {
+                raidSettings.RaidMode = serverSettings.RaidMode;
+
+                //botSettings.IsEnabled = !!(serverSettings.AiAmount != EBotAmount.NoBots);
+                botSettings.IsScavWars = serverSettings.ScavWars;
+                botSettings.BotAmount = serverSettings.AiAmount;
+                //botSettings.BossType = EBossType.AsOnline; //maybe in the future we can use this to adjust bosses to have different difficulties
+
+                waveSettings.BotAmount = serverSettings.AiAmount;
+                waveSettings.BotDifficulty = serverSettings.AiDifficulty;
+                waveSettings.IsBosses = serverSettings.BossEnabled;
+                waveSettings.IsTaggedAndCursed = serverSettings.TaggedAndCursed;
+
+            }
+            else
+            {
+                Logger.LogInfo("AutoSetOfflineMatch.PatchPrefix : Raid Settings are Null!");
+            }
+
             // Do a force of these, just encase it breaks
             ____offlineModeToggle.isOn = true;
             ____offlineModeToggle.gameObject.SetActive(false);
@@ -134,9 +163,13 @@ namespace MTGA.Patches.Menus
                 if (!method.Name.StartsWith("Show")) continue;
 
                 var parameters = method.GetParameters();
-                if (parameters.Length == 1 && parameters[0].Name == "controller")
+                if (parameters.Length == 2
+                && parameters[0].Name == "profileInfo"
+                && parameters[0].ParameterType == typeof(InfoClass)
+                && parameters[1].Name == "raidSettings"
+                && parameters[1].ParameterType == typeof(RaidSettings))
                 {
-                    //Logger.LogInfo(method.Name);
+                    Logger.LogInfo(method.Name);
                     return method;
                 }
             }
