@@ -139,7 +139,7 @@ namespace MTGA
                 // --------- Matchmaker ----------------
                 new AutoSetOfflineMatch().Enable();
                 new AutoSetRaidConfig().Enable();
-                new RemovePracticeModeWarning().Enable();
+                //new RemovePracticeModeWarning().Enable();
                 //new BringBackInsuranceScreen().Enable();
                 new DisableReadyButtonOnFirstScreen().Enable();
 

@@ -21,10 +21,11 @@ namespace MTGA.Patches.Menus
     {
         public AutoSetOfflineMatch()
         {
-            _ = typeof(RaidSettings);
+            Request();
         }
 
-        private static DefaultRaidSettings raidSettings = null;
+        private static bool IsRequested = false;
+        private static DefaultRaidSettings defaultraidSettings = null;
 
 /*        [PatchPrefix]
         public static void PatchPrefix(ref RaidSettings raidSettings)
@@ -78,7 +79,7 @@ namespace MTGA.Patches.Menus
 
                 try
                 {
-                    raidSettings = JsonConvert.DeserializeObject<DefaultRaidSettings>(json);
+                    defaultraidSettings = JsonConvert.DeserializeObject<DefaultRaidSettings>(json);
                     //Logger.LogInfo("Obtained DefaultRaidSettings from Server");
                 }
                 catch (Exception exception)
@@ -97,8 +98,8 @@ namespace MTGA.Patches.Menus
 
             }
 
-
-            return raidSettings;
+            IsRequested = true;
+            return defaultraidSettings;
 
         }
 
@@ -109,24 +110,27 @@ namespace MTGA.Patches.Menus
             //var raidSettings = Traverse.Create(controller).Field<RaidSettings>("RaidSettings").Value;
             //Logger.LogInfo("AutoSetOfflineMatch.PatchPrefix");
 
-            var serverSettings = Request();
-
             var botSettings = raidSettings.BotSettings;
             var waveSettings = raidSettings.WavesSettings;
 
-            if (raidSettings != null)
+            if (!IsRequested || defaultraidSettings == null)
+                Request();
+
+
+            if (defaultraidSettings != null)
             {
-                raidSettings.RaidMode = serverSettings.RaidMode;
+
+                raidSettings.RaidMode = defaultraidSettings.RaidMode;
 
                 //botSettings.IsEnabled = !!(serverSettings.AiAmount != EBotAmount.NoBots);
-                botSettings.IsScavWars = serverSettings.ScavWars;
-                botSettings.BotAmount = serverSettings.AiAmount;
+                botSettings.IsScavWars = defaultraidSettings.ScavWars;
+                botSettings.BotAmount = defaultraidSettings.AiAmount;
                 //botSettings.BossType = EBossType.AsOnline; //maybe in the future we can use this to adjust bosses to have different difficulties
 
-                waveSettings.BotAmount = serverSettings.AiAmount;
-                waveSettings.BotDifficulty = serverSettings.AiDifficulty;
-                waveSettings.IsBosses = serverSettings.BossEnabled;
-                waveSettings.IsTaggedAndCursed = serverSettings.TaggedAndCursed;
+                waveSettings.BotAmount = defaultraidSettings.AiAmount;
+                waveSettings.BotDifficulty = defaultraidSettings.AiDifficulty;
+                waveSettings.IsBosses = defaultraidSettings.BossEnabled;
+                waveSettings.IsTaggedAndCursed = defaultraidSettings.TaggedAndCursed;
 
             }
             else
@@ -150,7 +154,7 @@ namespace MTGA.Patches.Menus
 
             // Disable "Enable practice mode for this raid" toggle
             var practiceModeComponent = GameObject.Find("SoloModeCheckmarkBlocker").GetComponent<UiElementBlocker>();
-            practiceModeComponent.SetBlock(true, "Raids in SPT are always Offline raids. Don't worry - your progress will be saved!");
+            practiceModeComponent.SetBlock(true, "Raids in are always Offline raids. Don't worry - your progress will be saved!");
         }
 
         protected override MethodBase GetTargetMethod()
