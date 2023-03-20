@@ -1,5 +1,6 @@
 ﻿using MTGA.Utilities.Core;
 using System.Reflection;
+using EFT.UI;
 
 namespace MTGA.Patches.Menus
 {
@@ -13,7 +14,7 @@ namespace MTGA.Patches.Menus
         {
         }
         [PatchPostfix]
-        public static void PatchPostfix(ref EFT.UI.DefaultUIButton ____readyButton)
+        public static void PatchPostfix(ref DefaultUIButton ____readyButton)
         {
             ____readyButton.gameObject.SetActive(false);
         }
