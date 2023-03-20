@@ -76,7 +76,7 @@ namespace MTGA.Patches.Menus
         }
 
         [PatchPrefix]
-        public static void PatchPrefix(object controller)
+        public static void PatchPrefix(object controller, UpdatableToggle ____offlineModeToggle)
         {
             RaidSettings = Traverse.Create(controller).Field<RaidSettings>("RaidSettings").Value;
             if (RaidSettings == null)
@@ -88,11 +88,14 @@ namespace MTGA.Patches.Menus
             Logger.LogInfo($"AutoSetOfflineMatch.PatchPrefix: START");
             Request();
 
+            // Do a force of these, just encase it breaks
+            ____offlineModeToggle.isOn = true;
+            ____offlineModeToggle.enabled = false;
+            ____offlineModeToggle.interactable = false;
 
             RaidSettings.RaidMode = DefaultRaidSettings.RaidMode;
             var botSettings = RaidSettings.BotSettings;
             var waveSettings = RaidSettings.WavesSettings;
-
 
             //botSettings.IsEnabled = !!(serverSettings.AiAmount != EBotAmount.NoBots);
             botSettings.IsScavWars = DefaultRaidSettings.ScavWars;
@@ -109,15 +112,8 @@ namespace MTGA.Patches.Menus
         }
 
         [PatchPostfix]
-        public static void PatchPostfix(
-            UpdatableToggle ____offlineModeToggle
-            )
+        public static void PatchPostfix()
         {
-
-            // Do a force of these, just encase it breaks
-            ____offlineModeToggle.isOn = true;
-            ____offlineModeToggle.enabled = false;
-            ____offlineModeToggle.interactable = false;
 
 
             // Hide "no progression save" panel
