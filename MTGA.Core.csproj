@@ -84,4 +84,8 @@
       <Private>false</Private>
     </Reference>
   </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="Patches\AI\Mods\" />
+  </ItemGroup>
 </Project>

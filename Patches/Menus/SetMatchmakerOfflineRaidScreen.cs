@@ -6,19 +6,19 @@ using MTGA.Utilities.Core;
 using Newtonsoft.Json;
 using System;
 using System.Reflection;
-using UnityEngine;
 using HarmonyLib;
 using MTGA_Request = MTGA.Utilities.Core.Request;
+
 
 namespace MTGA.Patches.Menus
 {
     /// <summary>
     /// This patch sets matches to offline on screen enter also sets other variables directly
     /// </summary>
-    public class AutoSetOfflineMatch : ModulePatch
+    public class SetMatchmakerOfflineRaidScreen : ModulePatch
     {
 
-        public AutoSetOfflineMatch()
+        public SetMatchmakerOfflineRaidScreen()
         {
             Request();
         }
@@ -78,8 +78,8 @@ namespace MTGA.Patches.Menus
         [PatchPrefix]
         public static void PatchPrefix(object controller, UpdatableToggle ____offlineModeToggle)
         {
-            RaidSettings = Traverse.Create(controller).Field<RaidSettings>("RaidSettings").Value;
-            if (RaidSettings == null)
+            var raidSettings = Traverse.Create(controller).Field<RaidSettings>("RaidSettings").Value;
+            if (raidSettings == null)
             {
                 Logger.LogInfo("AutoSetOfflineMatch.PatchPrefix : Raid Settings are Null!");
                 return;
@@ -90,14 +90,23 @@ namespace MTGA.Patches.Menus
 
             // Do a force of these, just encase it breaks
             ____offlineModeToggle.isOn = true;
-            ____offlineModeToggle.enabled = false;
+            //____offlineModeToggle.enabled = false;
             ____offlineModeToggle.interactable = false;
 
-            RaidSettings.RaidMode = DefaultRaidSettings.RaidMode;
-            var botSettings = RaidSettings.BotSettings;
-            var waveSettings = RaidSettings.WavesSettings;
+            raidSettings.RaidMode = DefaultRaidSettings.RaidMode;
+            //raidSettings.Side;
+            //LocationId
+            //RaidSettings.SelectedLocation;
+            //raidSettings.KeyId;
+            //MetabolismDisabled
+            //PlayersSpawnPlace
+            //TimeAndWeatherSettings
+
+            var botSettings = raidSettings.BotSettings;
+            var waveSettings = raidSettings.WavesSettings;
 
             //botSettings.IsEnabled = !!(serverSettings.AiAmount != EBotAmount.NoBots);
+            botSettings.IsEnabled = true;
             botSettings.IsScavWars = DefaultRaidSettings.ScavWars;
             botSettings.BotAmount = DefaultRaidSettings.AiAmount;
 
@@ -112,20 +121,14 @@ namespace MTGA.Patches.Menus
         }
 
         [PatchPostfix]
-        public static void PatchPostfix()
+        public static void PatchPostfix(MatchmakerOfflineRaidScreen __instance, UiElementBlocker ____onlineBlocker)
         {
+            var warningPanel = __instance.transform.Find("Content/WarningPanelHorLayout").gameObject;
+            warningPanel.SetActive(false);
+            var spacer = __instance.transform.Find("Content/Space (1)").gameObject;
+            spacer.SetActive(false);
 
-
-            // Hide "no progression save" panel
-            var offlineRaidScreenContent = GameObject.Find("Matchmaker Offline Raid Screen").transform.Find("Content").transform;
-            var warningPanel = offlineRaidScreenContent.Find("WarningPanelHorLayout");
-            warningPanel.gameObject.SetActive(false);
-            var spacer = offlineRaidScreenContent.Find("Space (1)");
-            spacer.gameObject.SetActive(false);
-
-            // Disable "Enable practice mode for this raid" toggle
-            var practiceModeComponent = GameObject.Find("SoloModeCheckmarkBlocker").GetComponent<UiElementBlocker>();
-            practiceModeComponent.SetBlock(true, "tf you lookin at?");
+            ____onlineBlocker.SetBlock(true, "tf you lookin at?");
         }
 
         protected override MethodBase GetTargetMethod()
