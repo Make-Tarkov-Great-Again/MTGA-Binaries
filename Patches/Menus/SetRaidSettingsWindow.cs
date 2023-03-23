@@ -52,12 +52,6 @@ namespace MTGA.Patches.Menus
             bool scavWar = DefaultRaidSettings.ScavWars; //botSettings.IsScavWars;
             bool tagged = DefaultRaidSettings.TaggedAndCursed; // waveSettings.IsTaggedAndCursed;
 
-            if (____aiAmountDropdown.CurrentValue() != (int)amount) {
-                Logger.LogInfo("UPDATED??????!!!!!");
-                DefaultRaidSettings.AiAmount = (EBotAmount)____aiAmountDropdown.CurrentValue();
-            }
-                
-
             ____aiAmountDropdown.UpdateValue((int)amount, false);
             ____aiDifficultyDropdown.UpdateValue((int)difficulty, false);
 

@@ -14,8 +14,8 @@ namespace MTGA.Patches.Menus
             return typeof(MatchmakerRaidSettingsSummaryView).GetMethod("Show");
         }
 
-        [PatchPrefix]
-        public static void PatchPrefix(
+        [PatchPostfix]
+        public static void PatchPostfix(
         //[PatchPostfix]
         //public static void PatchPostfix(
             MatchmakerRaidSettingView ____aiAmountSettings,
@@ -24,7 +24,10 @@ namespace MTGA.Patches.Menus
             MatchmakerRaidSettingView ____cursedSettings,
             MatchmakerRaidSettingView ____bossesEnabledSettings,
             MatchmakerRaidSettingView ____randomTimeSettings,
-            MatchmakerRaidSettingView ____randomWeatherSettings
+            MatchmakerRaidSettingView ____randomWeatherSettings,
+            MatchmakerRaidSettingView ____FoodAndWaterSetting,
+            MatchmakerRaidSettingView ____weatherSettings,
+            MatchmakerRaidSettingView ____playerSpawnSetting
             )
         {
             //Logger.LogInfo("SetRaidSettingsSummary.PatchPrefix");
@@ -49,41 +52,6 @@ namespace MTGA.Patches.Menus
 
             ____randomTimeSettings.Refresh(DISABLED, false);
             ____randomWeatherSettings.Refresh(DISABLED, false);
-        }
-
-        [PatchPostfix]
-        public static void PatchPostfix(RaidSettings raidSettings)
-        {
-/*            var botSettings = raidSettings.BotSettings;
-            var waveSettings = raidSettings.WavesSettings;
-
-            if(DefaultRaidSettings.AiAmount != botSettings.BotAmount)
-            {
-                Logger.LogInfo("DefaultRaidSettings.AiAmount != botSettings.BotAmount");
-                //DefaultRaidSettings.AiAmount = botSettings.BotAmount;
-            }
-
-            if (DefaultRaidSettings.AiDifficulty != waveSettings.BotDifficulty)
-            {
-                Logger.LogInfo("DefaultRaidSettings.AiDifficulty != waveSettings.BotDifficulty");
-                //DefaultRaidSettings.AiDifficulty = waveSettings.BotDifficulty;
-            }
-
-            if (DefaultRaidSettings.BossEnabled != waveSettings.IsBosses)
-            {
-                Logger.LogInfo("DefaultRaidSettings.BossEnabled != waveSettings.IsBosses");
-                //DefaultRaidSettings.BossEnabled = waveSettings.IsBosses;
-            }
-            if (DefaultRaidSettings.ScavWars != botSettings.IsScavWars)
-            {
-                Logger.LogInfo("DefaultRaidSettings.ScavWars != botSettings.IsScavWars");
-                //DefaultRaidSettings.ScavWars = botSettings.IsScavWars;
-            }
-            if (DefaultRaidSettings.TaggedAndCursed != waveSettings.IsTaggedAndCursed)
-            {
-                Logger.LogInfo("DefaultRaidSettings.TaggedAndCursed != waveSettings.IsTaggedAndCursed");
-                //DefaultRaidSettings.TaggedAndCursed = waveSettings.IsTaggedAndCursed;
-            }*/
         }
 
     }

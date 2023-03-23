@@ -18,16 +18,14 @@ namespace MTGA.Patches.Menus
     public class SetMatchmakerOfflineRaidScreen : ModulePatch
     {
 
-        public SetMatchmakerOfflineRaidScreen()
-        {
-            Request();
-        }
-
         public static RaidSettingsTemplate DefaultRaidSettings { get; set; }
-        public static RaidSettings RaidSettings { get; set; }
         public static RaidSettingsTemplate Request()
         {
-            if (DefaultRaidSettings != null) return DefaultRaidSettings;
+            if (DefaultRaidSettings != null)
+            {
+                Logger.LogInfo("DefaultRaidSettings are not null");
+                return DefaultRaidSettings;
+            }
             try
             {
                 var json = MTGA_Request.Instance.GetJson("/singleplayer/settings/raid/menu");
