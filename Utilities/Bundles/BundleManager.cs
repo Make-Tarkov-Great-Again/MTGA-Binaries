@@ -52,7 +52,7 @@ namespace MTGA.Utilities.Bundles
                             continue;
                         }
                         VFS.WriteFile(filepath, data);
-                        //PatchConstants.Logger.LogInfo($"Adding Custom Bundle : {filepath}");
+                        PatchConstants.Logger.LogInfo($"Adding Custom Bundle : {filepath}");
                         bundle.Path = filepath;
                     }
                     catch
@@ -61,7 +61,7 @@ namespace MTGA.Utilities.Bundles
                     }
                 }
 
-                //PatchConstants.Logger.LogInfo($"Adding Custom Bundle : {key} : {path} : dp={dependencyKeys.Length}");
+                PatchConstants.Logger.LogInfo($"Adding Custom Bundle : {key} : {path} : dp={dependencyKeys.Length}");
                 Bundles.Add(key, bundle);
             }
 

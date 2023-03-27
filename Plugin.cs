@@ -54,7 +54,7 @@ namespace MTGA
                 var enableBundles = Config.Bind("Bundles", "Enable", false);
                 if (enableBundles.Value)
                 {
-                    BundleSetup.Init();
+                    //BundleSetup.Init();
                     BundleManager.GetBundles(); // Crash happens here
                     new EasyAssetsPatch().Enable();
                     new EasyBundlePatch().Enable();

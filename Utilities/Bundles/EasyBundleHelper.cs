@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using BindableState = GClass2918<Diz.DependencyManager.ELoadState>;
+
 
 namespace MTGA.Utilities.Bundles
 {
@@ -21,14 +23,14 @@ namespace MTGA.Utilities.Bundles
 
         static EasyBundleHelper()
         {
-            //_ = nameof(IBundleLock.IsLocked);
-            //_ = nameof(BindableState.Bind);
+            _ = nameof(IBundleLock.IsLocked);
+            _ = nameof(BindableState.Bind);
 
-            //Type = PatchConstants.EftTypes.Single(x => x.GetMethod("set_SameNameAsset", _flags) != null);
-            Type = PatchConstants.EftTypes.Single(x => !x.IsInterface && PatchConstants.GetPropertyFromType(x, "SameNameAsset") != null);
+            Type = PatchConstants.EftTypes.Single(x => x.GetMethod("set_SameNameAsset", _flags) != null);
+            PatchConstants.Logger.LogDebug($"EasyBundleHelper::{Type.FullName}");
             _pathField = Type.GetField("string_1", _flags);
             _keyWithoutExtensionField = Type.GetField("string_0", _flags);
-            _bundleLockField = Type.GetFields(_flags).FirstOrDefault(x => x.FieldType == BundleSetup.IBundleLockType);
+            _bundleLockField = Type.GetFields(_flags).FirstOrDefault(x => x.FieldType == typeof(IBundleLock));
             _dependencyKeysProperty = Type.GetProperty("DependencyKeys");
             _keyProperty = Type.GetProperty("Key");
             _loadStateProperty = Type.GetProperty("LoadState");
@@ -52,11 +54,11 @@ namespace MTGA.Utilities.Bundles
             }
         }
 
-        public object BundleLock
+        public IBundleLock BundleLock
         {
             get
             {
-                return _bundleLockField.GetValue(_instance);
+                return (IBundleLock)_bundleLockField.GetValue(_instance);
             }
             set
             {
@@ -88,11 +90,11 @@ namespace MTGA.Utilities.Bundles
             }
         }
 
-        public object LoadState
+        public BindableState LoadState
         {
             get
             {
-                return _loadStateProperty.GetValue(_instance);
+                return (BindableState)_loadStateProperty.GetValue(_instance);
             }
             set
             {
