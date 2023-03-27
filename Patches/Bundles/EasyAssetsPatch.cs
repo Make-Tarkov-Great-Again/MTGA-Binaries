@@ -28,8 +28,7 @@ namespace MTGA.Patches.Bundles
             var type = typeof(EasyAssets);
 
             _manifestField = type.GetField(nameof(EasyAssets.Manifest));
-            _bundlesField = PatchConstants.GetFieldFromTypeByFieldType(typeof(EasyAssets), typeof(AssetBundle[]));//  type.GetField($"{EasyBundleHelper.Type.Name.ToLowerInvariant()}_0", PatchConstants.PrivateFlags);
-            Logger.LogDebug(_bundlesField.Name);
+            _bundlesField = PatchConstants.GetFieldFromTypeByFieldType(typeof(EasyAssets), typeof(EasyBundleHelper[]));// type.GetField($"{EasyBundleHelper.Type.Name.ToLowerInvariant()}_0", PatchConstants.PrivateFlags); 
             _systemProperty = type.GetProperty("System");
         }
 
@@ -82,20 +81,6 @@ namespace MTGA.Patches.Bundles
             return false;
         }
 
-        [PatchPostfix]
-        public static void PatchPostfix()
-        {
-
-        }
-        //[PatchPostfix]
-        //public static async Task PatchPostfix(Task __result, EasyAssets __instance, [CanBeNull] IBundleLock bundleLock, string defaultKey, string rootPath,
-        //    string platformName, [CanBeNull] Func<string, bool> shouldExclude, [CanBeNull] Func<string, Task> bundleCheck)
-        //{
-        //    //await Init(__instance, bundleLock, defaultKey, rootPath, platformName, shouldExclude, bundleCheck);
-        //    //__result = Init(__instance, bundleLock, defaultKey, rootPath, platformName, shouldExclude, bundleCheck);
-        //    //return true;
-        //}
-
         public static string GetPairKey(KeyValuePair<string, BundleItem> x)
         {
             return x.Key;
@@ -144,27 +129,41 @@ namespace MTGA.Patches.Bundles
         {
             // platform manifest
             var path = $"{rootPath.Replace("file:///", string.Empty).Replace("file://", string.Empty)}/{platformName}/";
+            //PatchConstants.Logger.LogInfo($"PATH: {path}");
             var filepath = path + platformName;
+            //PatchConstants.Logger.LogInfo($"FILEPATH: {filepath}");
+
             var manifest = (File.Exists(filepath)) ? await GetManifestBundle(filepath) : await GetManifestJson(filepath);
+            //PatchConstants.Logger.LogInfo($"MANIFEST");
+
 
             // load bundles
             var bundleNames = manifest.GetAllAssetBundles().Union(BundleManager.Bundles.Keys).ToArray();
+            //PatchConstants.Logger.LogInfo($"BUNDLESNAMES");
+
             var bundles = (IEasyBundle[])Array.CreateInstance(EasyBundleHelper.Type, bundleNames.Length);
+            //PatchConstants.Logger.LogInfo($"BUNDLES");
 
-            if (bundleLock == null)
-            {
-                bundleLock = new BundleLock(int.MaxValue);
-            }
+            bundleLock ??= new BundleLock(int.MaxValue);
+            //PatchConstants.Logger.LogInfo($"BUNDLELOCK");
 
-            for (var i = 0; i < bundleNames.Length; i++)
+
+            for (var i = bundleNames.Length -1; i >= 0; i--)
             {
                 bundles[i] = (IEasyBundle)Activator.CreateInstance(EasyBundleHelper.Type, new object[] { bundleNames[i], path, manifest, bundleLock, bundleCheck });
+                //PatchConstants.Logger.LogInfo($"bundles[i]");
                 await JobScheduler.Yield(EJobPriority.Immediate);
             }
 
             _manifestField.SetValue(instance, manifest);
-            _bundlesField.SetValue(instance, bundles);
+            PatchConstants.Logger.LogInfo($" _manifestField.SetValue(instance, manifest)]");
+
+            _bundlesField.SetValue(instance, bundles); //failing right here
+            PatchConstants.Logger.LogInfo($"_bundlesField.SetValue(instance, bundles)");
+
             _systemProperty.SetValue(instance, new DependencyGraph(bundles, defaultKey, shouldExclude));
+            PatchConstants.Logger.LogInfo($"_systemProperty.SetValue(instance, new DependencyGraph(bundles, defaultKey, shouldExclude))");
+
         }
     }
 }
