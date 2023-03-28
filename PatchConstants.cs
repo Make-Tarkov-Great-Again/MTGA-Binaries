@@ -11,6 +11,7 @@ using FilesChecker;
 using Newtonsoft.Json;
 using MTGA.Utilities.AI;
 using MTGA.Utilities.Web;
+using AmplifyMotion;
 
 namespace MTGA
 {
@@ -162,6 +163,12 @@ namespace MTGA
             var fields = t.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
             return fields.FirstOrDefault(x => x.Name.ToLower() == name.ToLower());    
           
+        }
+
+        public static FieldInfo FindFieldFromType(Type t, string name)
+        {
+            var fields = t.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+            return fields.FirstOrDefault(x => x.Name.StartsWith(name));
         }
 
         public static FieldInfo GetFieldFromTypeByFieldType(Type objectType, Type fieldType)

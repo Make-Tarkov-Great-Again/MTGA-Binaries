@@ -28,7 +28,7 @@ namespace MTGA.Patches.Bundles
             var type = typeof(EasyAssets);
 
             _manifestField = type.GetField(nameof(EasyAssets.Manifest));
-            _bundlesField = PatchConstants.GetFieldFromTypeByFieldType(typeof(EasyAssets), typeof(EasyBundleHelper[]));// type.GetField($"{EasyBundleHelper.Type.Name.ToLowerInvariant()}_0", PatchConstants.PrivateFlags); 
+            _bundlesField = PatchConstants.FindFieldFromType(type, "class"); ; //EasyBundle[]
             _systemProperty = type.GetProperty("System");
         }
 
@@ -54,27 +54,16 @@ namespace MTGA.Patches.Bundles
                     && parameters[4].Name == "shouldExclude");
         }
 
-        //[PatchPrefix]
-        //private static bool PatchPrefix(ref Task __result, EasyAssets __instance, [CanBeNull] IBundleLock bundleLock, string defaultKey, string rootPath,
-        //    string platformName, [CanBeNull] Func<string, bool> shouldExclude, [CanBeNull] Func<string, Task> bundleCheck)
-        //{
-        //    //await Init(__instance, bundleLock, defaultKey, rootPath, platformName, shouldExclude, bundleCheck);
-        //    //__result = Init(__instance, bundleLock, defaultKey, rootPath, platformName, shouldExclude, bundleCheck);
-        //    //return false;
-        //    return true;
-        //}
-
         [PatchPrefix]
-        public static bool PatchPrefix(
-            ref Task __result
-            , EasyAssets __instance
-            , [CanBeNull] IBundleLock bundleLock
-            , string defaultKey
-            , string rootPath
-            , string platformName
-            , [CanBeNull] Func<string, bool> shouldExclude
-            , [CanBeNull] Func<string, Task> bundleCheck
-
+        private static bool PatchPrefix(
+            ref Task __result,
+            EasyAssets __instance,
+            [CanBeNull] IBundleLock bundleLock,
+            string defaultKey,
+            string rootPath,
+            string platformName,
+            [CanBeNull] Func<string, bool> shouldExclude,
+            [CanBeNull] Func<string, Task> bundleCheck
             )
         {
             __result = Init(__instance, bundleLock, defaultKey, rootPath, platformName, shouldExclude, bundleCheck);
@@ -148,7 +137,7 @@ namespace MTGA.Patches.Bundles
             //PatchConstants.Logger.LogInfo($"BUNDLELOCK");
 
 
-            for (var i = bundleNames.Length -1; i >= 0; i--)
+            for (var i = bundleNames.Length - 1; i >= 0; i--)
             {
                 bundles[i] = (IEasyBundle)Activator.CreateInstance(EasyBundleHelper.Type, new object[] { bundleNames[i], path, manifest, bundleLock, bundleCheck });
                 //PatchConstants.Logger.LogInfo($"bundles[i]");
@@ -156,13 +145,13 @@ namespace MTGA.Patches.Bundles
             }
 
             _manifestField.SetValue(instance, manifest);
-            PatchConstants.Logger.LogInfo($" _manifestField.SetValue(instance, manifest)]");
+            //PatchConstants.Logger.LogInfo($" _manifestField.SetValue(instance, manifest)]");
 
-            _bundlesField.SetValue(instance, bundles); //failing right here
-            PatchConstants.Logger.LogInfo($"_bundlesField.SetValue(instance, bundles)");
+            _bundlesField.SetValue(instance, bundles);
+            //PatchConstants.Logger.LogInfo($"_bundlesField.SetValue(instance, bundles)");
 
             _systemProperty.SetValue(instance, new DependencyGraph(bundles, defaultKey, shouldExclude));
-            PatchConstants.Logger.LogInfo($"_systemProperty.SetValue(instance, new DependencyGraph(bundles, defaultKey, shouldExclude))");
+            //PatchConstants.Logger.LogInfo($"_systemProperty.SetValue(instance, new DependencyGraph(bundles, defaultKey, shouldExclude))");
 
         }
     }
