@@ -14,7 +14,7 @@ namespace MTGA.Patches.Raid.Fixes
             return typeof(Profile).GetMethod("AddToCarriedQuestItems", BindingFlags.Public | BindingFlags.Instance);
         }
         [PatchPostfix]
-        private static void PatchPostfix()
+        public static void PatchPostfix()
         {
             var gameWorld = Singleton<GameWorld>.Instance;
 
