@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using BindableState = GClass2918<Diz.DependencyManager.ELoadState>;
+using BindableState = BindableState<Diz.DependencyManager.ELoadState>;
 
 
 namespace MTGA.Utilities.Bundles

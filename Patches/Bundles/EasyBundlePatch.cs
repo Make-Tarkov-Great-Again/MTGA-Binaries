@@ -14,7 +14,7 @@ namespace MTGA.Patches.Bundles
         {
             _ = nameof(IEasyBundle.SameNameAsset);
             _ = nameof(IBundleLock.IsLocked);
-            _ = nameof(GClass2918<ELoadState>.Bind);
+            _ = nameof(BindableState<ELoadState>.Bind);
         }
 
         protected override MethodBase GetTargetMethod()
@@ -40,7 +40,7 @@ namespace MTGA.Patches.Bundles
                 Path = path,
                 KeyWithoutExtension = Path.GetFileNameWithoutExtension(key),
                 DependencyKeys = dependencyKeys,
-                LoadState = new GClass2918<ELoadState>(ELoadState.Unloaded, null),
+                LoadState = new BindableState<ELoadState>(ELoadState.Unloaded, null),
                 BundleLock = bundleLock
             };
         }
