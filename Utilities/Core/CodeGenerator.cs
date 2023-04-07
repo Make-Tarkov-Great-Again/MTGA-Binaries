@@ -22,7 +22,7 @@ namespace MTGA.Utilities.Core
             return list;
         }
 
-        private static CodeInstruction ParseCode(Code code)
+        public static CodeInstruction ParseCode(Code code)
         {
             if (!code.HasOperand)
             {
