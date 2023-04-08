@@ -6,9 +6,7 @@ using MTGA.Utilities.Core;
 using Newtonsoft.Json;
 using System;
 using System.Reflection;
-using HarmonyLib;
 using MTGA_Request = MTGA.Utilities.Core.Request;
-using static UnityEngine.Experimental.Rendering.RayTracingAccelerationStructure;
 
 
 namespace MTGA.Patches.Menus
