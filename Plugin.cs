@@ -51,7 +51,7 @@ namespace MTGA
                 new WebSocketPatch().Enable();
 
                 // - Loading Bundles from Server. Working Aki version with some tweaks by me -----
-                var enableBundles = Config.Bind("Bundles", "Enable", false);
+                var enableBundles = Config.Bind("Bundles", "Enable", true);
                 if (enableBundles.Value)
                 {
                     //BundleSetup.Init();
@@ -103,7 +103,7 @@ namespace MTGA
                 //new MainMenuControllerRaidSettings().Enable();
                 new SetMatchmakerOfflineRaidScreen().Enable();
                 new SetRaidSettingsWindow().Enable();
-                new SetRaidSettingsSummary().Enable();
+                //new SetRaidSettingsSummary().Enable();
                 //new BringBackInsuranceScreen().Enable();
                 new DisableReadyButtonOnFirstScreen().Enable();
 

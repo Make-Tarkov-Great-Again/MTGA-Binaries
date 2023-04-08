@@ -8,6 +8,7 @@ using System;
 using System.Reflection;
 using HarmonyLib;
 using MTGA_Request = MTGA.Utilities.Core.Request;
+using static UnityEngine.Experimental.Rendering.RayTracingAccelerationStructure;
 
 
 namespace MTGA.Patches.Menus
@@ -74,24 +75,35 @@ namespace MTGA.Patches.Menus
         }
 
         [PatchPrefix]
-        public static void PatchPrefix(object controller, UpdatableToggle ____offlineModeToggle)
+        public static bool PatchPrefix(MatchmakerOfflineRaidScreen __instance, RaidSettings raidSettings, UpdatableToggle ____offlineModeToggle, UiElementBlocker ____onlineBlocker)
         {
-            var raidSettings = Traverse.Create(controller).Field<RaidSettings>("RaidSettings").Value;
             if (raidSettings == null)
             {
                 Logger.LogInfo("AutoSetOfflineMatch.PatchPrefix : Raid Settings are Null!");
-                return;
+                return false;
             }
 
             Logger.LogInfo($"AutoSetOfflineMatch.PatchPrefix: START");
+
             Request();
 
+            raidSettings.RaidMode = DefaultRaidSettings.RaidMode;
+
+            SetScreen(__instance, raidSettings, ____offlineModeToggle, ____onlineBlocker);
+
+            Logger.LogInfo($"AutoSetOfflineMatch.PatchPrefix END");
+            return true;
+        }
+
+        public static void SetScreen(MatchmakerOfflineRaidScreen __instance, RaidSettings raidSettings, UpdatableToggle ____offlineModeToggle, UiElementBlocker ____onlineBlocker)
+        {
             // Do a force of these, just encase it breaks
             ____offlineModeToggle.isOn = true;
-            //____offlineModeToggle.enabled = false;
-            ____offlineModeToggle.interactable = false;
+            ____onlineBlocker.enabled = true;
+            ____onlineBlocker.SetBlock(true, "tf you lookin at?");
 
-            raidSettings.RaidMode = DefaultRaidSettings.RaidMode;
+            //____onlineBlocker.RemoveBlock();
+
             //raidSettings.Side;
             //LocationId
             //RaidSettings.SelectedLocation;
@@ -103,8 +115,8 @@ namespace MTGA.Patches.Menus
             var botSettings = raidSettings.BotSettings;
             var waveSettings = raidSettings.WavesSettings;
 
-            //botSettings.IsEnabled = !!(serverSettings.AiAmount != EBotAmount.NoBots);
-            botSettings.IsEnabled = true;
+            botSettings.IsEnabled = !!(DefaultRaidSettings.AiAmount != EBotAmount.NoBots);
+            //botSettings.IsEnabled = true;
             botSettings.IsScavWars = DefaultRaidSettings.ScavWars;
             botSettings.BotAmount = DefaultRaidSettings.AiAmount;
 
@@ -114,19 +126,18 @@ namespace MTGA.Patches.Menus
             waveSettings.BotDifficulty = DefaultRaidSettings.AiDifficulty;
             waveSettings.IsBosses = DefaultRaidSettings.BossEnabled;
             waveSettings.IsTaggedAndCursed = DefaultRaidSettings.TaggedAndCursed;
-
-            Logger.LogInfo($"AutoSetOfflineMatch.PatchPrefix END");
         }
 
         [PatchPostfix]
-        public static void PatchPostfix(MatchmakerOfflineRaidScreen __instance, UiElementBlocker ____onlineBlocker)
+        public static void PatchPostfix(MatchmakerOfflineRaidScreen __instance, RaidSettings raidSettings, UpdatableToggle ____offlineModeToggle, UiElementBlocker ____onlineBlocker)
         {
             var warningPanel = __instance.transform.Find("Content/WarningPanelHorLayout").gameObject;
             warningPanel.SetActive(false);
             var spacer = __instance.transform.Find("Content/Space (1)").gameObject;
             spacer.SetActive(false);
 
-            ____onlineBlocker.SetBlock(true, "tf you lookin at?");
+            SetScreen(__instance, raidSettings, ____offlineModeToggle, ____onlineBlocker);
+
         }
 
         protected override MethodBase GetTargetMethod()
@@ -139,10 +150,9 @@ namespace MTGA.Patches.Menus
                 if (!method.Name.StartsWith("Show")) continue;
 
                 var parameters = method.GetParameters();
-                if (parameters.Length == 1
-                && parameters[0].Name == "controller")
+                if (parameters.Length == 2)
                 {
-                    Logger.LogInfo(method.Name);
+                    Logger.LogInfo($"[MatchmakerOfflineRaidScreen] {method.Name}");
                     return method;
                 }
             }

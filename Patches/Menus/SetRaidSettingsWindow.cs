@@ -11,11 +11,10 @@ namespace MTGA.Patches.Menus
     public class SetRaidSettingsWindow : ModulePatch
     {
 
-        //[PatchPrefix]
-        //public static void PatchPrefix(
-        [PatchPostfix]
-        public static void PatchPostfix(
-            RaidSettings raidSettings,
+        [PatchPrefix]
+        public static bool PatchPrefix(
+        //[PatchPostfix]
+        //public static void PatchPostfix(
             DropDownBox ____aiAmountDropdown,
             DropDownBox ____aiDifficultyDropdown,
             UpdatableToggle ____enableBosses,
@@ -29,8 +28,11 @@ namespace MTGA.Patches.Menus
         {
             Logger.LogInfo("SetRaidSettingsWindow.PatchPostfix");
 
+            ____randomTimeToggle.isOn = false;
             ____randomTimeToggle.interactable = false;
             ____randomTimeToggle.enabled = false;
+
+            ____randomWeatherToggle.isOn = false;
             ____randomWeatherToggle.interactable = false;
             ____randomWeatherToggle.enabled = false;
 
@@ -38,71 +40,89 @@ namespace MTGA.Patches.Menus
             if (DefaultRaidSettings == null)
             {
                 Logger.LogInfo("SetRaidSettingsWindow.PatchPostfix : DefaultRaidSettings are Null!");
-                return;
+                return false;
             }
 
-            /**/
-            var botSettings = raidSettings.BotSettings;
-            var waveSettings = raidSettings.WavesSettings;
+            /*
+             * class2729_0
+             */
 
-            EBotAmount amount =   DefaultRaidSettings.AiAmount; //botSettings.BotAmount;
+            EBotAmount amount = DefaultRaidSettings.AiAmount; //botSettings.BotAmount;
             EBotDifficulty difficulty = DefaultRaidSettings.AiDifficulty; //waveSettings.BotDifficulty; //
 
-            bool bossEnabled =  DefaultRaidSettings.BossEnabled; //waveSettings.IsBosses;
+            bool bossEnabled = DefaultRaidSettings.BossEnabled; //waveSettings.IsBosses;
             bool scavWar = DefaultRaidSettings.ScavWars; //botSettings.IsScavWars;
             bool tagged = DefaultRaidSettings.TaggedAndCursed; // waveSettings.IsTaggedAndCursed;
 
-            ____aiAmountDropdown.UpdateValue((int)amount, false);
-            ____aiDifficultyDropdown.UpdateValue((int)difficulty, false);
+            ____aiAmountDropdown.UpdateValue((int)amount);
+            ____aiDifficultyDropdown.UpdateValue((int)difficulty);
 
             ____enableBosses.isOn = bossEnabled;
-            ____enableBosses.UpdateValue(bossEnabled, false);
+            ____enableBosses.UpdateValue(bossEnabled);
 
-            ____scavWars.UpdateValue(scavWar, false);
-            ____taggedAndCursed.UpdateValue(tagged, false);
+            ____scavWars.isOn = scavWar;
+            ____scavWars.UpdateValue(scavWar);
 
+            ____taggedAndCursed.isOn = tagged;
+            ____taggedAndCursed.UpdateValue(tagged);
+            return true;
         }
 
-        [PatchPrefix]
-        public static void PatchPrefix(RaidSettings raidSettings)
-        {
-            var botSettings = raidSettings.BotSettings;
-            var waveSettings = raidSettings.WavesSettings;
+        /*        [PatchPrefix]
+                public static void PatchPrefix(RaidSettings raidSettings)
+                {
+                    var botSettings = raidSettings.BotSettings;
+                    var waveSettings = raidSettings.WavesSettings;
 
-            if (DefaultRaidSettings.AiAmount != botSettings.BotAmount)
-            {
-                Logger.LogInfo("DefaultRaidSettings.AiAmount != botSettings.BotAmount");
-                //DefaultRaidSettings.AiAmount = botSettings.BotAmount;
-            }
+                    if (DefaultRaidSettings.AiAmount != botSettings.BotAmount)
+                    {
+                        Logger.LogInfo("DefaultRaidSettings.AiAmount != botSettings.BotAmount");
+                        //DefaultRaidSettings.AiAmount = botSettings.BotAmount;
+                    }
 
-            if (DefaultRaidSettings.AiDifficulty != waveSettings.BotDifficulty)
-            {
-                Logger.LogInfo("DefaultRaidSettings.AiDifficulty != waveSettings.BotDifficulty");
-                //DefaultRaidSettings.AiDifficulty = waveSettings.BotDifficulty;
-            }
+                    if (DefaultRaidSettings.AiDifficulty != waveSettings.BotDifficulty)
+                    {
+                        Logger.LogInfo("DefaultRaidSettings.AiDifficulty != waveSettings.BotDifficulty");
+                        //DefaultRaidSettings.AiDifficulty = waveSettings.BotDifficulty;
+                    }
 
-            if (DefaultRaidSettings.BossEnabled != waveSettings.IsBosses)
-            {
-                Logger.LogInfo("DefaultRaidSettings.BossEnabled != waveSettings.IsBosses");
-                //DefaultRaidSettings.BossEnabled = waveSettings.IsBosses;
-            }
-            if (DefaultRaidSettings.ScavWars != botSettings.IsScavWars)
-            {
-                Logger.LogInfo("DefaultRaidSettings.ScavWars != botSettings.IsScavWars");
-                //DefaultRaidSettings.ScavWars = botSettings.IsScavWars;
-            }
-            if (DefaultRaidSettings.TaggedAndCursed != waveSettings.IsTaggedAndCursed)
-            {
-                Logger.LogInfo("DefaultRaidSettings.TaggedAndCursed != waveSettings.IsTaggedAndCursed");
-                //DefaultRaidSettings.TaggedAndCursed = waveSettings.IsTaggedAndCursed;
-            }
-        }
+                    if (DefaultRaidSettings.BossEnabled != waveSettings.IsBosses)
+                    {
+                        Logger.LogInfo("DefaultRaidSettings.BossEnabled != waveSettings.IsBosses");
+                        //DefaultRaidSettings.BossEnabled = waveSettings.IsBosses;
+                    }
+                    if (DefaultRaidSettings.ScavWars != botSettings.IsScavWars)
+                    {
+                        Logger.LogInfo("DefaultRaidSettings.ScavWars != botSettings.IsScavWars");
+                        //DefaultRaidSettings.ScavWars = botSettings.IsScavWars;
+                    }
+                    if (DefaultRaidSettings.TaggedAndCursed != waveSettings.IsTaggedAndCursed)
+                    {
+                        Logger.LogInfo("DefaultRaidSettings.TaggedAndCursed != waveSettings.IsTaggedAndCursed");
+                        //DefaultRaidSettings.TaggedAndCursed = waveSettings.IsTaggedAndCursed;
+                    }
+                }*/
 
         protected override MethodBase GetTargetMethod()
         {
             var type = typeof(RaidSettingsWindow);
-            var method = type.GetMethod(nameof(RaidSettingsWindow.Show));
-            return method;
+
+            var methods = PatchConstants.GetAllMethodsForType(type);
+
+            foreach (var method in methods)
+            {
+                if (!method.Name.StartsWith("method_")) continue;
+                var param = method.GetParameters();
+                if (param.Length != 1) continue;
+
+                if (param[0].ParameterType != typeof(bool)) continue;
+                if (param[0].Name != "value") continue;
+
+                if (method.MetadataToken != 0x0600E53B) continue;
+                Logger.LogInfo($"[RaidSettingsWindow] {method.Name} found!");
+                return method;
+            }
+            return null;
         }
     }
 }
