@@ -40,7 +40,7 @@ namespace MTGA
             try
             {
                 PatchConstants.GetBackendUrl();
-
+                new Utilities.Core.Request();
 
                 // - TURN OFF FileChecker and BattlEye -----
                 new ConsistencySinglePatch().Enable();
@@ -178,7 +178,6 @@ namespace MTGA
         void SceneManager_sceneLoaded(Scene arg0, LoadSceneMode arg1)
         {
             GetPoolManager();
-            GetBackendConfigurationInstance();
             GetGameWorld();
         }
 
@@ -223,40 +222,6 @@ namespace MTGA
             readOnlyCollection_0.SetValue(null, Collection_0);
             readOnlyCollection_3.SetValue(null, Collection_3);
             Logger.LogInfo("Adjusted sliders for Overall Visibility and LOD Quality");
-        }
-        void GetBackendConfigurationInstance()
-        {
-            if (
-                PatchConstants.BackendStaticConfigurationType != null &&
-                PatchConstants.BackendStaticConfigurationConfigInstance == null)
-            {
-                PatchConstants.BackendStaticConfigurationConfigInstance = PatchConstants.GetPropertyFromType(PatchConstants.BackendStaticConfigurationType, "Config").GetValue(null);
-                //Logger.LogInfo($"BackendStaticConfigurationConfigInstance Type:{ PatchConstants.BackendStaticConfigurationConfigInstance.GetType().Name }");
-            }
-
-            if (PatchConstants.BackendStaticConfigurationConfigInstance != null
-                && PatchConstants.CharacterControllerSettings.CharacterControllerInstance == null
-                )
-            {
-                PatchConstants.CharacterControllerSettings.CharacterControllerInstance
-                    = PatchConstants.GetFieldOrPropertyFromInstance<object>(PatchConstants.BackendStaticConfigurationConfigInstance, "CharacterController", false);
-                Logger.LogInfo($"PatchConstants.CharacterControllerInstance Type:{PatchConstants.CharacterControllerSettings.CharacterControllerInstance.GetType().Name}");
-            }
-
-            if (PatchConstants.CharacterControllerSettings.CharacterControllerInstance != null
-                && PatchConstants.CharacterControllerSettings.ClientPlayerMode == null
-                )
-            {
-                PatchConstants.CharacterControllerSettings.ClientPlayerMode
-                    = PatchConstants.GetFieldOrPropertyFromInstance<CharacterControllerSpawner.Mode>(PatchConstants.CharacterControllerSettings.CharacterControllerInstance, "ClientPlayerMode", false);
-
-                PatchConstants.CharacterControllerSettings.ObservedPlayerMode
-                    = PatchConstants.GetFieldOrPropertyFromInstance<CharacterControllerSpawner.Mode>(PatchConstants.CharacterControllerSettings.CharacterControllerInstance, "ObservedPlayerMode", false);
-
-                PatchConstants.CharacterControllerSettings.BotPlayerMode
-                    = PatchConstants.GetFieldOrPropertyFromInstance<CharacterControllerSpawner.Mode>(PatchConstants.CharacterControllerSettings.CharacterControllerInstance, "BotPlayerMode", false);
-            }
-
         }
 
 

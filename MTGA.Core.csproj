@@ -63,6 +63,9 @@
       <HintPath>..\Tarkov.References\Sirenix.Utilities.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="System.Net.Http">
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Unity.ScriptableBuildPipeline">
       <HintPath>..\Tarkov.References\Unity.ScriptableBuildPipeline.dll</HintPath>
       <Private>false</Private>

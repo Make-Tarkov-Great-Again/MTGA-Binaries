@@ -21,7 +21,10 @@ namespace MTGA.Patches.Web
         /// </summary>
         public WebSocketPatch()
         {
-            WebSocketAddress = new MTGA_Request().PostJson("/client/WebSocketAddress", null);
+           
+            Logger.LogError("SESSION: " + MTGA_Request.Session);
+            Logger.LogError("ENDPOINT: " + MTGA_Request.RemoteEndPoint);
+            WebSocketAddress = MTGA_Request.Instance.GetJson("/client/WebSocketAddress");
 
             if (Uri.TryCreate(WebSocketAddress, UriKind.Absolute, out Uri uri))
             {
