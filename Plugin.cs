@@ -88,7 +88,6 @@ namespace MTGA
                 var enabledMTGAAISystem = Config.Bind("AI", "AI System", true, "Description: Enable MTGA AI???????");
                 if (enabledMTGAAISystem.Value)
                 {
-                    //new IsEnemyPatch().Enable();
                     new IsPlayerEnemyPatch().Enable();
                     new IsPlayerEnemyByRolePatch().Enable();
                     new BotBrainActivatePatch().Enable();
@@ -96,15 +95,8 @@ namespace MTGA
                 }
 
                 new RemoveUsedBotProfile().Enable();
-                //new LoadBotTemplatesPatch().Enable();
-                //new CreateFriendlyAIPatch().Enable();
 
                 // --------- Matchmaker ----------------
-                //new MainMenuControllerRaidSettings().Enable();
-                new SetMatchmakerOfflineRaidScreen().Enable();
-                new SetRaidSettingsWindow().Enable();
-                //new SetRaidSettingsSummary().Enable();
-                //new BringBackInsuranceScreen().Enable();
                 new DisableReadyButtonOnFirstScreen().Enable();
 
                 // -------------------------------------

@@ -26,7 +26,7 @@ namespace MTGA.Patches.AI.Fixes
 
 
         [PatchPostfix]
-        public static void PatchPostfix(ref bool __result, BotGroupClass __instance, IAIDetails requester)
+        public static void PatchPostfix(ref bool __result, BotsGroup __instance, IPlayer requester)
         {
             var isEnemy = false; // default not an enemy
 
@@ -43,7 +43,7 @@ namespace MTGA.Patches.AI.Fixes
                         ShouldAttackUsec(requester))
                     {
                         isEnemy = true;
-                        __instance.AddEnemy(requester);
+                        __instance.AddEnemy(requester, EBotEnemyCause.initial);
                     }
                 }
                 else if (__instance.Side == EPlayerSide.Bear)
@@ -52,7 +52,7 @@ namespace MTGA.Patches.AI.Fixes
                         ShouldAttackBear(requester))
                     {
                         isEnemy = true;
-                        __instance.AddEnemy(requester);
+                        __instance.AddEnemy(requester, EBotEnemyCause.initial);
                     }
                 }
                 else if (__instance.Side == EPlayerSide.Savage)
@@ -61,7 +61,7 @@ namespace MTGA.Patches.AI.Fixes
                     {
                         // everyone else is an enemy to savage (scavs)
                         isEnemy = true;
-                        __instance.AddEnemy(requester);
+                        __instance.AddEnemy(requester, EBotEnemyCause.initial);
                     }
                 }
             }
@@ -75,7 +75,7 @@ namespace MTGA.Patches.AI.Fixes
         /// </summary>
         /// <param name="requester"></param>
         /// <returns>bool</returns>
-        private static bool ShouldAttackUsec(IAIDetails requester)
+        private static bool ShouldAttackUsec(IPlayer requester)
         {
             var requesterMind = requester?.AIData?.BotOwner?.Settings?.FileSettings?.Mind;
 
@@ -92,7 +92,7 @@ namespace MTGA.Patches.AI.Fixes
         /// </summary>
         /// <param name="requester"></param>
         /// <returns></returns>
-        private static bool ShouldAttackBear(IAIDetails requester)
+        private static bool ShouldAttackBear(IPlayer requester)
         {
             var requesterMind = requester.AIData?.BotOwner?.Settings?.FileSettings?.Mind;
 

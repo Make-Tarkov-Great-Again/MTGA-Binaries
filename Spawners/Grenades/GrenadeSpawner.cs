@@ -24,7 +24,7 @@ namespace MTGA.Spawners.Grenades
 		private void Start()
 		{
 			this.bullet = ShotFactory.GetBullet(TemplateId);
-			this.player = Singleton<GameWorld>.Instance.RegisteredPlayers.Find((Player p) => p.IsYourPlayer);
+			this.player = Singleton<GameWorld>.Instance.MainPlayer;
 			ShotFactory.Init(this.player);
 			((MonoBehaviour)this).InvokeRepeating("Tick", ExplosiveGrenadeSpawner.delay, ExplosiveGrenadeSpawner.rate);
 		}

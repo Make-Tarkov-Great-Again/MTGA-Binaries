@@ -30,8 +30,8 @@ namespace MTGA.Utilities.Airdrops.Utils
             {
                 return 100;
             }
-
-            string location = gameWorld.RegisteredPlayers[0].Location;
+            
+            string location = gameWorld.MainPlayer.Location;
 
             int result = 25;
             switch (location.ToLower())

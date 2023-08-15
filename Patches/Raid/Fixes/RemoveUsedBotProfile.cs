@@ -16,11 +16,11 @@ namespace MTGA.Patches.Raid.Fixes
 
         protected override MethodBase GetTargetMethod()
         {
-            return typeof(BotPresetFactory1).GetMethod("GetNewProfile", BindingFlags.NonPublic | BindingFlags.Instance);
+            return typeof(BotPresetFactory).GetMethod("GetNewProfile", BindingFlags.NonPublic | BindingFlags.Instance);
         }
 
         [PatchPrefix]
-        public static bool PatchPrefix(ref Profile __result, BotPresetFactory1 __instance, IProfileData data, List<EFT.Profile> ___list_0)
+        public static bool PatchPrefix(ref Profile __result, BotPresetFactory __instance, CreationData data, List<EFT.Profile> ___list_0)
         {
             if (___list_0.Count > 0)
             {
