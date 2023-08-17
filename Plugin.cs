@@ -48,7 +48,7 @@ namespace MTGA
                 new BattlEyePatch().Enable();
                 new SslCertificatePatch().Enable();
                 new UnityWebRequestPatch().Enable();
-                new WebSocketPatch().Enable();
+                //new WebSocketPatch().Enable();    //We dont need shitfuck here, because its gonna be WSS with only /SESSIONID
 
                 // - Loading Bundles from Server. Working Aki version with some tweaks by me -----
                 var enableBundles = Config.Bind("Bundles", "Enable", true);
