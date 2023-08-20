@@ -113,6 +113,7 @@ namespace MTGA
                 // Raid
                 new LoadBotDifficultyFromServer().Enable();
                 new ForceMuteVoIP().Enable();
+                new SkipLocationLootCaching().Enable();
 
                 // --------------------------------------
                 // Health stuff
