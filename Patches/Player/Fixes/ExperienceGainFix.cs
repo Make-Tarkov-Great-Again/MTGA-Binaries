@@ -7,10 +7,6 @@ namespace MTGA.Patches.Player.Fixes
 {
     public class ExperienceGainFix : ModulePatch
     {
-        public ExperienceGainFix()
-        {
-
-        }
 
         [PatchPrefix]
         static void PrefixPatch(ref bool isOnline)

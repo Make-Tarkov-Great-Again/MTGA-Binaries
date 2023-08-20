@@ -11,22 +11,14 @@ namespace MTGA.Patches.Player.Health
     public class OnDeadPatch : ModulePatch
     {
         public static event Action<EFT.Player, EDamageType> OnPersonKilled;
-        public static bool DisplayDeathMessage = true;
+        public static bool DisplayDeathMessage = false;
 
         public OnDeadPatch(BepInEx.Configuration.ConfigFile config)
         {
-            var enableDeathMessage = config.Bind("Bundles", "Enable", true);
-            if (enableDeathMessage != null && enableDeathMessage.Value == true)
+            var enableDeathMessage = config.Bind("SIT", "Enable Death Message", true);
+            if (enableDeathMessage?.Value == true)
             {
                 DisplayDeathMessage = enableDeathMessage.Value;
-
-                //DisplayDeathMessage = JsonConvert.DeserializeObject<bool>();
-            }
-
-            if (bool.TryParse(MTGA_Request.Instance.PostJson("/client/raid/person/killed/showMessage", null, true), out bool serverDecision))
-            {
-                Logger.LogInfo("OnDeadPatch:Server Decision:" + serverDecision);
-                DisplayDeathMessage = serverDecision;
             }
         }
 

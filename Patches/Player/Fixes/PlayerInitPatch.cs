@@ -1,6 +1,10 @@
-﻿using MTGA.Utilities.Core;
+﻿using EFT;
+using MTGA.Utilities.Core;
+using MTGA.Utilities.Player.Health;
 using System;
 using System.Reflection;
+using System.Threading.Tasks;
+using UnityEngine.Profiling;
 
 namespace MTGA.Patches.Player.Fixes
 {
@@ -14,17 +18,27 @@ namespace MTGA.Patches.Player.Fixes
         }
 
         [PatchPostfix]
-        public static void PatchPostfix(EFT.LocalPlayer __instance)
+        public static async void PatchPostfix(Task __result, LocalPlayer __instance, Profile profile)
         {
-            if (OnPlayerInit != null)
-                OnPlayerInit(__instance);
 
-            //if (__instance.IsAI)
-            //{
-            //    BotSystemHelpers.AddActivePlayer(__instance);
-            //}
+            if (__instance is HideoutPlayer)
+                return;
 
-            //PatchConstants.DisplayMessageNotification($"{__instance.Profile.Nickname}:{__instance.Side}:{__instance.Profile.Info.Settings.Role} has spawned");
+            OnPlayerInit?.Invoke(__instance);
+
+            await __result;
+
+            var listener = HealthListener.Instance;
+            if (profile?.PetId != null && __instance.IsYourPlayer)
+            {
+                Logger.LogInfo($"Hooking up health listener to profile: {profile.Id}");
+                listener.Init(__instance.HealthController, true);
+                return;
+                //Logger.LogInfo($"HealthController instance: {__instance.HealthController.GetHashCode()}");
+            }
+
+            //Logger.LogInfo($"Skipped on HealthController instance: {__instance.HealthController.GetHashCode()} for profile id: {profile?.Id}");
+
         }
     }
 }

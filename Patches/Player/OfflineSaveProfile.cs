@@ -82,7 +82,7 @@ namespace MTGA.Patches.Player
             };
 
             var convertedJson = request.MTGAToJson();
-            MTGA_Request.Instance.PostJson("/client/raid/profile/save", convertedJson, true);
+            _ = MTGA_Request.Instance.PostJsonAsync("/client/raid/profile/save", convertedJson, true);
             return true;
         }
 

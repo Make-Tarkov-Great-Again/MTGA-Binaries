@@ -13,7 +13,6 @@ using UnityEngine.SceneManagement;
 using MTGA.Utilities.Bundles;
 using MTGA.Patches.FileChecker;
 using MTGA.Patches.AntiCheat;
-using MTGA.Patches.Web;
 using MTGA.Patches.Bundles;
 using MTGA.Patches.Raid.Menus;
 using MTGA.Patches.Raid.Fixes;
@@ -48,7 +47,6 @@ namespace MTGA
                 new BattlEyePatch().Enable();
                 new SslCertificatePatch().Enable();
                 new UnityWebRequestPatch().Enable();
-                //new WebSocketPatch().Enable();    //We dont need shitfuck here, because its gonna be WSS with only /SESSIONID
 
                 // - Loading Bundles from Server. Working Aki version with some tweaks by me -----
                 var enableBundles = Config.Bind("Bundles", "Enable", true);
@@ -114,10 +112,7 @@ namespace MTGA
                 // -------------------------------------
                 // Raid
                 new LoadBotDifficultyFromServer().Enable();
-
                 new ForceMuteVoIP().Enable();
-                //new SpawnPointPatch().Enable();
-                //new BossSpawnChancePatch().Enable();
 
                 // --------------------------------------
                 // Health stuff
@@ -127,17 +122,10 @@ namespace MTGA
                 new ChangeEnergyPatch().Enable();
                 new ChangeHydrationPatch().Enable();
 
-                //new HideoutItemViewFactoryShowPatch().Enable();
-
                 new LootContainerInitPatch().Enable();
                 new CollectLootPointsDataPatch().Enable();
 
                 new SetupItemActionsSettingsPatch().Enable();
-
-                /*
-                new TransportPrefixCtorPatch().Enable();
-                new TransportPrefixPatch().Enable();
-                */
 
                 // Plugin startup logic
                 Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
