@@ -27,6 +27,7 @@ using MTGA.Patches.Player;
 using MTGA.Patches.Raid.FromServer;
 using MTGA.Patches.Misc;
 using MTGA.Patches.Hideout;
+using MTGA.Patches.Web;
 
 namespace MTGA
 {
@@ -47,6 +48,7 @@ namespace MTGA
                 new BattlEyePatch().Enable();
                 new SslCertificatePatch().Enable();
                 new UnityWebRequestPatch().Enable();
+                //new WSS().Enable();
 
                 // - Loading Bundles from Server. Working Aki version with some tweaks by me -----
                 var enableBundles = Config.Bind("Bundles", "Enable", true);
@@ -113,7 +115,7 @@ namespace MTGA
                 // Raid
                 new LoadBotDifficultyFromServer().Enable();
                 new ForceMuteVoIP().Enable();
-                new SkipLocationLootCaching().Enable();
+                //new SkipLocationLootCaching().Enable();
 
                 // --------------------------------------
                 // Health stuff
@@ -126,7 +128,7 @@ namespace MTGA
                 new LootContainerInitPatch().Enable();
                 new CollectLootPointsDataPatch().Enable();
 
-                new SetupItemActionsSettingsPatch().Enable();
+                new InstantItemsMoving().Enable();
 
                 // Plugin startup logic
                 Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_GUID} is loaded!");
