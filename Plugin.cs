@@ -58,7 +58,6 @@ namespace MTGA
                 }
 
                 new QTE().Enable();
-                new RemoveUsedBotProfile().Enable();
 
                 // --------- Container Id Debug ------------
                 var enableLootableContainerDebug = Config.Bind("Debug", "Lootable Container Debug", false, "Description: Print Lootable Container information");
@@ -230,24 +229,25 @@ namespace MTGA
 
         public static MethodInfo LoadBundlesAndCreatePoolsMethod { get; set; }
 
-        public static async void LoadBundlesAndCreatePoolsAsync(ResourceKey[] resources)
+        public static async Task LoadBundlesAndCreatePoolsAsync(ResourceKey[] resources)
         {
             try
             {
                 if (BundleAndPoolManager == null)
                 {
-                    PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: BundleAndPoolManager is missing");
+                    PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePoolsAsync: BundleAndPoolManager is missing");
                     return;
                 }
 
-                await Singleton<PoolManager>.Instance.LoadBundlesAndCreatePools(
+                var poolManager = Singleton<PoolManager>.Instance;
+                await poolManager.LoadBundlesAndCreatePools(
                     PoolManager.PoolsCategory.Raid, PoolManager.AssemblyType.Local, resources, JobPriority.General, null, CancellationToken.None);
-
             }
             catch (Exception ex)
             {
-                PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools -- ERROR ->>>");
-                PatchConstants.Logger.LogInfo(ex.ToString());
+                PatchConstants.Logger.LogError("LoadBundlesAndCreatePoolsAsync - ERROR");
+                PatchConstants.Logger.LogError(ex.ToString());
+                // You may choose to rethrow the exception here if needed.
             }
         }
 
@@ -261,22 +261,18 @@ namespace MTGA
                     return null;
                 }
 
-                var raidE = Enum.Parse(PoolsCategoryType, "Raid");
-
-                var localE = Enum.Parse(AssemblyTypeType, "Local");
-
-                var GenProp = PatchConstants.GetPropertyFromType(PatchConstants.JobPriorityType, "General").GetValue(null, null);
+                var raidEnum = Enum.Parse(PoolsCategoryType, "Raid");
+                var localEnum = Enum.Parse(AssemblyTypeType, "Local");
+                var generalProp = PatchConstants.GetPropertyFromType(PatchConstants.JobPriorityType, "General").GetValue(null, null);
 
                 return PatchConstants.InvokeAsyncStaticByReflection(
                     LoadBundlesAndCreatePoolsMethod,
-                    BundleAndPoolManager
-                    , raidE
-                    , localE
-                    , resources
-                    , GenProp
-                    //, (object o) => { PatchConstants.Logger.LogInfo("LoadBundlesAndCreatePools: Progressing!"); }
-                    , default(CancellationToken)
-                    );
+                    BundleAndPoolManager,
+                    raidEnum,
+                    localEnum,
+                    resources,
+                    generalProp
+                );
             }
             catch (Exception ex)
             {

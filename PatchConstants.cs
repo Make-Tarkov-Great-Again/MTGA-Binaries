@@ -20,17 +20,17 @@ namespace MTGA
         public static BindingFlags PrivateFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 
         private static Type[] _eftTypes;
-        public static Type[] EftTypes 
-        { 
-            get 
-            { 
-                if( _eftTypes == null)
+        public static Type[] EftTypes
+        {
+            get
+            {
+                if (_eftTypes == null)
                 {
                     _eftTypes = typeof(AbstractGame).Assembly.GetTypes().OrderBy(t => t.Name).ToArray();
                 }
 
-                return _eftTypes; 
-            } 
+                return _eftTypes;
+            }
         }
         public static Type[] FilesCheckerTypes { get; private set; }
         public static Type LocalGameType { get; private set; }
@@ -106,11 +106,9 @@ namespace MTGA
 
 
             var o = MessageNotificationType.GetMethod("DisplayMessageNotification", BindingFlags.Static | BindingFlags.Public);
-            if (o != null)
-            { 
-                o.Invoke("DisplayMessageNotification", new object[] { message, ENotificationDurationType.Default, ENotificationIconType.Default, null });
-            }
-
+            o?.Invoke("DisplayMessageNotification", new object[] {
+                    message, ENotificationDurationType.Default, ENotificationIconType.Default, null
+                });
         }
 
         public static ManualLogSource Logger { get; private set; }
@@ -125,11 +123,7 @@ namespace MTGA
         {
             get
             {
-                if (_backEndSession == null)
-                {
-                    _backEndSession = Singleton<ClientApplication<IBackEndSession>>.Instance.GetClientBackEndSession();
-                }
-
+                _backEndSession ??= Singleton<ClientApplication<IBackEndSession>>.Instance.GetClientBackEndSession();
                 return _backEndSession;
             }
         }
@@ -161,8 +155,8 @@ namespace MTGA
         public static FieldInfo GetFieldFromType(Type t, string name)
         {
             var fields = t.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
-            return fields.FirstOrDefault(x => x.Name.ToLower() == name.ToLower());    
-          
+            return fields.FirstOrDefault(x => x.Name.ToLower() == name.ToLower());
+
         }
 
         public static FieldInfo FindFieldFromType(Type t, string name)
@@ -187,7 +181,7 @@ namespace MTGA
 
         public static MethodInfo GetMethodForType(Type t, string methodName, bool debug = false)
         {
-            return GetAllMethodsForType(t, debug).LastOrDefault(x => x.Name.ToLower() == methodName.ToLower()); 
+            return GetAllMethodsForType(t, debug).LastOrDefault(x => x.Name.ToLower() == methodName.ToLower());
         }
 
         public static async Task<MethodInfo> GetMethodForTypeAsync(Type t, string methodName, bool debug = false)
@@ -213,7 +207,7 @@ namespace MTGA
                 yield return m;
             }
 
-            if(t.BaseType != null)
+            if (t.BaseType != null)
             {
                 foreach (var m in t.BaseType.GetMethods(
                 BindingFlags.NonPublic
@@ -234,7 +228,7 @@ namespace MTGA
 
         public static IEnumerable<MethodInfo> GetAllMethodsForObject(object ob)
         {
-            return GetAllMethodsForType(ob.GetType());  
+            return GetAllMethodsForType(ob.GetType());
         }
 
         public static IEnumerable<PropertyInfo> GetAllPropertiesForObject(object o)
@@ -283,23 +277,23 @@ namespace MTGA
         public static T GetFieldOrPropertyFromInstance<T>(object o, string name, bool safeConvert = true)
         {
             PropertyInfo property = GetAllPropertiesForObject(o).FirstOrDefault(x => x.Name.ToLower() == name.ToLower());
-            if(property != null)
+            if (property != null)
             {
                 if (safeConvert)
                     return MTGA.PatchConstants.DoSafeConversion<T>(property.GetValue(o));
-                else 
+                else
                     return (T)property.GetValue(o);
             }
             FieldInfo field = GetAllFieldsForObject(o).FirstOrDefault(x => x.Name.ToLower() == name.ToLower());
-            if(field != null)
+            if (field != null)
             {
                 if (safeConvert)
                     return MTGA.PatchConstants.DoSafeConversion<T>(field.GetValue(o));
                 else
                     return (T)field.GetValue(o);
             }
-            
-            return default(T);
+
+            return default;
         }
 
         public static async Task<T> GetFieldOrPropertyFromInstanceAsync<T>(object o, string name, bool safeConvert = true)
@@ -312,24 +306,20 @@ namespace MTGA
 
         public static void SetFieldOrPropertyFromInstance(object o, string name, object v)
         {
-            var field = GetAllFieldsForObject(o).FirstOrDefault(x => x.Name.ToLower() == (name.ToLower()));
-            if (field != null)
-                field.SetValue(o, v);
+            var field = GetAllFieldsForObject(o).FirstOrDefault(x => x.Name.ToLower() == name.ToLower());
+            field?.SetValue(o, v);
 
-            var property = GetAllPropertiesForObject(o).FirstOrDefault(x => x.Name.ToLower() == (name.ToLower()));
-            if (property != null)
-                property.SetValue(o, v);
+            var property = GetAllPropertiesForObject(o).FirstOrDefault(x => x.Name.ToLower() == name.ToLower());
+            property?.SetValue(o, v);
         }
 
         public static void SetFieldOrPropertyFromInstance<T>(object o, string name, T v)
         {
-            var field = GetAllFieldsForObject(o).FirstOrDefault(x=>x.Name.ToLower() == (name.ToLower()));
-            if (field != null)
-                field.SetValue(o, v);
+            var field = GetAllFieldsForObject(o).FirstOrDefault(x => x.Name.ToLower() == name.ToLower());
+            field?.SetValue(o, v);
 
-            var property = GetAllPropertiesForObject(o).FirstOrDefault(x => x.Name.ToLower() == (name.ToLower()));
-            if (property != null)
-                property.SetValue(o, v);
+            var property = GetAllPropertiesForObject(o).FirstOrDefault(x => x.Name.ToLower() == name.ToLower());
+            property?.SetValue(o, v);
         }
 
         public static void ConvertDictionaryToObject(object o, Dictionary<string, object> dict)
@@ -337,15 +327,11 @@ namespace MTGA
             foreach (var key in dict)
             {
                 var prop = PatchConstants.GetPropertyFromType(o.GetType(), key.Key);
-                if (prop != null)
-                {
-                    prop.SetValue(o, key.Value);
-                }
+                prop?.SetValue(o, key.Value);
+
                 var field = PatchConstants.GetFieldFromType(o.GetType(), key.Key);
-                if (field != null)
-                {
-                    field.SetValue(o, key.Value);
-                }
+                field?.SetValue(o, key.Value);
+
             }
         }
 
@@ -376,7 +362,7 @@ namespace MTGA
                         Converters = JsonConverterDefault,
                         ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                     }
-                    ) ;
+                    );
         }
 
         public static object GetPlayerProfile(object __instance)
@@ -386,7 +372,6 @@ namespace MTGA
             if (instanceProfile == null)
             {
                 Logger.LogInfo("ReplaceInPlayer:PatchPostfix: Couldn't find Profile");
-                return null;
             }
             return instanceProfile;
         }
@@ -395,19 +380,18 @@ namespace MTGA
         {
             var instanceAccountProp = instanceProfile.GetType().GetField("AccountId"
                 , BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
-          
+
             if (instanceAccountProp == null)
             {
                 Logger.LogInfo($"ReplaceInPlayer:PatchPostfix: instanceAccountProp not found");
-                return null;
             }
-            var instanceAccountId = instanceAccountProp.GetValue(instanceProfile).ToString();
-            return instanceAccountId;
+
+            return instanceAccountProp?.GetValue(instanceProfile).ToString();
         }
 
         public static IDisposable StartWithToken(string name)
         {
-            return GetAllMethodsForType(StartWithTokenType).Single(x=>x.Name == "StartWithToken").Invoke(null, new object[] { name }) as IDisposable;
+            return GetAllMethodsForType(StartWithTokenType).Single(x => x.Name == "StartWithToken").Invoke(null, new object[] { name }) as IDisposable;
         }
 
         public static async Task InvokeAsyncStaticByReflection(MethodInfo methodInfo, object rModel, params object[] p)
@@ -417,18 +401,17 @@ namespace MTGA
                 await (Task)methodInfo
                     .MakeGenericMethod(new[] { rModel.GetType() })
                     .Invoke(null, p);
+                return;
             }
-            else
-            {
-                await (Task)methodInfo
-                    .Invoke(null, p);
-            }
+
+            await (Task)methodInfo
+                .Invoke(null, p);
+
         }
 
         static PatchConstants()
         {
-            if (Logger == null)
-                Logger = BepInEx.Logging.Logger.CreateLogSource("MTGA.PatchConstants");
+            Logger ??= BepInEx.Logging.Logger.CreateLogSource("MTGA.PatchConstants");
 
             TypesDictionary.Add("EftTypes", EftTypes);
 
@@ -456,32 +439,21 @@ namespace MTGA
 
             BotSystemHelpers.Setup();
 
-            if (JobPriorityType == null)
-            {
-                JobPriorityType = PatchConstants.EftTypes.Single(x =>
-                    PatchConstants.GetAllMethodsForType(x).Any(x => x.Name == "Priority")
-                    //&& 
-                    //(PatchConstants.GetFieldFromType(x, "General") != null
-                    //|| PatchConstants.GetPropertyFromType(x, "General") != null)
-                    );
-                //Logger.LogInfo($"Loading JobPriorityType:{JobPriorityType.FullName}");
-            }
+            JobPriorityType ??= PatchConstants.EftTypes.Single(x =>
+                    PatchConstants.GetAllMethodsForType(x).Any(x => x.Name == "Priority"));
 
-            if (PlayerInfoType == null)
-            {
-                PlayerInfoType = PatchConstants.EftTypes.Single(x =>
-                    PatchConstants.GetAllMethodsForType(x).Any(x => x.Name == "AddBan")
-                    && PatchConstants.GetAllMethodsForType(x).Any(x => x.Name == "RemoveBan")
-                    );
-                //Logger.LogInfo($"Loading PlayerInfoType:{PlayerInfoType.FullName}");
-            }
 
-            if (PlayerCustomizationType == null)
-            {
-                var profileType = typeof(EFT.Profile);
-                PlayerCustomizationType = PatchConstants.GetFieldFromType(typeof(EFT.Profile), "Customization").FieldType;
-                //Logger.LogInfo($"Loading PlayerCustomizationType:{PlayerCustomizationType.FullName}");
-            }
+            PlayerInfoType ??= PatchConstants.EftTypes.Single(x =>
+                PatchConstants.GetAllMethodsForType(x).Any(x => x.Name == "AddBan")
+                && PatchConstants.GetAllMethodsForType(x).Any(x => x.Name == "RemoveBan")
+                );
+            //Logger.LogInfo($"Loading PlayerInfoType:{PlayerInfoType.FullName}");
+
+
+            //var profileType = typeof(EFT.Profile);
+            PlayerCustomizationType ??= PatchConstants.GetFieldFromType(typeof(EFT.Profile), "Customization").FieldType;
+            //Logger.LogInfo($"Loading PlayerCustomizationType:{PlayerCustomizationType.FullName}");
+
 
 
             //SpawnPointSystemInterfaceType = PatchConstants.EftTypes.Single(x =>
