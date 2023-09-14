@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿
+using System.Linq;
 using System.Reflection;
 using MTGA.Utilities.Core;
 
@@ -10,25 +11,32 @@ namespace MTGA.Patches.Raid.Fixes
         protected override MethodBase GetTargetMethod()
         {
             var desiredType = PatchConstants.EftTypes.Single(x => x.Name == "LocalGame").BaseType; // BaseLocalGame
-            var desiredMethod = desiredType.GetMethods(PatchConstants.PrivateFlags).Single(x => IsTargetMethod(x)); // method_6
+            if (desiredType == null)
+            {
+                Logger.LogError("Desired Type not found");
+            }
 
-            Logger.LogDebug($"{this.GetType().Name} Type: {desiredType?.Name}");
-            Logger.LogDebug($"{this.GetType().Name} Method: {desiredMethod?.Name}");
+            var methods = PatchConstants.GetAllMethodsForType(desiredType);
+            foreach (var method in methods)
+            {
+                var parameters = method.GetParameters();
 
-            return desiredMethod;
-        }
+                if (parameters.Length == 3
+                    && parameters[0].Name == "backendUrl"
+                    && parameters[1].Name == "locationId"
+                    && parameters[2].Name == "variantId")
+                {
+                    //Logger.Log(BepInEx.Logging.LogLevel.Info, method.Name);
+                    return method;
+                }
+            }
 
-        private static bool IsTargetMethod(MethodInfo mi)
-        {
-            var parameters = mi.GetParameters();
-            return parameters.Length == 3
-                && parameters[0].Name == "backendUrl"
-                && parameters[1].Name == "locationId"
-                && parameters[2].Name == "variantId";
+            Logger.LogError("Method not found");
+            return null;
         }
 
         [PatchPrefix]
-        private static bool PatchPrefix()
+        public static bool PatchPrefix()
         {
             return false; // skip original
         }

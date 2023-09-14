@@ -1,7 +1,6 @@
 ﻿using BepInEx;
 using Comfort.Common;
 using EFT;
-using EFT.AssetsManager;
 using MTGA.Menus;
 using System;
 using System.Collections.Generic;
@@ -27,7 +26,6 @@ using MTGA.Patches.Player;
 using MTGA.Patches.Raid.FromServer;
 using MTGA.Patches.Misc;
 using MTGA.Patches.Hideout;
-using MTGA.Patches.Web;
 
 namespace MTGA
 {
@@ -48,7 +46,6 @@ namespace MTGA
                 new BattlEyePatch().Enable();
                 new SslCertificatePatch().Enable();
                 new UnityWebRequestPatch().Enable();
-                //new WSS().Enable();
 
                 // - Loading Bundles from Server. Working Aki version with some tweaks by me -----
                 var enableBundles = Config.Bind("Bundles", "Enable", true);
@@ -115,7 +112,7 @@ namespace MTGA
                 // Raid
                 new LoadBotDifficultyFromServer().Enable();
                 new ForceMuteVoIP().Enable();
-                //new SkipLocationLootCaching().Enable();
+                new SkipLocationLootCaching().Enable();
 
                 // --------------------------------------
                 // Health stuff
