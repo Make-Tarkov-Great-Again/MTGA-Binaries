@@ -26,6 +26,8 @@ using MTGA.Patches.Player;
 using MTGA.Patches.Raid.FromServer;
 using MTGA.Patches.Misc;
 using MTGA.Patches.Hideout;
+using MTGA.Utilities.Web;
+using MTGA.Patches.Web;
 
 namespace MTGA
 {
@@ -131,6 +133,13 @@ namespace MTGA
 
                 SceneManager.sceneLoaded += SceneManager_sceneLoaded;
                 SceneManager.sceneUnloaded += SceneManager_sceneUnloaded;
+
+                var url = BackendConnection.GetBackendConnection().BackendUrl;
+                if (!url.Contains("https"))
+                {
+                    new TransportPrefixPatch().Enable();
+                    new WebSocketPatch().Enable();
+                }
 
                 SetupMoreGraphicsMenuOptions();
             }
